@@ -238,7 +238,8 @@ export default function Footer() {
               {[
                 { name: 'About Us', href: '/#about' },
                 { name: 'Manufacturing', href: '/#about' },
-                { name: 'Certifications', href: '/#about' },
+                { name: 'Gallery', href: '/#gallery' },
+                { name: 'Certifications', href: '/#certifications' },
                 { name: 'Export Process', href: '/#process' },
                 { name: 'Industry Insights', href: '/blogs', isRoute: true },
                 { name: 'Contact Us', href: '/#contact' },

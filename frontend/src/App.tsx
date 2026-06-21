@@ -9,6 +9,8 @@ import ProductsSection from './components/ProductsSection'
 import WhyChooseSection from './components/WhyChooseSection'
 import IndustriesSection from './components/IndustriesSection'
 import ProcessSection from './components/ProcessSection'
+import GallerySection from './components/GallerySection'
+import CertificationsSection from './components/CertificationsSection'
 import GlobalNetworkSection from './components/GlobalNetworkSection'
 import DomesticSupplySection from './components/DomesticSupplySection'
 import ContactSection from './components/ContactSection'
@@ -31,6 +33,8 @@ function LandingPage() {
         <WhyChooseSection />
         <IndustriesSection />
         <ProcessSection />
+        <GallerySection />
+        <CertificationsSection />
         <GlobalNetworkSection />
         <DomesticSupplySection />
         <ContactSection />
