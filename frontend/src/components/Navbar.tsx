@@ -7,6 +7,8 @@ const NAV_LINKS = [
   { label: 'About',       href: '/#about'       },
   { label: 'Industries',  href: '/#industries'  },
   { label: 'Process',     href: '/#process'     },
+  { label: 'Gallery',     href: '/#gallery'     },
+  { label: 'Certifications', href: '/#certifications' },
   { label: 'Global Reach',href: '/#global-reach'},
   { label: 'Blog',        href: '/blogs',  isRoute: true },
   { label: 'Contact',     href: '/#contact'     },
@@ -85,7 +87,7 @@ export default function Navbar() {
             {/* ── Desktop Nav ── */}
             <nav
               aria-label="Main navigation"
-              className="hidden md:flex items-center gap-1 lg:gap-2"
+              className="hidden xl:flex items-center gap-0"
             >
               {NAV_LINKS.map(({ label, href, isRoute }) => (
                 isRoute ? (
@@ -121,7 +123,7 @@ export default function Navbar() {
             </nav>
 
             {/* ── Desktop CTA ── */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden xl:flex items-center">
               <button
                 id="navbar-export-quote-btn"
                 onClick={() => openModal('export')}
@@ -149,7 +151,7 @@ export default function Navbar() {
               aria-controls="mobile-menu"
               onClick={() => setMenuOpen(prev => !prev)}
               className={[
-                'md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg',
+                'xl:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg',
                 'transition-colors duration-150',
                 'hover:bg-gray-100 active:bg-gray-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
