@@ -49,7 +49,7 @@ const counterAnim = (delay = 0): Variants => ({
   },
 });
 
-// ─── Floating Card ───────────────────────────────────────────────
+/* ─── Floating Card commented out since it is not used anymore
 interface FloatingCardProps {
   icon: string;
   title: string;
@@ -91,7 +91,6 @@ function FloatingCard({ icon, title, subtitle, position, delay = 0, reduce }: Fl
         minWidth: '188px',
       }}
     >
-      {/* Icon bubble */}
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xl"
         style={{
@@ -119,6 +118,7 @@ function FloatingCard({ icon, title, subtitle, position, delay = 0, reduce }: Fl
     </motion.div>
   );
 }
+*/
 
 // ─── Main Component ───────────────────────────────────────────────
 export default function AboutSection() {
@@ -169,8 +169,8 @@ export default function AboutSection() {
             >
               {/* Ken-Burns on inView */}
               <motion.img
-                src="/mariahcoirs/machinr_cutter.jpeg"
-                alt="Mariah Coirs coir cutter machine at the Tamil Nadu manufacturing facility"
+                src="/mariahcoirs/mills_top_view.jpeg"
+                alt="Mariah Coirs Pollachi manufacturing facility yard top view"
                 className="w-full h-full object-cover"
                 initial={shouldReduce ? {} : { scale: 1.08 }}
                 animate={isInView && !shouldReduce ? { scale: 1.0 } : {}}
