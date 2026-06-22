@@ -179,6 +179,63 @@ function SelectField({
   );
 }
 
+// ─── Textarea Component ───────────────────────────────────────────
+function TextAreaField({
+  label,
+  id,
+  placeholder,
+  value,
+  onChange,
+  rows = 3,
+}: {
+  label: string;
+  id: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div className="flex flex-col gap-0.5">
+      <label
+        htmlFor={id}
+        style={{
+          fontSize: '10px',
+          fontWeight: 700,
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          color: '#667085',
+        }}
+      >
+        {label}
+      </label>
+      <textarea
+        id={id}
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        rows={rows}
+        style={{
+          width: '100%',
+          border: `1px solid ${focused ? '#C99B67' : '#E4E7EC'}`,
+          borderRadius: '8px',
+          padding: '8px 12px',
+          fontSize: '13px',
+          color: '#111111',
+          outline: 'none',
+          transition: 'border-color 0.2s ease',
+          background: '#FFFFFF',
+          fontFamily: 'inherit',
+          resize: 'vertical',
+        }}
+      />
+    </div>
+  );
+}
+
 // ─── Main Modal Component ─────────────────────────────────────────
 export default function BulkPricingModal() {
   const { modalState, closeModal, openModal } = useModal();
@@ -198,8 +255,8 @@ export default function BulkPricingModal() {
   const [location, setLocation] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [quantity, setQuantity] = useState('');
   const [product, setProduct] = useState('');
+  const [message, setMessage] = useState('');
 
   // Session-based popup trigger:
   // sessionStorage is cleared when the tab/browser is closed,
@@ -260,7 +317,7 @@ export default function BulkPricingModal() {
 
   const resetForm = useCallback(() => {
     setName(''); setCompany(''); setLocation('');
-    setEmail(''); setPhone(''); setQuantity(''); setProduct('');
+    setEmail(''); setPhone(''); setProduct(''); setMessage('');
   }, []);
 
   const switchTab = (tab: ModalTab) => {
@@ -280,8 +337,7 @@ export default function BulkPricingModal() {
         phone: phone.trim() || undefined,
         country: location.trim() || undefined,
         productInterested: product || undefined,
-        quantity: quantity.trim() || undefined,
-        message: `Bulk pricing request. Quantity: ${quantity || 'N/A'}. Product: ${product || 'N/A'}.`,
+        message: message.trim(),
         sourcePage: activeTab === 'export' ? 'Export Quote Modal' : 'Indian Bulk Pricing Modal',
       });
       setSubmitted(true);
@@ -572,7 +628,7 @@ export default function BulkPricingModal() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-2">
+                  <div className="mb-2">
                     <Field
                       id="modal-phone"
                       label="WhatsApp / Phone"
@@ -581,27 +637,9 @@ export default function BulkPricingModal() {
                       value={phone}
                       onChange={setPhone}
                     />
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={`qty-${activeTab}`}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.18, ease: 'easeOut' }}
-                        className="w-full"
-                      >
-                        <Field
-                          id="modal-quantity"
-                          label="Quantity *"
-                          placeholder={cfg.quantityPlaceholder}
-                          value={quantity}
-                          onChange={setQuantity}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-2">
                     <SelectField
                       id="modal-product"
                       label="Product Interest *"
@@ -612,6 +650,17 @@ export default function BulkPricingModal() {
                     />
                   </div>
 
+                  <div className="mb-4">
+                    <TextAreaField
+                      id="modal-message"
+                      label="Enquiry Message *"
+                      placeholder="Please enter your enquiry message here (minimum 5 characters)..."
+                      value={message}
+                      onChange={setMessage}
+                      rows={3}
+                    />
+                  </div>
+
                   {submitError && (
                     <div style={{ color: '#DC2626', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '8px 12px', marginBottom: '16px', fontSize: '13px', fontWeight: 600 }}>
                       {submitError}
@@ -619,17 +668,17 @@ export default function BulkPricingModal() {
                   )}
 
                   {/* ── Footer Buttons ── */}
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-4">
+                  <div className="mt-4">
                     {/* Submit */}
                     <motion.button
                       id="modal-submit"
                       type="submit"
                       disabled={submitting}
-                      whileHover={submitting || shouldReduce ? {} : { scale: 1.02, y: -1 }}
-                      whileTap={submitting || shouldReduce ? {} : { scale: 0.98 }}
+                      whileHover={submitting || shouldReduce ? {} : { scale: 1.01, y: -1 }}
+                      whileTap={submitting || shouldReduce ? {} : { scale: 0.99 }}
                       transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                      className="px-2 py-2.5 sm:px-4 sm:py-3 text-[11px] sm:text-xs md:text-[13px] gap-1 sm:gap-1.5"
                       style={{
+                        width: '100%',
                         background: submitting ? '#666666' : '#111111',
                         color: '#FFFFFF',
                         fontWeight: 700,
@@ -639,6 +688,9 @@ export default function BulkPricingModal() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        padding: '12px 16px',
+                        fontSize: '14px',
+                        gap: '6px',
                         transition: 'background 0.2s ease',
                         fontFamily: 'inherit',
                       }}
@@ -664,45 +716,6 @@ export default function BulkPricingModal() {
                         </AnimatePresence>
                       )}
                     </motion.button>
-
-                    {/* Download Catalog */}
-                    <button
-                      id="modal-catalog"
-                      type="button"
-                      onClick={() => window.open('/catalog.pdf', '_blank')}
-                      className="px-2 py-2.5 sm:px-4 sm:py-3 text-[11px] sm:text-xs md:text-[13px] gap-1 sm:gap-1.5"
-                      style={{
-                        background: '#FFFFFF',
-                        color: '#C99B67',
-                        fontWeight: 700,
-                        borderRadius: '8px',
-                        border: '1px solid #C99B67',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.15s ease',
-                        fontFamily: 'inherit',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = '#FFFDF9';
-                        e.currentTarget.style.borderColor = '#B08352';
-                        e.currentTarget.style.color = '#B08352';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = '#FFFFFF';
-                        e.currentTarget.style.borderColor = '#C99B67';
-                        e.currentTarget.style.color = '#C99B67';
-                      }}
-                    >
-                      {/* Download icon */}
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      Download Catalog
-                    </button>
                   </div>
                 </form>
               </>

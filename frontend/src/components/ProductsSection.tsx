@@ -93,7 +93,7 @@ function ProductCard({
             📦
           </div>
         )}
-        {/* Category chip overlay */}
+        {/* Category chip overlay commented out
         <div className="absolute top-3 left-3">
           <span
             className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-full"
@@ -107,6 +107,7 @@ function ProductCard({
             {product.category}
           </span>
         </div>
+        */}
       </div>
 
       {/* ── Body ── */}
@@ -128,7 +129,7 @@ function ProductCard({
           {product.description}
         </p>
 
-        {/* Specs */}
+        {/* Specs commented out
         {product.specs && product.specs.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
             {product.specs.map(({ label, value }) => (
@@ -149,13 +150,14 @@ function ProductCard({
             ))}
           </div>
         )}
+        */}
 
-        {/* Spacer */}
+        {/* Spacer commented out
         <div className="flex-1" />
+        */}
 
-        {/* ── Buttons ── */}
+        {/* Buttons commented out
         <div className="mt-5 flex gap-2.5">
-          {/* Primary — dark */}
           <motion.a
             href="#quote"
             whileHover={reduce ? {} : { scale: 1.03 }}
@@ -171,7 +173,6 @@ function ProductCard({
             Request Quote
           </motion.a>
 
-          {/* Secondary — outline */}
           <motion.a
             href={`#product-${product.id}`}
             whileHover={reduce ? {} : { scale: 1.03, background: '#F5F0E8' }}
@@ -188,6 +189,7 @@ function ProductCard({
             View Details
           </motion.a>
         </div>
+        */}
       </div>
     </motion.article>
   );

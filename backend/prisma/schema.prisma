@@ -38,8 +38,8 @@ model Product {
   moq         String
   status      String   @default("Draft")
   description String   @db.Text
-  images      String   @db.Text @default("[]")
-  specs       String   @db.Text @default("[]")
+  images      String   @db.Text
+  specs       String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
