@@ -29,11 +29,13 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setModalState({ isOpen: true, initialTab: tab });
     // Prevent body scroll while modal is open
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('overflow-hidden');
   }, []);
 
   const closeModal = useCallback(() => {
     setModalState(prev => ({ ...prev, isOpen: false }));
     document.body.style.overflow = '';
+    document.body.classList.remove('overflow-hidden');
   }, []);
 
   return (

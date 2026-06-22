@@ -1,6 +1,473 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, API_BASE_URL } from '../lib/api';
 import type { Blog, Enquiry, DashboardSummary } from '../lib/api';
+
+// ─── Product Types ────────────────────────────────────────────────
+type ProductCategory = 'Cocopeat' | 'Coir Fibre' | 'Coir Mats' | 'Geotextiles';
+type ProductStatus = 'Published' | 'Draft' | 'Archived';
+
+interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  category: ProductCategory;
+  moq: string;
+  status: ProductStatus;
+  images: string[];
+  description: string;
+  updatedAt: string;
+}
+
+const PRODUCT_CATEGORIES: ProductCategory[] = ['Cocopeat', 'Coir Fibre', 'Coir Mats', 'Geotextiles'];
+const PRODUCT_STATUSES: ProductStatus[] = ['Published', 'Draft', 'Archived'];
+
+const STATUS_STYLE: Record<ProductStatus, { bg: string; color: string }> = {
+  Published: { bg: 'rgba(22,163,74,0.1)', color: '#16A34A' },
+  Draft:     { bg: 'rgba(100,116,139,0.1)', color: '#64748B' },
+  Archived:  { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
+};
+
+// ─── Seed / Demo Products (local-only until API is wired) ─────────
+const SEED_PRODUCTS: Product[] = [
+  { id: '1', name: 'Coco Peat Block 5kg', sku: 'MC-CPB-5K', category: 'Cocopeat', moq: '1 × 40ft FCL', status: 'Published', images: [], description: 'Premium compressed coco peat block, 5 kg, EC < 0.5 mS/cm.', updatedAt: new Date().toISOString() },
+  { id: '2', name: 'Coco Peat Block 650g', sku: 'MC-CPB-650', category: 'Cocopeat', moq: '2000 units', status: 'Published', images: [], description: 'Retail-sized compressed coco peat disc.', updatedAt: new Date().toISOString() },
+  { id: '3', name: 'Coir Grow Bags', sku: 'MC-CGB-01', category: 'Cocopeat', moq: '5000 pcs', status: 'Draft', images: [], description: 'Ready-to-use grow bags for hydroponic cultivation.', updatedAt: new Date().toISOString() },
+  { id: '4', name: 'Curled Coir Mat', sku: 'MC-CCM-01', category: 'Coir Mats', moq: '500 sqm', status: 'Published', images: [], description: 'Natural curled coir mat for erosion control.', updatedAt: new Date().toISOString() },
+  { id: '5', name: 'Woven Coir Geotextile', sku: 'MC-WCG-01', category: 'Geotextiles', moq: '1000 sqm', status: 'Archived', images: [], description: 'Heavy-duty woven geotextile for slope stabilization.', updatedAt: new Date().toISOString() },
+];
+
+// ─── Delete Confirm Modal ─────────────────────────────────────────
+function DeleteConfirmModal({ productName, onConfirm, onCancel }: { productName: string; onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+      onClick={(e) => e.target === e.currentTarget && onCancel()}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 12 }}
+        transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
+        style={{ background: '#FFFFFF', borderRadius: '20px', padding: '36px', width: '100%', maxWidth: '420px', boxShadow: '0 24px 60px rgba(0,0,0,0.3)' }}
+      >
+        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(220,38,38,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', fontSize: '22px' }}>🗑️</div>
+        <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em', marginBottom: '8px' }}>Delete Product?</h3>
+        <p style={{ fontSize: '14px', color: '#667085', lineHeight: 1.6, marginBottom: '28px' }}>
+          Are you sure you want to delete <strong style={{ color: '#111' }}>{productName}</strong>? This action cannot be undone.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          <button onClick={onCancel} style={{ padding: '11px 22px', background: 'transparent', border: '1px solid #E4E7EC', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 600, color: '#667085' }}>Cancel</button>
+          <button onClick={onConfirm} style={{ padding: '11px 22px', background: '#DC2626', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>Delete Product</button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Product Form Drawer ──────────────────────────────────────────
+function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | null; onClose: () => void; onSaved: (p: Product) => void }) {
+  const isEdit = product !== null;
+  const [name, setName] = useState(product?.name ?? '');
+  const [sku, setSku] = useState(product?.sku ?? '');
+  const [category, setCategory] = useState<ProductCategory>(product?.category ?? 'Cocopeat');
+  const [moq, setMoq] = useState(product?.moq ?? '');
+  const [status, setStatus] = useState<ProductStatus>(product?.status ?? 'Draft');
+  const [description, setDescription] = useState(product?.description ?? '');
+  const [imagePreviews, setImagePreviews] = useState<string[]>(product?.images ?? []);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      const url = URL.createObjectURL(file);
+      setImagePreviews((prev) => [...prev, url]);
+    });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    handleFiles(e.dataTransfer.files);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const saved: Product = {
+      id: product?.id ?? Date.now().toString(),
+      name: name.trim(),
+      sku: sku.trim(),
+      category,
+      moq: moq.trim(),
+      status,
+      images: imagePreviews,
+      description: description.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+    onSaved(saved);
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', border: '1px solid #E4E7EC', borderRadius: '10px',
+    padding: '12px 14px', fontSize: '14px', outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box', background: '#FFFFFF',
+    color: '#111111', transition: 'border-color 0.2s',
+  };
+  const labelStyle: React.CSSProperties = {
+    fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px', color: '#667085', display: 'block', marginBottom: '6px',
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      />
+      {/* Drawer */}
+      <motion.div
+        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+        transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
+        style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 210,
+          width: '100%', maxWidth: '580px', background: '#FFFFFF',
+          boxShadow: '-8px 0 40px rgba(0,0,0,0.18)',
+          display: 'flex', flexDirection: 'column', overflowY: 'auto',
+        }}
+      >
+        {/* Drawer Header */}
+        <div style={{ padding: '28px 32px 24px', borderBottom: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
+          <div>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#C99B67', marginBottom: '4px' }}>Product Catalog</p>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>
+              {isEdit ? `Edit: ${product.name}` : 'Add New Product'}
+            </h2>
+          </div>
+          <button onClick={onClose} style={{ background: '#F9FAFB', border: '1px solid #E4E7EC', borderRadius: '8px', width: '36px', height: '36px', cursor: 'pointer', fontSize: '16px', color: '#667085', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>✕</button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ padding: '28px 32px', flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Name */}
+          <div>
+            <label style={labelStyle}>Product Name *</label>
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Coco Peat Block 5kg" style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
+          </div>
+
+          {/* SKU + Category row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label style={labelStyle}>SKU / Product Code *</label>
+              <input required value={sku} onChange={(e) => setSku(e.target.value)} placeholder="MC-COCO-01" style={inputStyle}
+                onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
+            </div>
+            <div>
+              <label style={labelStyle}>Category *</label>
+              <select value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)} style={{ ...inputStyle, appearance: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M19 9l-7 7-7-7' stroke-linecap='round' stroke-linejoin='round'></path></svg>")`, backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px 16px', paddingRight: '36px', cursor: 'pointer' }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
+                {PRODUCT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* MOQ */}
+          <div>
+            <label style={labelStyle}>Minimum Order Quantity (MOQ) *</label>
+            <input required value={moq} onChange={(e) => setMoq(e.target.value)} placeholder="1 × 40ft FCL or 5 MT" style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
+          </div>
+
+          {/* Status switcher */}
+          <div>
+            <label style={labelStyle}>Status *</label>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' as const }}>
+              {PRODUCT_STATUSES.map((s) => {
+                const isActive = status === s;
+                const st = STATUS_STYLE[s];
+                return (
+                  <button key={s} type="button" onClick={() => setStatus(s)}
+                    style={{ padding: '8px 18px', borderRadius: '999px', border: `1.5px solid ${isActive ? st.color : '#E4E7EC'}`, background: isActive ? st.bg : 'transparent', color: isActive ? st.color : '#667085', fontWeight: 700, fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label style={labelStyle}>Product Description</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4}
+              placeholder="Describe key specs, certifications, use cases…"
+              style={{ ...inputStyle, resize: 'vertical' }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
+          </div>
+
+          {/* Image Uploader */}
+          <div>
+            <label style={labelStyle}>Product Images</label>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+              onDragLeave={() => setIsDragOver(false)}
+              style={{
+                border: `2px dashed ${isDragOver ? '#C99B67' : '#E4E7EC'}`,
+                borderRadius: '12px', padding: '24px', textAlign: 'center', cursor: 'pointer',
+                background: isDragOver ? 'rgba(201,155,103,0.04)' : '#FAFAFA',
+                transition: 'all 0.2s',
+              }}
+            >
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>📸</div>
+              <p style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Drop images here or <span style={{ color: '#C99B67' }}>browse</span></p>
+              <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '4px' }}>PNG, JPG, WEBP — up to 5 MB each</p>
+            </div>
+            <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={(e) => handleFiles(e.target.files)} style={{ display: 'none' }} />
+            {/* Preview thumbnails */}
+            {imagePreviews.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' as const }}>
+                {imagePreviews.map((src, i) => (
+                  <div key={i} style={{ position: 'relative' }}>
+                    <img src={src} alt={`preview-${i}`} style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
+                    <button type="button" onClick={() => setImagePreviews((prev) => prev.filter((_, idx) => idx !== i))}
+                      style={{ position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#DC2626', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer Actions */}
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '8px', marginTop: 'auto' }}>
+            <button type="button" onClick={onClose}
+              style={{ padding: '12px 24px', background: 'transparent', border: '1px solid #E4E7EC', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 600, color: '#667085' }}>
+              Cancel
+            </button>
+            <button type="submit"
+              style={{ padding: '12px 28px', background: '#111111', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#FFFFFF', boxShadow: '0 4px 14px rgba(0,0,0,0.25)' }}>
+              {isEdit ? 'Save Changes' : 'Create Product'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </>
+  );
+}
+
+// ─── Products Tab ─────────────────────────────────────────────────
+function ProductsTab() {
+  const [products, setProducts] = useState<Product[]>(SEED_PRODUCTS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState<ProductCategory | 'All'>('All');
+  const [filterStatus, setFilterStatus] = useState<ProductStatus | 'All'>('All');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+
+  const filtered = products.filter((p) => {
+    const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCat = filterCategory === 'All' || p.category === filterCategory;
+    const matchStatus = filterStatus === 'All' || p.status === filterStatus;
+    return matchSearch && matchCat && matchStatus;
+  });
+
+  const openCreate = () => { setSelectedProduct(null); setIsFormOpen(true); };
+  const openEdit = (p: Product) => { setSelectedProduct(p); setIsFormOpen(true); };
+
+  const handleSaved = (saved: Product) => {
+    setProducts((prev) => {
+      const idx = prev.findIndex((p) => p.id === saved.id);
+      if (idx >= 0) { const next = [...prev]; next[idx] = saved; return next; }
+      return [saved, ...prev];
+    });
+    setIsFormOpen(false);
+  };
+
+  const handleDelete = (id: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setDeleteTarget(null);
+  };
+
+  const inputStyle: React.CSSProperties = {
+    border: '1px solid #E4E7EC', borderRadius: '10px', padding: '9px 14px', fontSize: '14px',
+    outline: 'none', fontFamily: 'inherit', background: '#FFFFFF', color: '#111',
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap' as const, gap: '12px' }}>
+        <div>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#111111', letterSpacing: '-0.02em', lineHeight: 1.2 }}>Product Catalog</h2>
+          <p style={{ fontSize: '14px', color: '#667085', marginTop: '6px' }}>Manage, update, and monitor international and domestic product listings.</p>
+        </div>
+        <button
+          onClick={openCreate}
+          style={{ padding: '11px 22px', background: '#111111', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#FFFFFF', boxShadow: '0 4px 14px rgba(0,0,0,0.2)', whiteSpace: 'nowrap' as const, display: 'flex', alignItems: 'center', gap: '8px' }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#222')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = '#111111')}
+        >
+          <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> Add New Product
+        </button>
+      </div>
+
+      {/* Filters toolbar */}
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+        {/* Search */}
+        <div style={{ position: 'relative', flex: '1', minWidth: '220px' }}>
+          <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#A0A0A0', pointerEvents: 'none' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+          </svg>
+          <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by name or SKU…"
+            style={{ ...inputStyle, width: '100%', paddingLeft: '38px', boxSizing: 'border-box' }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
+        </div>
+        {/* Category filter */}
+        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value as ProductCategory | 'All')}
+          style={{ ...inputStyle, paddingRight: '32px', cursor: 'pointer' }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
+          <option value="All">All Categories</option>
+          {PRODUCT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        {/* Status filter */}
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as ProductStatus | 'All')}
+          style={{ ...inputStyle, paddingRight: '32px', cursor: 'pointer' }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
+          <option value="All">All Statuses</option>
+          {PRODUCT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      {/* Table */}
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '80px 40px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.06)' }}>
+          <p style={{ fontSize: '18px', fontWeight: 700, color: '#111' }}>No products found.</p>
+          <p style={{ color: '#667085', marginTop: '8px', fontSize: '14px' }}>Try adjusting your filters or add a new product.</p>
+        </div>
+      ) : (
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.06)', overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
+            <thead>
+              <tr style={{ background: '#F9FAFB' }}>
+                {['Product Info', 'Category', 'MOQ', 'Status', 'Updated', 'Actions'].map((h) => (
+                  <th key={h} style={{ padding: '14px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#667085', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((p, i) => {
+                const st = STATUS_STYLE[p.status];
+                return (
+                  <motion.tr
+                    key={p.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: i * 0.04, ease: 'easeOut' }}
+                    style={{ borderTop: '1px solid #F3F4F6' }}
+                    className="hover:bg-black/[0.02] transition-colors duration-200"
+                  >
+                    {/* Product Info */}
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)', border: '1px solid rgba(201,155,103,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0, overflow: 'hidden' }}>
+                          {p.images[0] ? <img src={p.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '14px', fontWeight: 700, color: '#111', whiteSpace: 'nowrap' }}>{p.name}</p>
+                          <p style={{ fontSize: '12px', color: '#A0A0A0', fontFamily: 'monospace', marginTop: '2px' }}>{p.sku}</p>
+                        </div>
+                      </div>
+                    </td>
+                    {/* Category */}
+                    <td style={{ padding: '14px 20px', fontSize: '13px', color: '#374151', whiteSpace: 'nowrap' }}>{p.category}</td>
+                    {/* MOQ */}
+                    <td style={{ padding: '14px 20px', fontSize: '13px', color: '#374151', whiteSpace: 'nowrap' }}>{p.moq}</td>
+                    {/* Status */}
+                    <td style={{ padding: '14px 20px' }}>
+                      <span style={{ padding: '4px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 700, background: st.bg, color: st.color, whiteSpace: 'nowrap' }}>{p.status}</span>
+                    </td>
+                    {/* Updated */}
+                    <td style={{ padding: '14px 20px', fontSize: '12px', color: '#A0A0A0', whiteSpace: 'nowrap' }}>
+                      {new Date(p.updatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </td>
+                    {/* Actions */}
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                          onClick={() => openEdit(p)}
+                          title="Edit product"
+                          style={{ width: '34px', height: '34px', borderRadius: '8px', border: '1px solid rgba(201,155,103,0.25)', background: 'rgba(201,155,103,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s', color: '#7A5C3A' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,155,103,0.18)'; e.currentTarget.style.borderColor = '#C99B67'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(201,155,103,0.08)'; e.currentTarget.style.borderColor = 'rgba(201,155,103,0.25)'; }}
+                        >
+                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(p)}
+                          title="Delete product"
+                          style={{ width: '34px', height: '34px', borderRadius: '8px', border: '1px solid rgba(220,38,38,0.15)', background: 'rgba(220,38,38,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s', color: '#DC2626' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.14)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.4)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.06)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.15)'; }}
+                        >
+                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                            <path d="M10 11v6M14 11v6" />
+                            <path d="M9 6V4h6v2" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div style={{ padding: '12px 20px', borderTop: '1px solid #F3F4F6', fontSize: '13px', color: '#A0A0A0' }}>
+            Showing {filtered.length} of {products.length} product{products.length !== 1 ? 's' : ''}
+          </div>
+        </div>
+      )}
+
+      {/* Product Form Drawer */}
+      <AnimatePresence>
+        {isFormOpen && (
+          <ProductFormDrawer
+            product={selectedProduct}
+            onClose={() => setIsFormOpen(false)}
+            onSaved={handleSaved}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirm Modal */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <DeleteConfirmModal
+            productName={deleteTarget.name}
+            onConfirm={() => handleDelete(deleteTarget.id)}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 // ─── Utility ──────────────────────────────────────────────────────
 function formatDate(d: string) {
@@ -632,7 +1099,7 @@ function EnquiriesTab() {
 }
 
 // ─── Main Admin Page ──────────────────────────────────────────────
-type Tab = 'dashboard' | 'blogs' | 'enquiries';
+type Tab = 'dashboard' | 'blogs' | 'enquiries' | 'products';
 
 export default function AdminPortal() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
@@ -676,6 +1143,7 @@ export default function AdminPortal() {
 
   const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'products', label: 'Products', icon: '📦' },
     { id: 'blogs', label: 'Blog Posts', icon: '📝' },
     { id: 'enquiries', label: 'Enquiries', icon: '📬' },
   ];
@@ -744,6 +1212,7 @@ export default function AdminPortal() {
         {/* ── Main Content ── */}
         <main className="p-4 sm:p-10" style={{ flex: 1, overflowY: 'auto' }}>
           {activeTab === 'dashboard' && <DashboardTab />}
+          {activeTab === 'products' && <ProductsTab />}
           {activeTab === 'blogs' && <BlogsTab />}
           {activeTab === 'enquiries' && <EnquiriesTab />}
         </main>

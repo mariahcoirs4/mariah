@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useModal } from '../context/ModalContext';
 import type { ModalTab } from '../context/ModalContext';
@@ -45,7 +45,7 @@ const TAB_CONFIG = {
 // ─── Animation Variants ───────────────────────────────────────────
 const backdropVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.25, ease: 'easeOut' as const } },
+  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' as const } },
   exit: { opacity: 0, transition: { duration: 0.2, ease: 'easeIn' as const } },
 };
 
@@ -181,7 +181,7 @@ function SelectField({
 
 // ─── Main Modal Component ─────────────────────────────────────────
 export default function BulkPricingModal() {
-  const { modalState, closeModal } = useModal();
+  const { modalState, closeModal, openModal } = useModal();
   const { isOpen, initialTab } = modalState;
   const shouldReduce = useReducedMotion();
 
@@ -190,6 +190,7 @@ export default function BulkPricingModal() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  const autoTriggerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Form state
   const [name, setName] = useState('');
@@ -199,6 +200,43 @@ export default function BulkPricingModal() {
   const [phone, setPhone] = useState('');
   const [quantity, setQuantity] = useState('');
   const [product, setProduct] = useState('');
+
+  // Visitation management and delayed trigger
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('mariah_coirs_has_visited');
+    if (!hasVisited) {
+      localStorage.setItem('mariah_coirs_has_visited', 'true');
+      autoTriggerTimerRef.current = setTimeout(() => {
+        openModal('export');
+      }, 3500);
+    }
+
+    return () => {
+      if (autoTriggerTimerRef.current) {
+        clearTimeout(autoTriggerTimerRef.current);
+      }
+    };
+  }, [openModal]);
+
+  // Clear timer if modal is opened manually
+  useEffect(() => {
+    if (isOpen && autoTriggerTimerRef.current) {
+      clearTimeout(autoTriggerTimerRef.current);
+      autoTriggerTimerRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Scroll lock using standard Tailwind class 'overflow-hidden' on document.body
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isOpen]);
 
   // Sync tab when modal opens with a different initialTab
   useEffect(() => {
