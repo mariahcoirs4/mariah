@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   motion,
   AnimatePresence,
@@ -6,166 +6,8 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-
-// ─── Types ────────────────────────────────────────────────────────
-type FilterKey = 'all' | 'coco-blocks' | 'grow-media' | 'coir-fibre' | 'custom';
-
-interface Spec {
-  label: string;
-  value: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  category: FilterKey[];
-  specs: Spec[];
-}
-
-// ─── Filter Pills ─────────────────────────────────────────────────
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: 'all',         label: 'All Products' },
-  { key: 'coco-blocks', label: 'Coco Blocks'  },
-  { key: 'grow-media',  label: 'Grow Media'   },
-  { key: 'coir-fibre',  label: 'Coir Fibre'   },
-  { key: 'custom',      label: 'Custom'        },
-];
-
-// ─── Product Catalogue ────────────────────────────────────────────
-const PRODUCTS: Product[] = [
-  {
-    id: 'coco-peat-block-5kg',
-    name: 'Coco Peat Blocks 5kg',
-    description:
-      'Premium compressed coco peat blocks — ideal for nurseries, hydroponic growers and greenhouse farming worldwide.',
-    image: '/mariahcoirs/coco_block.jpeg',
-    category: ['coco-blocks', 'grow-media'],
-    specs: [
-      { label: 'EC',    value: '< 0.5 mS/cm' },
-      { label: 'pH',    value: '5.8 – 6.5'   },
-      { label: 'Ratio', value: '5:1 compress' },
-    ],
-  },
-  {
-    id: 'low-ec-coco-peat',
-    name: 'Low EC Coco Peat Blocks',
-    description:
-      'Washed and buffered for superior electrical conductivity — perfect for propagation and modern soilless crops.',
-    image: '/mariahcoirs/coco_husk_cutted.jpg',
-    category: ['coco-blocks'],
-    specs: [
-      { label: 'EC',       value: '< 0.3 mS/cm' },
-      { label: 'pH',       value: '5.8 – 6.2'   },
-      { label: 'Moisture', value: '< 15%'        },
-    ],
-  },
-  {
-    id: 'high-ec-coco-peat',
-    name: 'High EC Coco Peat Blocks',
-    description:
-      'Concentrated nutrient-retaining substrate for substrate and soil-climate agriculture applications.',
-    image: '/mariahcoirs/coco_husk.jpg',
-    category: ['coco-blocks'],
-    specs: [
-      { label: 'EC',       value: '> 1.5 mS/cm' },
-      { label: 'pH',       value: '6.0 – 6.8'   },
-      { label: 'Water HC', value: '≥ 750 ml/L'  },
-    ],
-  },
-  {
-    id: 'coco-peat-briquettes',
-    name: 'Coco Peat Briquettes',
-    description:
-      'Compact mini-briquettes for nurseries, hobby growers and small commercial operations. Retail-pack ready.',
-    image: '/mariahcoirs/coco_block_person.jpeg',
-    category: ['coco-blocks', 'custom'],
-    specs: [
-      { label: 'Weight',    value: '650 g'        },
-      { label: 'Expansion', value: '≥ 10 L'       },
-      { label: 'pH',        value: '5.8 – 6.5'    },
-    ],
-  },
-  {
-    id: 'coir-pith-blocks',
-    name: 'Coir Pith Blocks',
-    description:
-      'Fine-grade pith blocks for soil amendment, mulching and organic farming applications worldwide.',
-    image: '/mariahcoirs/block_machine.jpeg',
-    category: ['coco-blocks', 'grow-media'],
-    specs: [
-      { label: 'EC',        value: '< 1.0 mS/cm' },
-      { label: 'pH',        value: '5.7 – 6.4'   },
-      { label: 'Moisture',  value: '< 20%'        },
-    ],
-  },
-  {
-    id: 'coconut-fibre',
-    name: 'Coconut Coir Fibre',
-    description:
-      'Long-strand coconut fibre extracted from mature husks — used in erosion control, geotextiles and horticulture.',
-    image: '/mariahcoirs/process.jpeg',
-    category: ['coir-fibre'],
-    specs: [
-      { label: 'Length',   value: '15 – 35 cm'  },
-      { label: 'Moisture', value: '< 20%'        },
-      { label: 'Colour',   value: 'Brown / Gold' },
-    ],
-  },
-  {
-    id: 'coir-fibre-bales',
-    name: 'Coir Fibre Bales',
-    description:
-      'Machine-pressed bales for bulk export. Ideal for mattress, brush, and geotextile manufacturing industries.',
-    image: '/mariahcoirs/machine_process.jpeg',
-    category: ['coir-fibre'],
-    specs: [
-      { label: 'Weight',  value: '100 – 120 kg' },
-      { label: 'Density', value: '105 kg/m³'    },
-      { label: 'Grade',   value: 'Brown Fibre'  },
-    ],
-  },
-  {
-    id: 'husk-chips',
-    name: 'Coconut Husk Chips',
-    description:
-      'Chunky coir husk chips with excellent aeration — the preferred substrate for orchids and tropical plants.',
-    image: '/mariahcoirs/dry_process.jpeg',
-    category: ['grow-media'],
-    specs: [
-      { label: 'Chip Size', value: '8 – 18 mm'   },
-      { label: 'EC',        value: '< 0.8 mS/cm' },
-      { label: 'pH',        value: '5.8 – 6.8'   },
-    ],
-  },
-  {
-    id: 'coir-grow-bags',
-    name: 'Coir Grow Media Bags',
-    description:
-      'Ready-to-use grow slabs and bags engineered for high-wire tomato, cucumber and pepper production systems.',
-    image: '/mariahcoirs/bed.jpeg',
-    category: ['grow-media'],
-    specs: [
-      { label: 'Size',     value: '100×15×10 cm' },
-      { label: 'EC',       value: '< 0.5 mS/cm'  },
-      { label: 'Porosity', value: '≥ 95%'         },
-    ],
-  },
-  {
-    id: 'custom-export-packaging',
-    name: 'Custom Export Packaging',
-    description:
-      'White-label and OEM packing solutions for international distributors. Bulk, retail, and private-label options.',
-    image: '/mariahcoirs/package_unit.jpg',
-    category: ['custom'],
-    specs: [
-      { label: 'MOQ',      value: '1×20ft FCL'   },
-      { label: 'Label',    value: 'Custom / OEM'  },
-      { label: 'Shipping', value: 'Ex-Works / FOB' },
-    ],
-  },
-];
+import { productApi, API_BASE_URL } from '../lib/api';
+import type { ApiProduct } from '../lib/api';
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -184,17 +26,25 @@ const cardVariant: Variants = {
   exit: { opacity: 0, scale: 0.95, y: -12, transition: { duration: 0.28, ease: 'easeIn' } },
 };
 
+// ─── Helper ───────────────────────────────────────────────────────
+function getImageSrc(img: string | undefined): string {
+  if (!img) return '';
+  if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) return img;
+  return `${API_BASE_URL}/uploads/${img}`;
+}
+
 // ─── Product Card ─────────────────────────────────────────────────
 function ProductCard({
   product,
   index,
   reduce,
 }: {
-  product: Product;
+  product: ApiProduct;
   index: number;
   reduce: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
+  const firstImage = product.images?.[0];
 
   return (
     <motion.article
@@ -226,14 +76,23 @@ function ProductCard({
         className="relative overflow-hidden"
         style={{ height: '200px', borderRadius: '16px 16px 0 0' }}
       >
-        <motion.img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover"
-          animate={hovered && !reduce ? { scale: 1.08 } : { scale: 1.0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          loading="lazy"
-        />
+        {firstImage ? (
+          <motion.img
+            src={getImageSrc(firstImage)}
+            alt={product.name}
+            className="w-full h-full object-cover"
+            animate={hovered && !reduce ? { scale: 1.08 } : { scale: 1.0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center text-5xl"
+            style={{ background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)' }}
+          >
+            📦
+          </div>
+        )}
         {/* Category chip overlay */}
         <div className="absolute top-3 left-3">
           <span
@@ -245,7 +104,7 @@ function ProductCard({
               color: '#7A5020',
             }}
           >
-            Export Ready
+            {product.category}
           </span>
         </div>
       </div>
@@ -270,24 +129,26 @@ function ProductCard({
         </p>
 
         {/* Specs */}
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
-          {product.specs.map(({ label, value }) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span
-                className="text-[10px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: '#A07840' }}
-              >
-                {label}:
-              </span>
-              <span
-                className="text-[11px] font-medium"
-                style={{ color: '#3C2C18' }}
-              >
-                {value}
-              </span>
-            </div>
-          ))}
-        </div>
+        {product.specs && product.specs.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
+            {product.specs.map(({ label, value }) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                  style={{ color: '#A07840' }}
+                >
+                  {label}:
+                </span>
+                <span
+                  className="text-[11px] font-medium"
+                  style={{ color: '#3C2C18' }}
+                >
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Spacer */}
         <div className="flex-1" />
@@ -334,15 +195,34 @@ function ProductCard({
 
 // ─── Main Section ─────────────────────────────────────────────────
 export default function ProductsSection() {
-  const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
+  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const sectionRef   = useRef<HTMLElement>(null);
   const isInView     = useInView(sectionRef, { once: true, amount: 0.08 });
   const shouldReduce = useReducedMotion();
 
+  // Fetch published products on mount
+  useEffect(() => {
+    productApi.getAll()
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error('Failed to load products:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Build filter pills dynamically from loaded categories
+  const filters = useMemo(() => {
+    const cats = Array.from(new Set(products.map((p) => p.category)));
+    return [
+      { key: 'all', label: 'All Products' },
+      ...cats.map((c) => ({ key: c, label: c })),
+    ];
+  }, [products]);
+
   const filtered = useMemo(() => {
-    if (activeFilter === 'all') return PRODUCTS;
-    return PRODUCTS.filter((p) => p.category.includes(activeFilter));
-  }, [activeFilter]);
+    if (activeFilter === 'all') return products;
+    return products.filter((p) => p.category === activeFilter);
+  }, [activeFilter, products]);
 
   return (
     <section
@@ -396,80 +276,113 @@ export default function ProductsSection() {
             </h2>
           </div>
 
-          {/* Right — filter pills */}
-          <div
-            className="flex flex-wrap gap-2"
-            role="group"
-            aria-label="Filter products by category"
-          >
-            {FILTERS.map(({ key, label }) => {
-              const isActive = activeFilter === key;
-              return (
-                <motion.button
-                  key={key}
-                  onClick={() => setActiveFilter(key)}
-                  whileHover={shouldReduce ? {} : { scale: 1.04 }}
-                  whileTap={shouldReduce ? {} : { scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                  aria-pressed={isActive}
-                  className="relative px-4 py-2 rounded-full text-[12px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
-                  style={{
-                    background: isActive ? '#0F0A04' : 'rgba(0,0,0,0.05)',
-                    color:      isActive ? '#FFFFFF' : '#5A4830',
-                    border:     isActive ? '1.5px solid transparent' : '1.5px solid rgba(0,0,0,0.09)',
-                    transition: 'background 0.22s ease, color 0.22s ease',
-                  }}
-                >
-                  {label}
-                  {isActive && (
-                    <motion.span
-                      layoutId="active-filter-bg"
-                      className="absolute inset-0 rounded-full -z-10"
-                      style={{ background: '#0F0A04' }}
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
+          {/* Right — filter pills (dynamic categories) */}
+          {!loading && filters.length > 1 && (
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label="Filter products by category"
+            >
+              {filters.map(({ key, label }) => {
+                const isActive = activeFilter === key;
+                return (
+                  <motion.button
+                    key={key}
+                    onClick={() => setActiveFilter(key)}
+                    whileHover={shouldReduce ? {} : { scale: 1.04 }}
+                    whileTap={shouldReduce ? {} : { scale: 0.96 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                    aria-pressed={isActive}
+                    className="relative px-4 py-2 rounded-full text-[12px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                    style={{
+                      background: isActive ? '#0F0A04' : 'rgba(0,0,0,0.05)',
+                      color:      isActive ? '#FFFFFF' : '#5A4830',
+                      border:     isActive ? '1.5px solid transparent' : '1.5px solid rgba(0,0,0,0.09)',
+                      transition: 'background 0.22s ease, color 0.22s ease',
+                    }}
+                  >
+                    {label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="active-filter-bg"
+                        className="absolute inset-0 rounded-full -z-10"
+                        style={{ background: '#0F0A04' }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
         </motion.div>
 
         {/* ── Results count ── */}
-        <motion.p
-          key={activeFilter}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-8 text-[12px] font-medium"
-          style={{ color: '#9A8060' }}
-          aria-live="polite"
-        >
-          Showing {filtered.length} product{filtered.length !== 1 ? 's' : ''}
-          {activeFilter !== 'all' ? ` in "${FILTERS.find(f => f.key === activeFilter)?.label}"` : ''}
-        </motion.p>
+        {!loading && (
+          <motion.p
+            key={activeFilter}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8 text-[12px] font-medium"
+            style={{ color: '#9A8060' }}
+            aria-live="polite"
+          >
+            Showing {filtered.length} product{filtered.length !== 1 ? 's' : ''}
+            {activeFilter !== 'all' ? ` in "${filters.find(f => f.key === activeFilter)?.label}"` : ''}
+          </motion.p>
+        )}
+
+        {/* ══════════════════════════════════════════
+            LOADING STATE
+        ══════════════════════════════════════════ */}
+        {loading && (
+          <div className="flex items-center justify-center py-24">
+            <div
+              className="w-10 h-10 rounded-full border-4 border-t-transparent animate-spin"
+              style={{ borderColor: 'rgba(160,120,64,0.25)', borderTopColor: '#A07840' }}
+            />
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════
+            EMPTY STATE
+        ══════════════════════════════════════════ */}
+        {!loading && filtered.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <span className="text-5xl">📦</span>
+            <p className="text-lg font-bold" style={{ color: '#0F0A04' }}>
+              No products available yet.
+            </p>
+            <p className="text-sm" style={{ color: '#9A8060' }}>
+              Check back soon — our catalog is being updated.
+            </p>
+          </div>
+        )}
 
         {/* ══════════════════════════════════════════
             PRODUCT GRID
         ══════════════════════════════════════════ */}
-        <motion.div layout>
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={activeFilter}
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6"
-            >
-              {filtered.map((product, i) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  index={i}
-                  reduce={!!shouldReduce}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+        {!loading && filtered.length > 0 && (
+          <motion.div layout>
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={activeFilter}
+                layout
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6"
+              >
+                {filtered.map((product, i) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    index={i}
+                    reduce={!!shouldReduce}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         {/* ══════════════════════════════════════════
             BOTTOM CTA BANNER

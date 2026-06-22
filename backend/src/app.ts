@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes';
 import blogRoutes from './routes/blog.routes';
 import enquiryRoutes from './routes/enquiry.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import productRoutes from './routes/product.routes';
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/enquiries', enquiryLimiter, enquiryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/products', productRoutes);
 
 // ─── 404 Handler ─────────────────────────────────────────────────
 app.use((req, res) => {

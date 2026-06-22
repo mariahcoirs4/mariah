@@ -201,11 +201,14 @@ export default function BulkPricingModal() {
   const [quantity, setQuantity] = useState('');
   const [product, setProduct] = useState('');
 
-  // Visitation management and delayed trigger
+  // Session-based popup trigger:
+  // sessionStorage is cleared when the tab/browser is closed,
+  // so the popup shows once per session (each new visit).
   useEffect(() => {
-    const hasVisited = localStorage.getItem('mariah_coirs_has_visited');
-    if (!hasVisited) {
-      localStorage.setItem('mariah_coirs_has_visited', 'true');
+    const SESSION_KEY = 'mariah_coirs_popup_shown';
+    const hasShownThisSession = sessionStorage.getItem(SESSION_KEY);
+    if (!hasShownThisSession) {
+      sessionStorage.setItem(SESSION_KEY, 'true');
       autoTriggerTimerRef.current = setTimeout(() => {
         openModal('export');
       }, 3500);

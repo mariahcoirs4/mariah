@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, API_BASE_URL } from '../lib/api';
+import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, API_BASE_URL, productApi } from '../lib/api';
 import type { Blog, Enquiry, DashboardSummary } from '../lib/api';
 
 // ─── Product Types ────────────────────────────────────────────────
@@ -8,34 +8,34 @@ type ProductCategory = 'Cocopeat' | 'Coir Fibre' | 'Coir Mats' | 'Geotextiles';
 type ProductStatus = 'Published' | 'Draft' | 'Archived';
 
 interface Product {
-  id: string;
+  id: number | string;
   name: string;
   sku: string;
-  category: ProductCategory;
+  category: string;
   moq: string;
-  status: ProductStatus;
+  status: string;
   images: string[];
   description: string;
+  specs: { label: string; value: string }[];
   updatedAt: string;
 }
 
 const PRODUCT_CATEGORIES: ProductCategory[] = ['Cocopeat', 'Coir Fibre', 'Coir Mats', 'Geotextiles'];
 const PRODUCT_STATUSES: ProductStatus[] = ['Published', 'Draft', 'Archived'];
 
-const STATUS_STYLE: Record<ProductStatus, { bg: string; color: string }> = {
+const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   Published: { bg: 'rgba(22,163,74,0.1)', color: '#16A34A' },
   Draft:     { bg: 'rgba(100,116,139,0.1)', color: '#64748B' },
   Archived:  { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
 };
 
-// ─── Seed / Demo Products (local-only until API is wired) ─────────
-const SEED_PRODUCTS: Product[] = [
-  { id: '1', name: 'Coco Peat Block 5kg', sku: 'MC-CPB-5K', category: 'Cocopeat', moq: '1 × 40ft FCL', status: 'Published', images: [], description: 'Premium compressed coco peat block, 5 kg, EC < 0.5 mS/cm.', updatedAt: new Date().toISOString() },
-  { id: '2', name: 'Coco Peat Block 650g', sku: 'MC-CPB-650', category: 'Cocopeat', moq: '2000 units', status: 'Published', images: [], description: 'Retail-sized compressed coco peat disc.', updatedAt: new Date().toISOString() },
-  { id: '3', name: 'Coir Grow Bags', sku: 'MC-CGB-01', category: 'Cocopeat', moq: '5000 pcs', status: 'Draft', images: [], description: 'Ready-to-use grow bags for hydroponic cultivation.', updatedAt: new Date().toISOString() },
-  { id: '4', name: 'Curled Coir Mat', sku: 'MC-CCM-01', category: 'Coir Mats', moq: '500 sqm', status: 'Published', images: [], description: 'Natural curled coir mat for erosion control.', updatedAt: new Date().toISOString() },
-  { id: '5', name: 'Woven Coir Geotextile', sku: 'MC-WCG-01', category: 'Geotextiles', moq: '1000 sqm', status: 'Archived', images: [], description: 'Heavy-duty woven geotextile for slope stabilization.', updatedAt: new Date().toISOString() },
-];
+function getProductImageUrl(img: string | undefined) {
+  if (!img) return '';
+  if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) {
+    return img;
+  }
+  return `${API_BASE_URL}/uploads/${img}`;
+}
 
 // ─── Delete Confirm Modal ─────────────────────────────────────────
 function DeleteConfirmModal({ productName, onConfirm, onCancel }: { productName: string; onConfirm: () => void; onCancel: () => void }) {
@@ -66,15 +66,21 @@ function DeleteConfirmModal({ productName, onConfirm, onCancel }: { productName:
 }
 
 // ─── Product Form Drawer ──────────────────────────────────────────
-function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | null; onClose: () => void; onSaved: (p: Product) => void }) {
+function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | null; onClose: () => void; onSaved: () => void }) {
   const isEdit = product !== null;
   const [name, setName] = useState(product?.name ?? '');
   const [sku, setSku] = useState(product?.sku ?? '');
-  const [category, setCategory] = useState<ProductCategory>(product?.category ?? 'Cocopeat');
+  const [category, setCategory] = useState<string>(product?.category ?? 'Cocopeat');
   const [moq, setMoq] = useState(product?.moq ?? '');
-  const [status, setStatus] = useState<ProductStatus>(product?.status ?? 'Draft');
+  const [status, setStatus] = useState<string>(product?.status ?? 'Draft');
   const [description, setDescription] = useState(product?.description ?? '');
-  const [imagePreviews, setImagePreviews] = useState<string[]>(product?.images ?? []);
+  
+  const [existingImages, setExistingImages] = useState<string[]>(product?.images ?? []);
+  const [newFiles, setNewFiles] = useState<{ id: string; file: File; preview: string }[]>([]);
+  const [specs, setSpecs] = useState<{ label: string; value: string }[]>(product?.specs ?? []);
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,10 +93,12 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
-    Array.from(files).forEach((file) => {
-      const url = URL.createObjectURL(file);
-      setImagePreviews((prev) => [...prev, url]);
-    });
+    const added = Array.from(files).map((file) => ({
+      id: `${file.name}-${Date.now()}-${Math.random()}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setNewFiles((prev) => [...prev, ...added]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -99,20 +107,53 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
     handleFiles(e.dataTransfer.files);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const removeNewFile = (id: string) => {
+    setNewFiles((prev) => {
+      const match = prev.find((item) => item.id === id);
+      if (match) {
+        URL.revokeObjectURL(match.preview);
+      }
+      return prev.filter((item) => item.id !== id);
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const saved: Product = {
-      id: product?.id ?? Date.now().toString(),
-      name: name.trim(),
-      sku: sku.trim(),
-      category,
-      moq: moq.trim(),
-      status,
-      images: imagePreviews,
-      description: description.trim(),
-      updatedAt: new Date().toISOString(),
-    };
-    onSaved(saved);
+    setLoading(true);
+    setError('');
+
+    const fd = new FormData();
+    fd.append('name', name.trim());
+    fd.append('sku', sku.trim());
+    fd.append('category', category.trim());
+    fd.append('moq', moq.trim());
+    fd.append('status', status);
+    fd.append('description', description.trim());
+    
+    // Filter specs that have either label or value
+    const filteredSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
+    fd.append('specs', JSON.stringify(filteredSpecs));
+
+    if (isEdit) {
+      fd.append('existingImages', JSON.stringify(existingImages));
+    }
+    
+    newFiles.forEach((item) => {
+      fd.append('images', item.file);
+    });
+
+    try {
+      if (isEdit && product) {
+        await productApi.update(Number(product.id), fd);
+      } else {
+        await productApi.create(fd);
+      }
+      onSaved();
+    } catch (err: any) {
+      setError(err.message ?? 'Failed to save product');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -151,7 +192,7 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
           <div>
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#C99B67', marginBottom: '4px' }}>Product Catalog</p>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>
-              {isEdit ? `Edit: ${product.name}` : 'Add New Product'}
+              {isEdit ? `Edit: ${name}` : 'Add New Product'}
             </h2>
           </div>
           <button onClick={onClose} style={{ background: '#F9FAFB', border: '1px solid #E4E7EC', borderRadius: '8px', width: '36px', height: '36px', cursor: 'pointer', fontSize: '16px', color: '#667085', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>✕</button>
@@ -159,6 +200,12 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
 
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ padding: '28px 32px', flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {error && (
+            <div style={{ padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '10px', color: '#DC2626', fontSize: '14px', fontWeight: 600 }}>
+              {error}
+            </div>
+          )}
+
           {/* Name */}
           <div>
             <label style={labelStyle}>Product Name *</label>
@@ -175,7 +222,7 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
             </div>
             <div>
               <label style={labelStyle}>Category *</label>
-              <select value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)} style={{ ...inputStyle, appearance: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M19 9l-7 7-7-7' stroke-linecap='round' stroke-linejoin='round'></path></svg>")`, backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px 16px', paddingRight: '36px', cursor: 'pointer' }}
+              <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ ...inputStyle, appearance: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M19 9l-7 7-7-7' stroke-linecap='round' stroke-linejoin='round'></path></svg>")`, backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px 16px', paddingRight: '36px', cursor: 'pointer' }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
                 {PRODUCT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -215,6 +262,71 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
               onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
           </div>
 
+          {/* Specs Editor */}
+          <div>
+            <label style={labelStyle}>Product Specifications</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+              {specs.map((spec, index) => (
+                <div key={index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    value={spec.label}
+                    onChange={(e) => {
+                      const next = [...specs];
+                      next[index].label = e.target.value;
+                      setSpecs(next);
+                    }}
+                    placeholder="Label (e.g., pH)"
+                    style={{ ...inputStyle, flex: 1 }}
+                  />
+                  <input
+                    value={spec.value}
+                    onChange={(e) => {
+                      const next = [...specs];
+                      next[index].value = e.target.value;
+                      setSpecs(next);
+                    }}
+                    placeholder="Value (e.g., 5.8 – 6.5)"
+                    style={{ ...inputStyle, flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSpecs((prev) => prev.filter((_, i) => i !== index))}
+                    style={{
+                      background: 'rgba(220,38,38,0.06)',
+                      border: '1px solid rgba(220,38,38,0.15)',
+                      color: '#DC2626',
+                      borderRadius: '8px',
+                      width: '36px',
+                      height: '36px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSpecs((prev) => [...prev, { label: '', value: '' }])}
+              style={{
+                background: 'rgba(201,155,103,0.08)',
+                border: '1px solid rgba(201,155,103,0.25)',
+                color: '#7A5C3A',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: 700,
+              }}
+            >
+              + Add Spec Row
+            </button>
+          </div>
+
           {/* Image Uploader */}
           <div>
             <label style={labelStyle}>Product Images</label>
@@ -236,12 +348,19 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
             </div>
             <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={(e) => handleFiles(e.target.files)} style={{ display: 'none' }} />
             {/* Preview thumbnails */}
-            {imagePreviews.length > 0 && (
+            {(existingImages.length > 0 || newFiles.length > 0) && (
               <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' as const }}>
-                {imagePreviews.map((src, i) => (
-                  <div key={i} style={{ position: 'relative' }}>
-                    <img src={src} alt={`preview-${i}`} style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
-                    <button type="button" onClick={() => setImagePreviews((prev) => prev.filter((_, idx) => idx !== i))}
+                {existingImages.map((src, i) => (
+                  <div key={`existing-${i}`} style={{ position: 'relative' }}>
+                    <img src={getProductImageUrl(src)} alt={`preview-ext-${i}`} style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
+                    <button type="button" onClick={() => setExistingImages((prev) => prev.filter((_, idx) => idx !== i))}
+                      style={{ position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#DC2626', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
+                  </div>
+                ))}
+                {newFiles.map((item) => (
+                  <div key={item.id} style={{ position: 'relative' }}>
+                    <img src={item.preview} alt="preview-new" style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
+                    <button type="button" onClick={() => removeNewFile(item.id)}
                       style={{ position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#DC2626', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
                   </div>
                 ))}
@@ -251,13 +370,13 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
 
           {/* Footer Actions */}
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '8px', marginTop: 'auto' }}>
-            <button type="button" onClick={onClose}
+            <button type="button" onClick={onClose} disabled={loading}
               style={{ padding: '12px 24px', background: 'transparent', border: '1px solid #E4E7EC', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 600, color: '#667085' }}>
               Cancel
             </button>
-            <button type="submit"
-              style={{ padding: '12px 28px', background: '#111111', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#FFFFFF', boxShadow: '0 4px 14px rgba(0,0,0,0.25)' }}>
-              {isEdit ? 'Save Changes' : 'Create Product'}
+            <button type="submit" disabled={loading}
+              style={{ padding: '12px 28px', background: '#111111', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#FFFFFF', boxShadow: '0 4px 14px rgba(0,0,0,0.25)', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Saving…' : (isEdit ? 'Save Changes' : 'Create Product')}
             </button>
           </div>
         </form>
@@ -268,13 +387,33 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
 
 // ─── Products Tab ─────────────────────────────────────────────────
 function ProductsTab() {
-  const [products, setProducts] = useState<Product[]>(SEED_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterCategory, setFilterCategory] = useState<ProductCategory | 'All'>('All');
-  const [filterStatus, setFilterStatus] = useState<ProductStatus | 'All'>('All');
+  const [filterCategory, setFilterCategory] = useState<string | 'All'>('All');
+  const [filterStatus, setFilterStatus] = useState<string | 'All'>('All');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await productApi.getAllAdmin();
+      setProducts(res.data);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // Derive unique categories from loaded products
+  const dynamicCategories = Array.from(new Set(products.map((p) => p.category))).sort();
 
   const filtered = products.filter((p) => {
     const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase());
@@ -286,17 +425,18 @@ function ProductsTab() {
   const openCreate = () => { setSelectedProduct(null); setIsFormOpen(true); };
   const openEdit = (p: Product) => { setSelectedProduct(p); setIsFormOpen(true); };
 
-  const handleSaved = (saved: Product) => {
-    setProducts((prev) => {
-      const idx = prev.findIndex((p) => p.id === saved.id);
-      if (idx >= 0) { const next = [...prev]; next[idx] = saved; return next; }
-      return [saved, ...prev];
-    });
+  const handleSaved = () => {
+    fetchProducts();
     setIsFormOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id: number | string) => {
+    try {
+      await productApi.delete(Number(id));
+      fetchProducts();
+    } catch (err: any) {
+      alert(err.message ?? 'Failed to delete product');
+    }
     setDeleteTarget(null);
   };
 
@@ -335,14 +475,14 @@ function ProductsTab() {
             onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
         </div>
         {/* Category filter */}
-        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value as ProductCategory | 'All')}
+        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
           style={{ ...inputStyle, paddingRight: '32px', cursor: 'pointer' }}
           onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
           <option value="All">All Categories</option>
-          {PRODUCT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          {dynamicCategories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
         {/* Status filter */}
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as ProductStatus | 'All')}
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
           style={{ ...inputStyle, paddingRight: '32px', cursor: 'pointer' }}
           onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}>
           <option value="All">All Statuses</option>
@@ -351,7 +491,9 @@ function ProductsTab() {
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <p style={{ color: '#667085' }}>Loading products…</p>
+      ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 40px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.06)' }}>
           <p style={{ fontSize: '18px', fontWeight: 700, color: '#111' }}>No products found.</p>
           <p style={{ color: '#667085', marginTop: '8px', fontSize: '14px' }}>Try adjusting your filters or add a new product.</p>
@@ -368,7 +510,7 @@ function ProductsTab() {
             </thead>
             <tbody>
               {filtered.map((p, i) => {
-                const st = STATUS_STYLE[p.status];
+                const st = STATUS_STYLE[p.status] || { bg: 'rgba(100,116,139,0.1)', color: '#64748B' };
                 return (
                   <motion.tr
                     key={p.id}
@@ -382,7 +524,7 @@ function ProductsTab() {
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)', border: '1px solid rgba(201,155,103,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0, overflow: 'hidden' }}>
-                          {p.images[0] ? <img src={p.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+                          {p.images[0] ? <img src={getProductImageUrl(p.images[0])} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
                         </div>
                         <div>
                           <p style={{ fontSize: '14px', fontWeight: 700, color: '#111', whiteSpace: 'nowrap' }}>{p.name}</p>
@@ -471,6 +613,7 @@ function ProductsTab() {
 
 // ─── Utility ──────────────────────────────────────────────────────
 function formatDate(d: string) {
+
   return new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 

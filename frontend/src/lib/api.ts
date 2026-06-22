@@ -178,3 +178,69 @@ export const dashboardApi = {
   getSummary: (): Promise<{ success: boolean; data: DashboardSummary }> =>
     authRequest<{ success: boolean; data: DashboardSummary }>('/api/dashboard/summary'),
 };
+
+// ─── Product Types ────────────────────────────────────────────────
+export interface ProductSpec {
+  label: string;
+  value: string;
+}
+
+export interface ApiProduct {
+  id: number;
+  name: string;
+  sku: string;
+  category: string;
+  moq: string;
+  status: string;
+  description: string;
+  images: string[];
+  specs: ProductSpec[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Product API ──────────────────────────────────────────────────
+export const productApi = {
+  // Public: returns only Published products (no auth needed)
+  getAll: (): Promise<{ success: boolean; data: ApiProduct[] }> =>
+    request<{ success: boolean; data: ApiProduct[] }>('/api/products'),
+
+  // Admin: returns all products regardless of status (sends JWT)
+  getAllAdmin: (): Promise<{ success: boolean; data: ApiProduct[] }> =>
+    authRequest<{ success: boolean; data: ApiProduct[] }>('/api/products'),
+
+  getCategories: (): Promise<{ success: boolean; data: string[] }> =>
+    request<{ success: boolean; data: string[] }>('/api/products/categories'),
+
+  getById: (id: number): Promise<{ success: boolean; data: ApiProduct }> =>
+    request<{ success: boolean; data: ApiProduct }>(`/api/products/${id}`),
+
+  create: (formData: FormData): Promise<{ success: boolean; data: ApiProduct; message: string }> => {
+    const token = getAdminToken();
+    return fetch(`${API_BASE_URL}/api/products`, {
+      method: 'POST',
+      headers: { Authorization: token ? `Bearer ${token}` : '' },
+      body: formData,
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message ?? 'Create product failed');
+      return data;
+    });
+  },
+
+  update: (id: number, formData: FormData): Promise<{ success: boolean; data: ApiProduct; message: string }> => {
+    const token = getAdminToken();
+    return fetch(`${API_BASE_URL}/api/products/${id}`, {
+      method: 'PUT',
+      headers: { Authorization: token ? `Bearer ${token}` : '' },
+      body: formData,
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message ?? 'Update product failed');
+      return data;
+    });
+  },
+
+  delete: (id: number): Promise<{ success: boolean; message: string }> =>
+    authRequest<{ success: boolean; message: string }>(`/api/products/${id}`, { method: 'DELETE' }),
+};
