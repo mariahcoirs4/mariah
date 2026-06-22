@@ -8,6 +8,7 @@ import {
 import type { Variants } from 'framer-motion';
 import { productApi, API_BASE_URL } from '../lib/api';
 import type { ApiProduct } from '../lib/api';
+import { useModal } from '../context/ModalContext';
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -197,6 +198,7 @@ function ProductCard({
 
 // ─── Main Section ─────────────────────────────────────────────────
 export default function ProductsSection() {
+  const { openModal } = useModal();
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('all');
@@ -420,6 +422,7 @@ export default function ProductsSection() {
           <div className="flex gap-3 shrink-0">
             <motion.a
               href="#quote"
+              onClick={(e) => { e.preventDefault(); openModal('export'); }}
               whileHover={shouldReduce ? {} : { scale: 1.05, y: -2 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}

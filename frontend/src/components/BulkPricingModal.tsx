@@ -265,10 +265,10 @@ export default function BulkPricingModal() {
     const SESSION_KEY = 'mariah_coirs_popup_shown';
     const hasShownThisSession = sessionStorage.getItem(SESSION_KEY);
     if (!hasShownThisSession) {
-      sessionStorage.setItem(SESSION_KEY, 'true');
       autoTriggerTimerRef.current = setTimeout(() => {
+        sessionStorage.setItem(SESSION_KEY, 'true');
         openModal('export');
-      }, 3500);
+      }, 10000);
     }
 
     return () => {
@@ -278,11 +278,15 @@ export default function BulkPricingModal() {
     };
   }, [openModal]);
 
-  // Clear timer if modal is opened manually
+  // Clear timer if modal is opened manually and mark as shown
   useEffect(() => {
-    if (isOpen && autoTriggerTimerRef.current) {
-      clearTimeout(autoTriggerTimerRef.current);
-      autoTriggerTimerRef.current = null;
+    if (isOpen) {
+      const SESSION_KEY = 'mariah_coirs_popup_shown';
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      if (autoTriggerTimerRef.current) {
+        clearTimeout(autoTriggerTimerRef.current);
+        autoTriggerTimerRef.current = null;
+      }
     }
   }, [isOpen]);
 

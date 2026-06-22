@@ -5,6 +5,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { useModal } from '../context/ModalContext';
 
 // ─── Data ────────────────────────────────────────────────────────
 const CERTIFICATIONS = [
@@ -121,6 +122,7 @@ function FloatingCard({ icon, title, subtitle, position, delay = 0, reduce }: Fl
 
 // ─── Main Component ───────────────────────────────────────────────
 export default function AboutSection() {
+  const { openModal } = useModal();
   const sectionRef  = useRef<HTMLElement>(null);
   const isInView    = useInView(sectionRef, { once: true, amount: 0.15 });
   const shouldReduce = useReducedMotion();
@@ -404,6 +406,7 @@ export default function AboutSection() {
             >
               <motion.a
                 href="#quote"
+                onClick={(e) => { e.preventDefault(); openModal('export'); }}
                 whileHover={shouldReduce ? {} : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
