@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 const GALLERY_IMAGES = [
   { src: '/mariahcoirs/droven_view.jpeg', title: 'Manufacturing Facility' },
   { src: '/mariahcoirs/machine_process.jpeg', title: 'Coir Processing' },
-  { src: '/mariahcoirs/Washing_process.jpg', title: 'Washing Process' },
+  { src: '/mariahcoirs/process.jpeg', title: 'Washing Process' },
   { src: '/mariahcoirs/mills_top_view.jpeg', title: 'Production Yard' },
   { src: '/mariahcoirs/coco_block_person.jpeg', title: 'Finished Coco Peat Blocks' },
   { src: '/mariahcoirs/package_unit.jpg', title: 'Export Packaging' },

@@ -12,7 +12,7 @@ const SLIDES = [
   { src: '/mariahcoirs/droven_view.jpeg', alt: 'Aerial view of Mariah Coirs facility' },
   { src: '/mariahcoirs/machine_process.jpeg', alt: 'Coir processing machinery in operation' },
   { src: '/mariahcoirs/machine_top.jpeg', alt: 'Top view of processing machines' },
-  { src: '/mariahcoirs/Washing_process.jpg', alt: 'Coir washing process' },
+
   { src: '/mariahcoirs/process.jpeg', alt: 'Coir manufacturing process' },
   { src: '/mariahcoirs/mills_top_view.jpeg', alt: 'Top view of coir mills' },
   { src: '/mariahcoirs/bed.jpeg', alt: 'Coco peat growing medium' },
@@ -209,7 +209,7 @@ export default function HeroSection() {
             Premium&nbsp;Coco&nbsp;Peat
             <br />
             <span style={{ color: '#D8A166', textShadow: '0 4px 20px rgba(0,0,0,0.30)' }}>
-              &amp;<br/>Coir&nbsp;Products
+              &amp;<br />Coir&nbsp;Products
             </span>
 
             <br />
@@ -361,32 +361,8 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* ══════════════════════════════════════════
-          SCROLL INDICATOR
-      ══════════════════════════════════════════ */}
-      <motion.div
-        variants={fadeIn}
-        initial="hidden"
-        animate="visible"
-        custom={1.1}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
-        aria-label="Scroll down"
-      >
-        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/40">
-          Scroll
-        </span>
-        {/* Animated mouse */}
-        <div
-          className="w-6 h-9 rounded-full border-2 border-white/30 flex justify-center pt-1.5"
-          aria-hidden="true"
-        >
-          <motion.span
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-            className="w-1 h-2 rounded-full bg-white/50"
-          />
-        </div>
-      </motion.div>
+
+
 
       {/* ══════════════════════════════════════════
           SLIDE PROGRESS BAR (thin top line)

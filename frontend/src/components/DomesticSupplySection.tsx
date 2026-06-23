@@ -181,7 +181,7 @@ function BenefitCard({ benefit, reduce }: { benefit: Benefit; reduce: boolean })
       onHoverEnd={() => setHovered(false)}
       whileHover={reduce ? {} : { y: -6, scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className="flex items-start gap-4 p-6 overflow-hidden select-none cursor-default"
+      className="flex items-start gap-3 p-6 overflow-hidden select-none cursor-default"
       style={{
         background: '#FFFFFF',
         border: hovered ? '1px solid rgba(201, 155, 103, 0.40)' : '1px solid rgba(0, 0, 0, 0.04)',
@@ -207,14 +207,13 @@ function BenefitCard({ benefit, reduce }: { benefit: Benefit; reduce: boolean })
       {/* Content */}
       <div className="flex flex-col">
         <h4
-          className="font-bold tracking-tight text-[#111111] text-[15px] sm:text-[16px]"
+          className="font-bold tracking-tight text-[#111111] text-lg"
           style={{ letterSpacing: '-0.01em' }}
         >
           {benefit.title}
         </h4>
         <p
-          className="mt-1 text-[13px] leading-relaxed"
-          style={{ color: '#667085' }}
+          className="mt-1 text-sm leading-relaxed text-gray-500"
         >
           {benefit.description}
         </p>
@@ -238,8 +237,8 @@ export default function DomesticSupplySection() {
       className="relative w-full overflow-hidden"
       style={{
         background: '#F5F1EB',
-        paddingTop: '140px',
-        paddingBottom: '140px',
+        paddingTop: '96px',
+        paddingBottom: '96px',
       }}
     >
       <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
@@ -249,7 +248,7 @@ export default function DomesticSupplySection() {
           variants={shouldReduce ? {} : sectionFade}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start"
         >
           
           {/* ══════════════════════════════════════════
@@ -273,9 +272,8 @@ export default function DomesticSupplySection() {
 
             {/* Main Heading */}
             <h2
-              className="font-extrabold text-[#111111] tracking-tight leading-[1.05]"
+              className="font-extrabold text-[#111111] tracking-tight leading-[1.1] text-5xl"
               style={{
-                fontSize: 'clamp(2.25rem, 5.5vw, 4rem)',
                 letterSpacing: '-0.03em',
               }}
             >
@@ -286,10 +284,10 @@ export default function DomesticSupplySection() {
 
             {/* Description */}
             <p
-              className="mt-6 text-[18px] sm:text-[22px] leading-[1.9]"
+              className="mt-5 text-lg leading-relaxed"
               style={{
                 color: '#667085',
-                maxWidth: '650px',
+                maxWidth: '550px',
               }}
             >
               We supply premium cocopeat and coir products across India for commercial agriculture,
@@ -300,7 +298,7 @@ export default function DomesticSupplySection() {
             {/* Benefits Grid */}
             <motion.div
               variants={gridFade}
-              className="mt-12 w-full grid grid-cols-1 sm:grid-cols-2 gap-5"
+              className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-5"
             >
               {BENEFITS.map((benefit) => (
                 <BenefitCard
@@ -312,14 +310,14 @@ export default function DomesticSupplySection() {
             </motion.div>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-fit">
               <motion.button
                 id="domestic-bulk-pricing-btn"
                 onClick={() => openModal('domestic')}
                 whileHover={shouldReduce ? {} : { scale: 1.04, y: -3 }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-[15px] rounded-[16px] font-bold text-[14px] sm:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-[16px] font-bold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 w-full sm:w-auto text-center"
                 style={{
                   background: '#C99B67',
                   color: '#111111',
@@ -338,7 +336,7 @@ export default function DomesticSupplySection() {
                 whileHover={shouldReduce ? {} : { scale: 1.03, background: 'rgba(0,0,0,0.03)' }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-[15px] rounded-[16px] font-semibold text-[14px] sm:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-[16px] font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 w-full sm:w-auto text-center"
                 style={{
                   background: 'transparent',
                   border: '1.5px solid rgba(0,0,0,0.12)',
@@ -361,7 +359,7 @@ export default function DomesticSupplySection() {
             className="lg:col-span-4 w-full h-full relative"
           >
             <div
-              className="relative w-full h-full flex flex-col justify-start p-8 sm:p-10 overflow-hidden"
+              className="relative w-full flex flex-col justify-start p-8 overflow-hidden"
               style={{
                 background: '#0A0A0A',
                 borderRadius: '32px',
@@ -394,11 +392,11 @@ export default function DomesticSupplySection() {
               </h3>
 
               {/* State Pills */}
-              <div className="mt-8 flex flex-wrap gap-2">
+              <div className="mt-6 flex flex-wrap gap-2">
                 {STATES.map((state) => (
                   <span
                     key={state}
-                    className="inline-flex items-center px-4 py-2 rounded-full text-[12px] font-medium"
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium"
                     style={{
                       background: 'rgba(255, 255, 255, 0.04)',
                       border: '1px solid rgba(201, 155, 103, 0.15)',
@@ -412,14 +410,14 @@ export default function DomesticSupplySection() {
 
               {/* Divider */}
               <div
-                className="mt-8 mb-8 h-px w-full"
+                className="mt-6 mb-6 h-px w-full"
                 style={{ background: 'rgba(255, 255, 255, 0.08)' }}
                 aria-hidden="true"
               />
 
               {/* Buyers We Serve Label */}
               <span
-                className="inline-block text-[11px] font-bold uppercase tracking-[0.24em] mb-4"
+                className="inline-block text-[11px] font-bold uppercase tracking-[0.24em] mb-3"
                 style={{ color: '#C99B67' }}
               >
                 Buyers We Serve
@@ -433,7 +431,7 @@ export default function DomesticSupplySection() {
                       <CheckIcon />
                     </span>
                     <span
-                      className="text-[13px] font-semibold tracking-tight"
+                      className="text-sm font-semibold tracking-tight"
                       style={{ color: 'rgba(255, 255, 255, 0.85)' }}
                     >
                       {buyer}
