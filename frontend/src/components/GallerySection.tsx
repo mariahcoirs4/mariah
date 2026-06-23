@@ -10,6 +10,11 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/package_unit.jpg', title: 'Export Packaging' },
   { src: '/mariahcoirs/block_machine.jpeg', title: 'Block Production' },
   { src: '/mariahcoirs/dry_process.jpeg', title: 'Natural Drying' },
+  { src: '/mariahcoirs/long_view.jpeg', title: 'Facility Overview' },
+  { src: '/mariahcoirs/machine.jpeg', title: 'Processing Machinery' },
+  { src: '/mariahcoirs/raw_material.jpeg', title: 'Raw Coconut Husk' },
+  { src: '/mariahcoirs/coir_group.jpeg', title: 'Coir Fiber Stock' },
+  { src: '/mariahcoirs/bed.jpeg', title: 'Coir Drying Beds' },
 ];
 
 const YOUTUBE_VIDEOS = [
@@ -96,7 +101,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 auto-rows-[150px] sm:auto-rows-[210px] gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[130px] sm:auto-rows-[180px] lg:auto-rows-[210px] gap-2.5 sm:gap-3.5 lg:gap-4">
           {GALLERY_IMAGES.map((image, index) => (
             <motion.button
               key={image.src}
@@ -108,7 +113,7 @@ export default function GallerySection() {
             >
               <img src={image.src} alt={image.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
-              <span className="absolute left-3 right-3 bottom-3 text-xs sm:text-sm font-semibold text-white">{image.title}</span>
+              <span className="absolute left-2.5 right-2.5 bottom-2.5 sm:left-3 sm:right-3 sm:bottom-3 text-[11px] sm:text-xs lg:text-sm font-semibold text-white">{image.title}</span>
             </motion.button>
           ))}
         </div>

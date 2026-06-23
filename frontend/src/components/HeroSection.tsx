@@ -12,7 +12,11 @@ const SLIDES = [
   { src: '/mariahcoirs/droven_view.jpeg', alt: 'Aerial view of Mariah Coirs facility' },
   { src: '/mariahcoirs/machine_process.jpeg', alt: 'Coir processing machinery in operation' },
   { src: '/mariahcoirs/machine_top.jpeg', alt: 'Top view of processing machines' },
+  { src: '/mariahcoirs/coir_group.jpeg', alt: 'Top view of processing machines' },
+  { src: '/mariahcoirs/machine.jpeg', alt: 'Top view of processing machines' },
 
+  { src: '/mariahcoirs/raw_material.jpeg', alt: 'Top view of processing machines' },
+  { src: '/mariahcoirs/long_view.jpeg', alt: 'Top view of processing machines' },
   { src: '/mariahcoirs/process.jpeg', alt: 'Coir manufacturing process' },
   { src: '/mariahcoirs/mills_top_view.jpeg', alt: 'Top view of coir mills' },
   { src: '/mariahcoirs/bed.jpeg', alt: 'Coco peat growing medium' },
@@ -182,9 +186,7 @@ export default function HeroSection() {
             <span
               className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-[8px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] sm:tracking-[0.2em] text-amber-300 border"
               style={{
-                background: 'rgba(0,0,0,0.45)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
+                background: 'transparent',
                 borderColor: 'rgba(185,128,60,0.55)',
               }}
             >
@@ -249,11 +251,12 @@ export default function HeroSection() {
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               aria-label="Request an export quote from Mariah Coirs"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-[14px] sm:text-[15px] text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-[14px] sm:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               style={{
-                background: 'linear-gradient(135deg, #D9A56A 0%, #C9875A 100%)',
-                boxShadow: '0 8px 32px rgba(185,128,60,0.45), 0 2px 8px rgba(0,0,0,0.3)',
-                border: 'none',
+                background: 'transparent',
+                color: '#D9A56A',
+                boxShadow: 'none',
+                border: '1.5px solid #D9A56A',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
@@ -265,15 +268,13 @@ export default function HeroSection() {
             {/* Secondary – glass */}
             <motion.a
               href="#products"
-              whileHover={shouldReduce ? {} : { scale: 1.03, backgroundColor: 'rgba(255,255,255,0.12)' }}
+              whileHover={shouldReduce ? {} : { scale: 1.03 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               aria-label="View Mariah Coirs products"
               className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-[14px] sm:text-[15px] text-white border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
+                background: 'transparent',
               }}
             >
               View Products
@@ -301,18 +302,13 @@ export default function HeroSection() {
           {STATS.map(({ value, label }) => (
             <motion.div
               key={label}
-              whileHover={shouldReduce ? {} : {
-                y: -3, scale: 1.02,
-                boxShadow: '0 8px 32px rgba(185,128,60,0.22), inset 0 1px 0 rgba(255,255,255,0.12)'
-              }}
+              whileHover={shouldReduce ? {} : { y: -3, scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300, damping: 22 }}
               className="flex flex-col items-start p-3 sm:p-5 rounded-xl sm:rounded-2xl border cursor-default"
               style={{
-                background: 'rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
+                background: 'transparent',
                 borderColor: 'rgba(255,255,255,0.15)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08)',
+                boxShadow: 'none',
               }}
               aria-label={`${value} ${label}`}
             >
