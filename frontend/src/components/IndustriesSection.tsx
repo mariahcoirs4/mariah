@@ -166,27 +166,37 @@ function IndustryCard({ industry, reduce }: { industry: Industry; reduce: boolea
       variants={cardFade}
       onHoverStart={() => !reduce && setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      whileHover={reduce ? {} : { y: -8, scale: 1.02 }}
+      whileHover={reduce ? {} : { y: -6 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className="relative flex flex-col justify-start p-8 overflow-hidden select-none cursor-default"
+      className="relative flex flex-col items-center p-5 sm:p-8 overflow-hidden select-none cursor-default"
       style={{
-        minHeight: '220px',
+        minHeight: '180px',
         background: '#FFFFFF',
-        border: hovered ? '1px solid rgba(201, 155, 103, 0.45)' : '1px solid rgba(0, 0, 0, 0.05)',
-        borderRadius: '24px',
+        borderRadius: '20px',
         boxShadow: hovered
-          ? '0 20px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(185, 120, 45, 0.06)'
-          : '0 10px 30px rgba(0, 0, 0, 0.04)',
-        transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          ? '0 15px 40px -15px rgba(0,0,0,0.15)'
+          : '0 10px 30px -10px rgba(0,0,0,0.05)',
+        transition: 'box-shadow 0.25s ease, transform 0.25s ease',
       }}
     >
-      {/* Icon Container */}
+      {/* Top Accent Line */}
       <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+        className="absolute top-0 left-0 right-0 h-1"
         style={{
-          background: hovered ? 'rgba(201, 155, 103, 0.16)' : 'rgba(201, 155, 103, 0.08)',
-          color: '#C99B67',
-          transition: 'background-color 0.25s ease',
+          background: 'linear-gradient(90deg, #E5A93C, #C99B67)',
+          borderRadius: '20px 20px 0 0',
+        }}
+      />
+
+      {/* Icon Container (Circle) */}
+      <div
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shrink-0"
+        style={{
+          background: hovered ? 'rgba(229, 169, 60, 0.12)' : 'rgba(229, 169, 60, 0.06)',
+          color: '#E5A93C',
+          border: '1px solid rgba(229, 169, 60, 0.15)',
+          boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.03)',
+          transition: 'background-color 0.25s ease, border-color 0.25s ease',
         }}
         aria-hidden="true"
       >
@@ -198,16 +208,16 @@ function IndustryCard({ industry, reduce }: { industry: Industry; reduce: boolea
         </motion.div>
       </div>
 
-      {/* Card Content */}
+      {/* Card Content (Centered) */}
       <h3
-        className="mt-5 font-bold tracking-tight text-[#111111] text-[17px] sm:text-[18px]"
-        style={{ letterSpacing: '-0.01em' }}
+        className="mt-4 sm:mt-5 font-bold tracking-tight text-[#111111] text-[15px] sm:text-[17px]"
+        style={{ letterSpacing: '-0.01em', textAlign: 'center' }}
       >
         {industry.title}
       </h3>
       <p
-        className="mt-2.5 leading-relaxed text-[13px] sm:text-[14px]"
-        style={{ color: '#555555' }}
+        className="mt-2 sm:mt-2.5 leading-relaxed text-[12px] sm:text-[13px]"
+        style={{ color: '#666666', textAlign: 'center' }}
       >
         {industry.description}
       </p>
@@ -242,11 +252,11 @@ export default function IndustriesSection() {
           variants={headerFade}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
           <span
             className="inline-block text-[11px] font-bold uppercase tracking-[0.32em] mb-4"
-            style={{ color: '#C99B67' }}
+            style={{ color: '#E5A93C' }}
           >
             Markets We Serve
           </span>
@@ -269,7 +279,7 @@ export default function IndustriesSection() {
           variants={gridFade}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
         >
           {INDUSTRIES.map((industry) => (
             <IndustryCard

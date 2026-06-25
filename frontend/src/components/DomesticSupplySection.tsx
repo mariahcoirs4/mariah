@@ -64,7 +64,7 @@ const HeadsetIcon = () => (
 );
 
 const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#C99B67' }}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#E5A93C' }}>
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -179,25 +179,25 @@ function BenefitCard({ benefit, reduce }: { benefit: Benefit; reduce: boolean })
       variants={benefitFade}
       onHoverStart={() => !reduce && setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      whileHover={reduce ? {} : { y: -6, scale: 1.02 }}
+      whileHover={reduce ? {} : { y: -4 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className="flex items-start gap-3 p-6 overflow-hidden select-none cursor-default"
+      className="flex items-start gap-3 p-4 sm:p-6 overflow-hidden select-none cursor-default"
       style={{
         background: '#FFFFFF',
-        border: hovered ? '1px solid rgba(201, 155, 103, 0.40)' : '1px solid rgba(0, 0, 0, 0.04)',
+        border: hovered ? '1px solid rgba(229, 169, 60, 0.40)' : '1px solid rgba(0, 0, 0, 0.04)',
         borderRadius: '20px',
         boxShadow: hovered
-          ? '0 16px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(185, 120, 45, 0.04)'
-          : '0 8px 24px rgba(0, 0, 0, 0.03)',
+          ? '0 16px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(229, 169, 60, 0.04)'
+          : '0 10px 30px -10px rgba(0,0,0,0.04)',
         transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
       }}
     >
       {/* Icon Wrapper */}
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
         style={{
-          background: 'rgba(201, 155, 103, 0.08)',
-          color: '#C99B67',
+          background: 'rgba(229, 169, 60, 0.08)',
+          color: '#E5A93C',
         }}
         aria-hidden="true"
       >
@@ -207,13 +207,13 @@ function BenefitCard({ benefit, reduce }: { benefit: Benefit; reduce: boolean })
       {/* Content */}
       <div className="flex flex-col">
         <h4
-          className="font-bold tracking-tight text-[#111111] text-lg"
+          className="font-bold tracking-tight text-[#111111] text-base sm:text-lg"
           style={{ letterSpacing: '-0.01em' }}
         >
           {benefit.title}
         </h4>
         <p
-          className="mt-1 text-sm leading-relaxed text-gray-500"
+          className="mt-1 text-xs sm:text-sm leading-relaxed text-gray-500"
         >
           {benefit.description}
         </p>
@@ -241,7 +241,7 @@ export default function DomesticSupplySection() {
         paddingBottom: '96px',
       }}
     >
-      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         
         {/* Outer grid */}
         <motion.div
@@ -260,11 +260,11 @@ export default function DomesticSupplySection() {
           >
             {/* Eyebrow Badge */}
             <div
-              className="inline-flex items-center px-4 py-2 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.24em] mb-6"
+              className="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-6"
               style={{
-                background: 'rgba(201, 155, 103, 0.1)',
-                border: '1px solid rgba(201, 155, 103, 0.2)',
-                color: '#C99B67',
+                background: 'rgba(229, 169, 60, 0.1)',
+                border: '1px solid rgba(229, 169, 60, 0.2)',
+                color: '#E5A93C',
               }}
             >
               Domestic Bulk Supply Programme
@@ -272,7 +272,7 @@ export default function DomesticSupplySection() {
 
             {/* Main Heading */}
             <h2
-              className="font-extrabold text-[#111111] tracking-tight leading-[1.1] text-5xl"
+              className="font-extrabold text-[#111111] tracking-tight leading-[1.1] text-4xl sm:text-5xl"
               style={{
                 letterSpacing: '-0.03em',
               }}
@@ -284,7 +284,7 @@ export default function DomesticSupplySection() {
 
             {/* Description */}
             <p
-              className="mt-5 text-lg leading-relaxed"
+              className="mt-5 text-base sm:text-lg leading-relaxed"
               style={{
                 color: '#667085',
                 maxWidth: '550px',
@@ -297,11 +297,11 @@ export default function DomesticSupplySection() {
 
             {/* Tamil Nadu MOQ Notice */}
             <div
-              className="mt-4 flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold"
+              className="mt-4 flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold"
               style={{
-                background: 'rgba(201, 155, 103, 0.1)',
-                border: '1px solid rgba(201, 155, 103, 0.25)',
-                color: '#C99B67',
+                background: 'rgba(229, 169, 60, 0.1)',
+                border: '1px solid rgba(229, 169, 60, 0.25)',
+                color: '#E5A93C',
                 maxWidth: '550px',
               }}
             >
@@ -316,7 +316,7 @@ export default function DomesticSupplySection() {
             {/* Benefits Grid */}
             <motion.div
               variants={gridFade}
-              className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-5"
+              className="mt-10 w-full grid grid-cols-2 sm:grid-cols-2 gap-y-4 gap-x-3 sm:gap-x-5"
             >
               {BENEFITS.map((benefit) => (
                 <BenefitCard
@@ -328,22 +328,24 @@ export default function DomesticSupplySection() {
             </motion.div>
 
             {/* CTA Buttons */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-fit">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-fit">
               <motion.button
                 id="domestic-bulk-pricing-btn"
                 onClick={() => openModal('domestic')}
                 whileHover={shouldReduce ? {} : { scale: 1.04, y: -3 }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-[16px] font-bold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 w-full sm:w-auto text-center"
                 style={{
-                  background: '#C99B67',
+                  background: '#E5A93C',
                   color: '#111111',
-                  boxShadow: '0 4px 18px rgba(201, 155, 103, 0.35)',
+                  boxShadow: '0 4px 18px rgba(229, 169, 60, 0.35)',
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#D99828' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#E5A93C' }}
               >
                 Request Indian Bulk Pricing
               </motion.button>
@@ -354,7 +356,7 @@ export default function DomesticSupplySection() {
                 whileHover={shouldReduce ? {} : { scale: 1.03, background: 'rgba(0,0,0,0.03)' }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-[16px] font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 w-full sm:w-auto text-center"
                 style={{
                   background: 'transparent',
                   border: '1.5px solid rgba(0,0,0,0.12)',
@@ -377,34 +379,34 @@ export default function DomesticSupplySection() {
             className="lg:col-span-4 w-full h-full relative"
           >
             <div
-              className="relative w-full flex flex-col justify-start p-8 overflow-hidden"
+              className="relative w-full flex flex-col justify-start p-6 sm:p-8 overflow-hidden"
               style={{
                 background: '#0A0A0A',
-                borderRadius: '32px',
-                boxShadow: '0 24px 60px rgba(0, 0, 0, 0.4)',
+                borderRadius: '28px',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
               }}
             >
               {/* Radial glow */}
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(circle at 80% 20%, rgba(201, 155, 103, 0.08) 0%, transparent 60%)',
+                  background: 'radial-gradient(circle at 80% 20%, rgba(229, 169, 60, 0.08) 0%, transparent 60%)',
                 }}
                 aria-hidden="true"
               />
 
               {/* Supplying Across Eyebrow */}
               <span
-                className="inline-block text-[11px] font-bold uppercase tracking-[0.24em] mb-3"
-                style={{ color: '#C99B67' }}
+                className="inline-block text-xs font-bold uppercase tracking-wider mb-3"
+                style={{ color: '#E5A93C' }}
               >
                 Supplying Across
               </span>
 
               {/* Card Heading */}
               <h3
-                className="font-extrabold text-white tracking-tight"
-                style={{ fontSize: '34px', letterSpacing: '-0.02em', lineHeight: '1.15' }}
+                className="font-extrabold text-white tracking-tight text-2xl sm:text-3xl"
+                style={{ letterSpacing: '-0.02em', lineHeight: '1.15' }}
               >
                 Major Indian Markets
               </h3>
@@ -417,7 +419,7 @@ export default function DomesticSupplySection() {
                     className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium"
                     style={{
                       background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(201, 155, 103, 0.15)',
+                      border: '1px solid rgba(229, 169, 60, 0.15)',
                       color: '#FFFFFF',
                     }}
                   >
@@ -435,8 +437,8 @@ export default function DomesticSupplySection() {
 
               {/* Buyers We Serve Label */}
               <span
-                className="inline-block text-[11px] font-bold uppercase tracking-[0.24em] mb-3"
-                style={{ color: '#C99B67' }}
+                className="inline-block text-xs font-bold uppercase tracking-wider mb-3"
+                style={{ color: '#E5A93C' }}
               >
                 Buyers We Serve
               </span>
@@ -449,7 +451,7 @@ export default function DomesticSupplySection() {
                       <CheckIcon />
                     </span>
                     <span
-                      className="text-sm font-semibold tracking-tight"
+                      className="text-xs sm:text-sm font-semibold tracking-tight"
                       style={{ color: 'rgba(255, 255, 255, 0.85)' }}
                     >
                       {buyer}

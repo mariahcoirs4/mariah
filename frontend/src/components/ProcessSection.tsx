@@ -75,7 +75,7 @@ const stepFade: Variants = {
 };
 
 // ─── Process Step Card Component ──────────────────────────────────
-function ProcessStep({ step, reduce }: { step: Step; reduce: boolean }) {
+function ProcessStep({ step, reduce, index }: { step: Step; reduce: boolean; index: number }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -83,44 +83,55 @@ function ProcessStep({ step, reduce }: { step: Step; reduce: boolean }) {
       variants={stepFade}
       onHoverStart={() => !reduce && setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      whileHover={reduce ? {} : { y: -8, scale: 1.03 }}
+      whileHover={reduce ? {} : { y: -4 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className="relative flex flex-col items-center text-center px-4 select-none cursor-default group"
+      className="relative flex flex-col md:flex-col items-start md:items-center px-4 select-none cursor-default group gap-4 md:gap-0"
     >
+      {/* Mobile: Vertical Timeline Line */}
+      {index < STEPS.length - 1 && (
+        <div
+          className="absolute top-[26px] left-[25px] md:hidden w-[2px] h-[calc(100%+24px)]"
+          style={{ background: 'rgba(229, 169, 60, 0.4)' }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Step Badge */}
       <div
-        className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center shrink-0 z-10 border"
+        className="w-[52px] h-[52px] rounded-xl flex items-center justify-center shrink-0 z-10 border"
         style={{
-          background: 'rgba(201, 155, 103, 0.12)',
-          borderColor: hovered ? 'rgba(201, 155, 103, 0.45)' : 'rgba(201, 155, 103, 0.18)',
+          background: hovered ? 'rgba(229, 169, 60, 0.20)' : 'rgba(229, 169, 60, 0.10)',
+          borderColor: hovered ? 'rgba(229, 169, 60, 0.50)' : 'rgba(229, 169, 60, 0.30)',
           boxShadow: hovered
-            ? '0 0 20px rgba(201, 155, 103, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            ? '0 0 20px rgba(229, 169, 60, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             : '0 4px 10px rgba(0, 0, 0, 0.2)',
-          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          transition: 'all 0.25s ease',
         }}
         aria-hidden="true"
       >
         <span
           className="text-[15px] font-bold"
-          style={{ color: '#D8A56D' }}
+          style={{ color: '#E5A93C' }}
         >
           {step.number}
         </span>
       </div>
 
       {/* Content */}
-      <h3
-        className="mt-6 font-bold tracking-tight text-white"
-        style={{ fontSize: '20px', letterSpacing: '-0.015em' }}
-      >
-        {step.title}
-      </h3>
-      <p
-        className="mt-3 leading-relaxed max-w-[280px]"
-        style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.6)' }}
-      >
-        {step.description}
-      </p>
+      <div className="flex-1 md:text-center pl-12 md:pl-0">
+        <h3
+          className="font-semibold tracking-tight text-white"
+          style={{ fontSize: '18px', letterSpacing: '-0.015em' }}
+        >
+          {step.title}
+        </h3>
+        <p
+          className="mt-2 leading-relaxed text-gray-300"
+          style={{ fontSize: '14px' }}
+        >
+          {step.description}
+        </p>
+      </div>
     </motion.div>
   );
 }
@@ -147,12 +158,12 @@ export default function ProcessSection() {
       <div
         className="absolute inset-0 pointer-events-none z-0"
         style={{
-          background: 'radial-gradient(circle at center, rgba(201, 155, 103, 0.08), transparent 60%)',
+          background: 'radial-gradient(circle at center, rgba(229, 169, 60, 0.08), transparent 60%)',
         }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
 
         {/* ══════════════════════════════════════════
             SECTION HEADER
@@ -165,7 +176,7 @@ export default function ProcessSection() {
         >
           <span
             className="inline-block text-[11px] font-bold uppercase tracking-[0.32em] mb-4"
-            style={{ color: '#C99B67' }}
+            style={{ color: '#E5A93C' }}
           >
             Our Process
           </span>
@@ -177,7 +188,7 @@ export default function ProcessSection() {
               letterSpacing: '-0.025em',
             }}
           >
-            From Husk to Export Container
+            From <span style={{ color: '#E5A93C' }}>Husk</span> to <span style={{ color: '#E5A93C' }}>Export Container</span>
           </h2>
         </motion.div>
 
@@ -189,13 +200,13 @@ export default function ProcessSection() {
           {/* ── Connecting line for Desktop/Tablet ──
               Hidden on mobile. Displays as a thin line running behind the badges. */}
           <div
-            className="absolute top-[26px] left-[8%] right-[8%] h-[2px] hidden md:block"
-            style={{ background: 'rgba(201, 155, 103, 0.25)' }}
+            className="absolute top-[26px] left-[8%] right-[8%] h-[1px] hidden md:block"
+            style={{ background: 'rgba(229, 169, 60, 0.4)' }}
             aria-hidden="true"
           >
             {/* Animated progress reveal */}
             <motion.div
-              className="h-full origin-left bg-gradient-to-r from-[#D8A56D] to-[#C99B67]"
+              className="h-full origin-left bg-gradient-to-r from-[#E5A93C] to-[#C99B67]"
               initial={{ scaleX: 0 }}
               animate={isInView ? { scaleX: 1 } : {}}
               transition={{ duration: 1.4, ease: EASE_CUBIC }}
@@ -208,13 +219,14 @@ export default function ProcessSection() {
             variants={timelineFade}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}
-            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-y-12 md:gap-y-16 gap-x-4 lg:gap-x-2"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-y-12 md:gap-y-16 gap-x-4 lg:gap-x-6"
           >
-            {STEPS.map((step) => (
+            {STEPS.map((step, index) => (
               <ProcessStep
                 key={step.number}
                 step={step}
                 reduce={!!shouldReduce}
+                index={index}
               />
             ))}
           </motion.div>

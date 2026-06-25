@@ -51,12 +51,14 @@ export default function Navbar() {
       <header
         className={[
           'fixed top-0 left-0 right-0 z-50 w-full',
-          'transition-[background-color,box-shadow] duration-300',
+          'transition-[background-color,backdrop-filter,box-shadow,border] duration-300',
+          'backdrop-blur-md',
+          'border-b border-white/10',
           scrolled
             ? 'shadow-[0_2px_20px_rgba(0,0,0,0.08)]'
             : 'shadow-none',
         ].join(' ')}
-        style={{ backgroundColor: isHeroState ? 'transparent' : '#F8F6F3' }}
+        style={{ backgroundColor: isHeroState ? 'rgba(0,0,0,0.2)' : '#F8F6F3' }}
       >
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           <div className="flex items-center justify-between h-[100px]">
@@ -85,28 +87,28 @@ export default function Navbar() {
                     key={label}
                     to={href}
                     className={[
-                      `relative px-3 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E0B463]' : 'text-gray-600 hover:text-[#B8892A]'}`,
-                      'rounded-md',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
-                      'group',
-                    ].join(' ')}
+                `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
+                'rounded-md',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                'group',
+              ].join(' ')}
                   >
                     {label}
-                    <span aria-hidden="true" className={['absolute bottom-0 left-3 right-3 h-[1.5px] rounded-full', 'bg-[#B8892A]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
+                    <span aria-hidden="true" className={['absolute bottom-0 left-4 right-4 h-[1.5px] rounded-full', 'bg-[#E5A93C]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
                   </Link>
                 ) : (
                   <a
                     key={label}
                     href={href}
                     className={[
-                      `relative px-3 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E0B463]' : 'text-gray-600 hover:text-[#B8892A]'}`,
-                      'rounded-md',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
-                      'group',
-                    ].join(' ')}
+                `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
+                'rounded-md',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                'group',
+              ].join(' ')}
                   >
                     {label}
-                    <span aria-hidden="true" className={['absolute bottom-0 left-3 right-3 h-[1.5px] rounded-full', 'bg-[#B8892A]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
+                    <span aria-hidden="true" className={['absolute bottom-0 left-4 right-4 h-[1.5px] rounded-full', 'bg-[#E5A93C]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
                   </a>
                 )
               ))}
@@ -115,29 +117,34 @@ export default function Navbar() {
             {/* ── Desktop CTA ── */}
             <div className="hidden xl:flex items-center">
               <button
-                id="navbar-export-quote-btn"
-                onClick={() => openModal('export')}
-                className={[
-                  'inline-flex items-center justify-center',
-                  'px-7 py-[13px] rounded-xl',
-                  'text-white text-[14px] font-semibold',
-                  'transition-all duration-200 ease-out',
-                  'hover:scale-[1.03]',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                  'active:scale-[0.98]',
-                ].join(' ')}
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  backgroundColor: '#B8892A',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A37A24')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#B8892A')}
-                aria-label="Get an export quote from Mariah Coirs"
-              >
-                Get Export Quote
-              </button>
+              id="navbar-export-quote-btn"
+              onClick={() => openModal('export')}
+              className={[
+                'inline-flex items-center justify-center',
+                'px-7 py-[13px] rounded-lg',
+                'text-[14px] font-semibold',
+                'transition-all duration-200 ease-out',
+                'hover:scale-[1.03]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'active:scale-[0.98]',
+              ].join(' ')}
+              style={{
+                border: `1.5px solid ${isHeroState ? '#E5A93C' : '#E5A93C'}`,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                backgroundColor: 'transparent',
+                color: isHeroState ? '#E5A93C' : '#E5A93C',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(229, 169, 60, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+              aria-label="Get an export quote from Mariah Coirs"
+            >
+              Get Export Quote
+            </button>
             </div>
 
             {/* ── Mobile Hamburger ── */}
@@ -260,8 +267,8 @@ export default function Navbar() {
                 className={[
                   'flex items-center px-4 py-4 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
-                  'hover:bg-[#B8892A]/10 hover:text-[#B8892A]',
-                  'active:bg-[#B8892A]/20',
+                  'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
+                'active:bg-[#E5A93C]/20',
                   'transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
                 ].join(' ')}
@@ -280,8 +287,8 @@ export default function Navbar() {
                 className={[
                   'flex items-center px-4 py-4 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
-                  'hover:bg-[#B8892A]/10 hover:text-[#B8892A]',
-                  'active:bg-[#B8892A]/20',
+                  'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
+                'active:bg-[#E5A93C]/20',
                   'transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
                 ].join(' ')}
@@ -309,12 +316,15 @@ export default function Navbar() {
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
             ].join(' ')}
             style={{
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              width: '100%',
-              backgroundColor: '#B8892A',
-            }}
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                width: '100%',
+                backgroundColor: '#E5A93C',
+                color: '#1a1a1a',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#D99828')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#E5A93C')}
             aria-label="Get an export quote from Mariah Coirs"
           >
             Get Export Quote

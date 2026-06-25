@@ -107,24 +107,24 @@ export default function Footer() {
         className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 pt-[100px] pb-[60px]"
       >
         {/* ─── Main Footer Columns ─────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-20">
-          
+        {/* Mobile: 2 columns / 2 rows, Desktop: 4 columns / 1 row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 lg:gap-20">
+
           {/* Column 1: Brand Info */}
-          <motion.div variants={columnVariants} className="flex flex-col gap-6">
+          <motion.div
+            variants={columnVariants}
+            className="col-span-2 lg:col-span-1 flex flex-col gap-6"
+          >
             <Link
               to="/"
-              className="flex flex-col select-none leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-sm w-fit"
+              className="flex select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-sm w-fit -ml-2"
               aria-label="Mariah Coirs - Home"
             >
-              <span className="text-[24px] font-black tracking-tight text-white font-sans">
-                Mariah Coirs
-              </span>
-              <span
-                style={{ color: '#C99B67', letterSpacing: '3px' }}
-                className="text-[10px] font-bold mt-1.5 uppercase font-sans"
-              >
-                EXPORT • SINCE 2009
-              </span>
+              <img
+                src="/mariahcoirs/logo.png"
+                alt="Mariah Coirs"
+                className="h-24 sm:h-28 lg:h-32 w-auto object-contain"
+              />
             </Link>
 
             <p className="text-[14px] leading-relaxed text-white/65 font-sans font-normal max-w-sm">
