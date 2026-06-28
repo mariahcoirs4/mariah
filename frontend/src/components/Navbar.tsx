@@ -255,7 +255,7 @@ export default function Navbar() {
         {/* Drawer nav links */}
         <nav
           aria-label="Mobile navigation"
-          className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-1"
+          className="flex-1 overflow-y-auto px-6 py-4 pb-6 flex flex-col gap-0.5"
         >
           {NAV_LINKS.map(({ label, href, isRoute }, i) => (
             isRoute ? (
@@ -265,7 +265,7 @@ export default function Navbar() {
                 onClick={closeMenu}
                 style={{ transitionDelay: menuOpen ? `${i * 40}ms` : '0ms' }}
                 className={[
-                  'flex items-center px-4 py-4 rounded-xl',
+                  'flex items-center px-4 py-3 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
                   'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
                 'active:bg-[#E5A93C]/20',
@@ -285,7 +285,7 @@ export default function Navbar() {
                 onClick={closeMenu}
                 style={{ transitionDelay: menuOpen ? `${i * 40}ms` : '0ms' }}
                 className={[
-                  'flex items-center px-4 py-4 rounded-xl',
+                  'flex items-center px-4 py-3 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
                   'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
                 'active:bg-[#E5A93C]/20',
@@ -301,38 +301,6 @@ export default function Navbar() {
             )
           ))}
         </nav>
-
-        {/* Drawer CTA */}
-        <div className="px-6 pb-10 pt-4 border-t border-gray-200">
-          <button
-            id="navbar-mobile-export-btn"
-            onClick={() => { closeMenu(); openModal('export'); }}
-            className={[
-              'flex items-center justify-center w-full',
-              'px-6 py-4 rounded-xl',
-              'text-white text-[15px] font-semibold',
-              'active:scale-[0.98]',
-              'transition-all duration-200',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            ].join(' ')}
-            style={{
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                width: '100%',
-                backgroundColor: '#E5A93C',
-                color: '#1a1a1a',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#D99828')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#E5A93C')}
-            aria-label="Get an export quote from Mariah Coirs"
-          >
-            Get Export Quote
-          </button>
-          <p className="text-center text-[12px] text-gray-400 mt-3 tracking-wide">
-            Quality Coir Products · Worldwide
-          </p>
-        </div>
       </div>
     </>
   );

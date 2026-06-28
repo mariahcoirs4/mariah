@@ -5,6 +5,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import MobileCarousel from './MobileCarousel';
 
 // ─── Types & Interfaces ──────────────────────────────────────────
 interface Industry {
@@ -275,11 +276,25 @@ export default function IndustriesSection() {
         {/* ══════════════════════════════════════════
             FEATURES GRID
         ══════════════════════════════════════════ */}
+        {/* Mobile carousel */}
+        <div className="md:hidden">
+          <MobileCarousel slideClassName="w-[72vw] max-w-[260px]">
+            {INDUSTRIES.map((industry) => (
+              <IndustryCard
+                key={industry.id}
+                industry={industry}
+                reduce={!!shouldReduce}
+              />
+            ))}
+          </MobileCarousel>
+        </div>
+
+        {/* Desktop grid */}
         <motion.div
           variants={gridFade}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+          className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
         >
           {INDUSTRIES.map((industry) => (
             <IndustryCard

@@ -6,6 +6,7 @@ import {
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useModal } from '../context/ModalContext';
+import MobileCarousel from './MobileCarousel';
 
 // ─── Types & Interfaces ──────────────────────────────────────────
 interface Benefit {
@@ -234,12 +235,8 @@ export default function DomesticSupplySection() {
       id="domestic"
       ref={sectionRef}
       aria-label="Domestic Bulk Supply Programme"
-      className="relative w-full overflow-hidden"
-      style={{
-        background: '#F5F1EB',
-        paddingTop: '96px',
-        paddingBottom: '96px',
-      }}
+      className="relative w-full overflow-hidden py-12 sm:py-20 lg:py-24"
+      style={{ background: '#F5F1EB' }}
     >
       <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         
@@ -313,10 +310,18 @@ export default function DomesticSupplySection() {
               <span>Minimum order quantity in Tamil Nadu is 16 tons.</span>
             </div>
 
-            {/* Benefits Grid */}
+            {/* Benefits — mobile carousel, desktop grid */}
+            <div className="mt-8 sm:mt-10 w-full md:hidden">
+              <MobileCarousel slideClassName="w-[78vw] max-w-[300px]">
+                {BENEFITS.map((benefit) => (
+                  <BenefitCard key={benefit.id} benefit={benefit} reduce={!!shouldReduce} />
+                ))}
+              </MobileCarousel>
+            </div>
+
             <motion.div
               variants={gridFade}
-              className="mt-10 w-full grid grid-cols-2 sm:grid-cols-2 gap-y-4 gap-x-3 sm:gap-x-5"
+              className="mt-10 w-full hidden md:grid grid-cols-2 gap-x-5 gap-y-4"
             >
               {BENEFITS.map((benefit) => (
                 <BenefitCard

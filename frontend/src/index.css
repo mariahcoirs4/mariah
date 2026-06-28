@@ -17,6 +17,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide scrollbars on horizontal carousels while keeping touch scroll */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 #root {
   width: 100%;
   max-width: 100%;
