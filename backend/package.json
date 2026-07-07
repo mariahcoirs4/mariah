@@ -5,8 +5,8 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "node ./node_modules/prisma/build/index.js generate && node ./node_modules/prisma/build/index.js migrate deploy && node ./node_modules/typescript/bin/tsc",
-    "start": "node dist/app.js",
+    "build": "node ./node_modules/prisma/build/index.js generate && node ./node_modules/typescript/bin/tsc",
+    "start": "node ./node_modules/prisma/build/index.js migrate deploy && node dist/app.js",
     "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
     "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate dev",
     "prisma:migrate:deploy": "node ./node_modules/prisma/build/index.js migrate deploy",
