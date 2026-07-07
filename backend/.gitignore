@@ -3,7 +3,6 @@ node_modules/
 
 # Build output
 dist/
-dist-ssr/
 
 # Environment & secrets
 .env
@@ -17,10 +16,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# Vite
-*.local
+# User uploads (keep folder via .gitkeep)
+uploads/*
+!uploads/.gitkeep
 
 # OS & editor
 .DS_Store
