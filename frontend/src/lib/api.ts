@@ -1,6 +1,10 @@
 // ─── API Configuration ────────────────────────────────────────────
 export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000';
 
+export function getUploadUrl(filename: string): string {
+  return `${API_BASE_URL}/uploads/${filename}`;
+}
+
 // ─── Helper to get stored JWT token ──────────────────────────────
 export function getAdminToken(): string | null {
   return localStorage.getItem('admin_token');

@@ -12,6 +12,7 @@ import blogRoutes from './routes/blog.routes';
 import enquiryRoutes from './routes/enquiry.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import productRoutes from './routes/product.routes';
+import prisma from './config/prisma';
 
 const app = express();
 
@@ -99,12 +100,23 @@ async function main() {
   // Ensure default admin exists on startup
   await authService.ensureDefaultAdminExists();
 
-  app.listen(env.PORT, () => {
+  const server = app.listen(env.PORT, () => {
     console.log(`\n🚀 Mariah Coirs API running at http://localhost:${env.PORT}`);
     console.log(`📁 Uploads served at http://localhost:${env.PORT}/uploads`);
     console.log(`🌐 CORS origin: ${env.CORS_ORIGIN}`);
     console.log(`📦 Environment: ${env.NODE_ENV}\n`);
   });
+
+  const shutdown = async (signal: string) => {
+    console.log(`\n${signal} received — shutting down gracefully`);
+    server.close(async () => {
+      await prisma.$disconnect();
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 main().catch((err) => {

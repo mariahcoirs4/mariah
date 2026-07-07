@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, API_BASE_URL, productApi } from '../lib/api';
+import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, getUploadUrl, productApi } from '../lib/api';
 import type { Blog, Enquiry, DashboardSummary } from '../lib/api';
 
 // ─── Product Types ────────────────────────────────────────────────
@@ -34,7 +34,7 @@ function getProductImageUrl(img: string | undefined) {
   if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) {
     return img;
   }
-  return `${API_BASE_URL}/uploads/${img}`;
+  return getUploadUrl(img);
 }
 
 // ─── Delete Confirm Modal ─────────────────────────────────────────
@@ -730,7 +730,7 @@ function BlogFormModal({
   const [isPublished, setIsPublished] = useState(blog?.isPublished ?? false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
-    blog?.featuredImage ? `${API_BASE_URL}/uploads/${blog.featuredImage}` : null
+    blog?.featuredImage ? getUploadUrl(blog.featuredImage) : null
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

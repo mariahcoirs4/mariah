@@ -27,7 +27,7 @@ function LandingPage() {
     <>
       <BulkPricingModal />
       <Navbar />
-      <main>
+      <main className="pb-[calc(72px+env(safe-area-inset-bottom,0px))] md:pb-0">
         <HeroSection />
         <AboutSection />
         <ProductsSection />

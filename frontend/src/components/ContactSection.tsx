@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useModal } from '../context/ModalContext';
+import MobileCarousel from './MobileCarousel';
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -135,8 +136,8 @@ export default function ContactSection() {
       id="contact"
       ref={sectionRef}
       aria-label="Contact Our Team"
-      className="relative w-full overflow-hidden"
-      style={{ background: '#F5F1EB', paddingTop: '140px', paddingBottom: '140px' }}
+      className="relative w-full overflow-hidden py-14 sm:py-24 lg:py-32"
+      style={{ background: '#F5F1EB' }}
     >
       {/* Separator */}
       <div
@@ -234,8 +235,36 @@ export default function ContactSection() {
               ))}
             </div>
 
-            {/* Certification Badges */}
-            <div className="flex flex-wrap gap-2">
+            {/* Certification Badges — swipe on mobile */}
+            <div className="md:hidden -mx-2">
+              <MobileCarousel
+                slideClassName="w-auto"
+                gapClassName="gap-2"
+                bleed={false}
+                showDots={false}
+              >
+                {BADGES.map(badge => (
+                  <span
+                    key={badge}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      background: 'rgba(201,155,103,0.08)',
+                      border: '1px solid rgba(201,155,103,0.2)',
+                      color: '#7A5C3A',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </MobileCarousel>
+            </div>
+            <div className="hidden md:flex flex-wrap gap-2">
               {BADGES.map(badge => (
                 <span
                   key={badge}
@@ -256,14 +285,15 @@ export default function ContactSection() {
               ))}
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-10">
+            {/* CTA Buttons — hide export quote on mobile (floating bar handles it) */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-8 sm:mt-10">
               <motion.button
                 id="contact-export-btn"
                 onClick={() => openModal('export')}
                 whileHover={shouldReduce ? {} : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 20 }}
+                className="hidden sm:inline-flex"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -319,7 +349,7 @@ export default function ContactSection() {
             className="relative w-full"
           >
             <div
-              className="relative w-full overflow-hidden"
+              className="relative w-full overflow-hidden min-h-[280px] sm:min-h-0"
               style={{ borderRadius: '32px', aspectRatio: '4/3', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}
             >
               {/* Hero Image */}
@@ -338,11 +368,12 @@ export default function ContactSection() {
                 aria-hidden="true"
               />
 
-              {/* Top-left floating pill */}
+              {/* Top-left floating pill — desktop only */}
               <motion.div
                 initial={{ opacity: 0, x: -16 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.55, duration: 0.55, ease: EASE_CUBIC }}
+                className="hidden sm:block"
                 style={{ position: 'absolute', top: '20px', left: '20px' }}
               >
                 <div
@@ -369,11 +400,12 @@ export default function ContactSection() {
                 </div>
               </motion.div>
 
-              {/* Bottom overlay card */}
+              {/* Bottom overlay card — desktop only */}
               <motion.div
                 initial={{ opacity: 0, y: 18 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.7, duration: 0.55, ease: EASE_CUBIC }}
+                className="hidden sm:block"
                 style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px' }}
               >
                 <div
@@ -441,6 +473,39 @@ export default function ContactSection() {
                   </svg>
                 </motion.button>
               </motion.div>
+            </div>
+
+            {/* Mobile info cards — stacked below image, no overlap */}
+            <div className="mt-4 flex flex-col gap-3 sm:hidden">
+              <div
+                className="flex items-center gap-3 p-4 rounded-2xl"
+                style={{ background: 'rgba(255,255,255,0.94)', border: '1px solid rgba(201,155,103,0.2)' }}
+              >
+                <span style={{ fontSize: '22px' }}>🌍</span>
+                <div>
+                  <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C99B67' }}>
+                    Export Reach
+                  </p>
+                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#111111' }}>30+ Countries</p>
+                </div>
+              </div>
+              <div
+                className="flex items-center justify-between p-4 rounded-2xl"
+                style={{ background: '#0A0A0A', border: '1px solid rgba(201,155,103,0.2)' }}
+              >
+                <div>
+                  <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#C99B67' }}>
+                    Response Time
+                  </p>
+                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
+                    Within 24 Business Hours
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ADE80', boxShadow: '0 0 10px rgba(74,222,128,0.9)', display: 'block' }} />
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>Active</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 

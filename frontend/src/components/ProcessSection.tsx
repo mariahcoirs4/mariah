@@ -5,6 +5,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import MobileCarousel from './MobileCarousel';
 
 // ─── Types & Interfaces ──────────────────────────────────────────
 interface Step {
@@ -59,9 +60,7 @@ const timelineFade: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
+    transition: { staggerChildren: 0.15 },
   },
 };
 
@@ -74,7 +73,63 @@ const stepFade: Variants = {
   },
 };
 
-// ─── Process Step Card Component ──────────────────────────────────
+// ─── Mobile swipe card ────────────────────────────────────────────
+function ProcessMobileCard({ step, index }: { step: Step; index: number }) {
+  return (
+    <article
+      className="relative flex flex-col h-full min-h-[200px] p-5 rounded-2xl overflow-hidden"
+      style={{
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+        border: '1px solid rgba(229, 169, 60, 0.22)',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
+      }}
+    >
+      <div
+        className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(229,169,60,0.12) 0%, transparent 70%)' }}
+        aria-hidden="true"
+      />
+
+      <div className="flex items-center justify-between mb-4">
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center border"
+          style={{
+            background: 'rgba(229, 169, 60, 0.12)',
+            borderColor: 'rgba(229, 169, 60, 0.35)',
+          }}
+        >
+          <span className="text-[15px] font-bold text-[#E5A93C]">{step.number}</span>
+        </div>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/40">
+          Step {index + 1} of {STEPS.length}
+        </span>
+      </div>
+
+      <h3 className="font-semibold text-white text-[17px] tracking-tight leading-snug">
+        {step.title}
+      </h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-gray-400 flex-1">
+        {step.description}
+      </p>
+
+      {/* Mini progress bar */}
+      <div className="mt-5 flex gap-1" aria-hidden="true">
+        {STEPS.map((_, i) => (
+          <div
+            key={i}
+            className="h-1 rounded-full flex-1 transition-colors duration-300"
+            style={{
+              background: i <= index ? '#E5A93C' : 'rgba(255,255,255,0.1)',
+              opacity: i === index ? 1 : i < index ? 0.6 : 1,
+            }}
+          />
+        ))}
+      </div>
+    </article>
+  );
+}
+
+// ─── Desktop step ─────────────────────────────────────────────────
 function ProcessStep({ step, reduce }: { step: Step; reduce: boolean }) {
   const [hovered, setHovered] = useState(false);
 
@@ -83,44 +138,33 @@ function ProcessStep({ step, reduce }: { step: Step; reduce: boolean }) {
       variants={stepFade}
       onHoverStart={() => !reduce && setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      whileHover={reduce ? {} : { y: -8, scale: 1.03 }}
+      whileHover={reduce ? {} : { y: -4 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className="relative flex flex-col items-center text-center px-4 select-none cursor-default group"
+      className="relative flex flex-col items-center px-2 select-none cursor-default group"
     >
-      {/* Step Badge */}
       <div
-        className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center shrink-0 z-10 border"
+        className="w-[52px] h-[52px] rounded-xl flex items-center justify-center shrink-0 z-10 border"
         style={{
-          background: 'rgba(201, 155, 103, 0.12)',
-          borderColor: hovered ? 'rgba(201, 155, 103, 0.45)' : 'rgba(201, 155, 103, 0.18)',
+          background: hovered ? 'rgba(229, 169, 60, 0.20)' : 'rgba(229, 169, 60, 0.10)',
+          borderColor: hovered ? 'rgba(229, 169, 60, 0.50)' : 'rgba(229, 169, 60, 0.30)',
           boxShadow: hovered
-            ? '0 0 20px rgba(201, 155, 103, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            ? '0 0 20px rgba(229, 169, 60, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             : '0 4px 10px rgba(0, 0, 0, 0.2)',
-          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          transition: 'all 0.25s ease',
         }}
         aria-hidden="true"
       >
-        <span
-          className="text-[15px] font-bold"
-          style={{ color: '#D8A56D' }}
-        >
-          {step.number}
-        </span>
+        <span className="text-[15px] font-bold text-[#E5A93C]">{step.number}</span>
       </div>
 
-      {/* Content */}
-      <h3
-        className="mt-6 font-bold tracking-tight text-white"
-        style={{ fontSize: '20px', letterSpacing: '-0.015em' }}
-      >
-        {step.title}
-      </h3>
-      <p
-        className="mt-3 leading-relaxed max-w-[280px]"
-        style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.6)' }}
-      >
-        {step.description}
-      </p>
+      <div className="mt-4 text-center">
+        <h3 className="font-semibold tracking-tight text-white text-[18px]" style={{ letterSpacing: '-0.015em' }}>
+          {step.title}
+        </h3>
+        <p className="mt-2 leading-relaxed text-gray-300 text-[14px]">
+          {step.description}
+        </p>
+      </div>
     </motion.div>
   );
 }
@@ -136,79 +180,78 @@ export default function ProcessSection() {
       id="process"
       ref={sectionRef}
       aria-label="Our Manufacturing Process"
-      className="relative w-full overflow-hidden"
-      style={{
-        background: '#0A0A0A',
-        paddingTop: '140px',
-        paddingBottom: '140px',
-      }}
+      className="relative w-full overflow-hidden py-12 sm:py-20 lg:py-32"
+      style={{ background: '#0A0A0A' }}
     >
-      {/* ── Background Radial Glow ── */}
       <div
         className="absolute inset-0 pointer-events-none z-0"
         style={{
-          background: 'radial-gradient(circle at center, rgba(201, 155, 103, 0.08), transparent 60%)',
+          background: 'radial-gradient(circle at center, rgba(229, 169, 60, 0.08), transparent 60%)',
         }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
 
-        {/* ══════════════════════════════════════════
-            SECTION HEADER
-        ══════════════════════════════════════════ */}
         <motion.div
           variants={headerFade}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="text-center mb-20"
+          className="text-center mb-8 sm:mb-16 lg:mb-20"
         >
-          <span
-            className="inline-block text-[11px] font-bold uppercase tracking-[0.32em] mb-4"
-            style={{ color: '#C99B67' }}
-          >
+          <span className="inline-block text-[11px] font-bold uppercase tracking-[0.32em] mb-3 sm:mb-4 text-[#E5A93C]">
             Our Process
           </span>
           <h2
             className="font-extrabold text-white tracking-tight"
             style={{
-              fontSize: 'clamp(2.25rem, 5vw, 3.75rem)',
+              fontSize: 'clamp(1.75rem, 5vw, 3.75rem)',
               lineHeight: '1.1',
               letterSpacing: '-0.025em',
             }}
           >
-            From Husk to Export Container
+            From <span className="text-[#E5A93C]">Husk</span> to <span className="text-[#E5A93C]">Export Container</span>
           </h2>
+          <p className="mt-3 text-sm text-white/45 md:hidden">
+            Swipe through each stage of our manufacturing pipeline
+          </p>
         </motion.div>
 
-        {/* ══════════════════════════════════════════
-            PROCESS TIMELINE GRID
-        ══════════════════════════════════════════ */}
-        <div className="relative w-full">
-          
-          {/* ── Connecting line for Desktop/Tablet ──
-              Hidden on mobile. Displays as a thin line running behind the badges. */}
+        {/* ── Mobile: horizontal swipe carousel ── */}
+        <div className="md:hidden">
+          <MobileCarousel
+            slideClassName="w-[88vw] max-w-[340px]"
+            gapClassName="gap-4"
+            dotClassName="bg-white/20"
+            activeDotClassName="bg-[#E5A93C]"
+          >
+            {STEPS.map((step, index) => (
+              <ProcessMobileCard key={step.number} step={step} index={index} />
+            ))}
+          </MobileCarousel>
+        </div>
+
+        {/* ── Desktop / tablet: horizontal timeline grid ── */}
+        <div className="relative w-full hidden md:block">
           <div
-            className="absolute top-[26px] left-[8%] right-[8%] h-[2px] hidden md:block"
-            style={{ background: 'rgba(201, 155, 103, 0.25)' }}
+            className="absolute top-[26px] left-[8%] right-[8%] h-px hidden lg:block"
+            style={{ background: 'rgba(229, 169, 60, 0.4)' }}
             aria-hidden="true"
           >
-            {/* Animated progress reveal */}
             <motion.div
-              className="h-full origin-left bg-gradient-to-r from-[#D8A56D] to-[#C99B67]"
+              className="h-full origin-left"
+              style={{ width: '100%', background: 'linear-gradient(90deg, #E5A93C, #C99B67)' }}
               initial={{ scaleX: 0 }}
               animate={isInView ? { scaleX: 1 } : {}}
               transition={{ duration: 1.4, ease: EASE_CUBIC }}
-              style={{ width: '100%' }}
             />
           </div>
 
-          {/* ── Steps Container ── */}
           <motion.div
             variants={timelineFade}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}
-            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-y-12 md:gap-y-16 gap-x-4 lg:gap-x-2"
+            className="grid grid-cols-2 lg:grid-cols-6 gap-x-4 lg:gap-x-6 gap-y-12 lg:gap-y-0"
           >
             {STEPS.map((step) => (
               <ProcessStep
@@ -218,7 +261,6 @@ export default function ProcessSection() {
               />
             ))}
           </motion.div>
-
         </div>
 
       </div>

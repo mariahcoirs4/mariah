@@ -132,33 +132,10 @@ export default function HeroSection() {
         </AnimatePresence>
 
         {/* ── Overlays ── */}
-        {/* 1. Reduced base overlay — images must stay clearly visible */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'rgba(0,0,0,0.35)' }}
-        />
-
-        {/* 2. Left-side gradient only — right side stays bright */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(100deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0.05) 100%)',
-          }}
-        />
-
-        {/* 3. Subtle golden radial glow (bottom-left accent) */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse 50% 40% at 8% 85%, rgba(185,128,60,0.14) 0%, transparent 65%)',
-          }}
-        />
-
-        {/* 4. Gentle bottom vignette */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.40) 0%, transparent 30%)',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.2) 100%)',
           }}
         />
       </div>
@@ -186,12 +163,11 @@ export default function HeroSection() {
           >
             Premium&nbsp;Coco&nbsp;Peat
             <br />
-            <span style={{ color: '#D8A166', textShadow: '0 4px 20px rgba(0,0,0,0.30)' }}>
-              &amp;<br />Coir&nbsp;Products
-            </span>
-
+            &amp;&nbsp;Coir&nbsp;Products
             <br />
-            for Global Growers
+            <span style={{ color: 'rgb(229, 169, 60)', textShadow: '0 4px 20px rgba(0,0,0,0.30)' }}>
+              for Global Growers
+            </span>
           </motion.h1>
 
           {/* ── Sub-heading ── */}
@@ -219,7 +195,7 @@ export default function HeroSection() {
             custom={0.5}
             className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4"
           >
-            {/* Primary – gold → opens Export modal */}
+            {/* Primary – solid amber gold → opens Export modal */}
             <motion.button
               id="hero-export-quote-btn"
               onClick={() => openModal('export')}
@@ -227,30 +203,32 @@ export default function HeroSection() {
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               aria-label="Request an export quote from Mariah Coirs"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-[14px] sm:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-bold text-[14px] sm:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               style={{
-                background: 'transparent',
-                color: '#D9A56A',
-                boxShadow: 'none',
-                border: '1.5px solid #D9A56A',
+                background: 'rgb(229, 169, 60)',
+                color: '#1a1a1a',
+                boxShadow: '0 4px 20px rgba(229, 169, 60, 0.3)',
+                border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgb(229, 169, 60)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#E5A93C')}
             >
               Request Export Quote
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 8 13 8" /><polyline points="9 4 13 8 9 12" /></svg>
             </motion.button>
 
-            {/* Secondary – glass */}
+            {/* Secondary – refined ghost button */}
             <motion.a
               href="#products"
               whileHover={shouldReduce ? {} : { scale: 1.03 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               aria-label="View Mariah Coirs products"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-[14px] sm:text-[15px] text-white border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-semibold text-[14px] sm:text-[15px] text-white border border-white/40 bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent hover:bg-white/10 transition-colors duration-200"
               style={{
-                background: 'transparent',
+                backdropFilter: 'blur(4px)',
               }}
             >
               View Products
@@ -273,30 +251,28 @@ export default function HeroSection() {
           initial="hidden"
           animate="visible"
           custom={0.7}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 max-w-[840px]"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-[840px]"
         >
-          {STATS.map(({ value, label }) => (
+          {STATS.map(({ value, label }, index) => (
             <motion.div
               key={label}
               whileHover={shouldReduce ? {} : { y: -3, scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-              className="flex flex-col items-start p-3 sm:p-5 rounded-xl sm:rounded-2xl border cursor-default"
-              style={{
-                background: 'transparent',
-                borderColor: 'rgba(255,255,255,0.15)',
-                boxShadow: 'none',
-              }}
+              className="flex flex-col items-start p-0 cursor-default"
               aria-label={`${value} ${label}`}
             >
               <span
-                className="text-xl sm:text-3xl font-black leading-none"
-                style={{ color: '#D8A166' }}
+                className="text-2xl sm:text-4xl font-black leading-none"
+                style={{ color: 'rgb(229, 169, 60)' }}
               >
                 {value}
               </span>
-              <span className="mt-1.5 text-[10px] sm:text-[13px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.72)' }}>
+              <span className="mt-2 text-[11px] sm:text-[14px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.75)' }}>
                 {label}
               </span>
+              {index < STATS.length - 1 && (
+                <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-white/10" style={{ display: 'none' }}></div>
+              )}
             </motion.div>
           ))}
         </motion.div>
@@ -323,7 +299,7 @@ export default function HeroSection() {
               animate={{
                 width: i === current ? 24 : 6,
                 opacity: i === current ? 1 : 0.4,
-                backgroundColor: i === current ? '#D9A56A' : '#ffffff',
+                backgroundColor: i === current ? '#E5A93C' : '#ffffff',
               }}
               transition={{ duration: 0.35, ease: 'easeOut' }}
               className="block h-1.5 rounded-full"
@@ -343,7 +319,7 @@ export default function HeroSection() {
         <motion.div
           key={current}
           className="h-full origin-left"
-          style={{ background: 'linear-gradient(90deg, #D9A56A, #C9875A)' }}
+          style={{ background: 'linear-gradient(90deg, #E5A93C, #C98728)' }}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: SLIDE_DURATION / 1000, ease: 'linear' }}

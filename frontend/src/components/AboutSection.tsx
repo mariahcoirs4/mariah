@@ -139,14 +139,14 @@ export default function AboutSection() {
       <div
         className="w-full h-[3px]"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, #D9A56A 30%, #C97B38 60%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, #E5A93C 30%, #C99B67 60%, transparent 100%)',
           opacity: 0.45,
         }}
         aria-hidden="true"
       />
 
-      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-24 items-center">
+      <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
 
           {/* ══════════════════════════════════════════
               LEFT — IMAGE WITH FLOATING CARDS
@@ -155,15 +155,14 @@ export default function AboutSection() {
             variants={shouldReduce ? {} : makeSlide('left')}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}
-            className="relative order-2 lg:order-1"
+            className="relative order-2 md:order-1"
           >
             {/* Image wrapper */}
             <div
               className="relative overflow-hidden"
               style={{
-                borderRadius: '24px',
-                boxShadow:
-                  '0 24px 64px rgba(0,0,0,0.14), 0 8px 24px rgba(0,0,0,0.08)',
+                borderRadius: '20px',
+                boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08)',
                 aspectRatio: '4 / 3.2',
               }}
             >
@@ -194,7 +193,7 @@ export default function AboutSection() {
             <div
               className="absolute -bottom-4 -left-4 w-24 h-24 rounded-2xl -z-10"
               style={{
-                background: 'linear-gradient(135deg, #E8B458 0%, #D4924E 100%)',
+                background: 'linear-gradient(135deg, #E5A93C 0%, #C99B67 100%)',
                 opacity: 0.18,
               }}
               aria-hidden="true"
@@ -208,7 +207,7 @@ export default function AboutSection() {
             variants={shouldReduce ? {} : makeSlide('right')}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}
-            className="flex flex-col order-1 lg:order-2"
+            className="flex flex-col order-1 md:order-2"
           >
             {/* ── Premium Badge ── */}
             <motion.div
@@ -218,16 +217,16 @@ export default function AboutSection() {
               className="inline-flex mb-5"
             >
               <span
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em]"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider"
                 style={{
-                  background: 'rgba(215,155,70,0.12)',
-                  border: '1.5px solid rgba(205,145,60,0.35)',
-                  color: '#B8742A',
+                  background: 'rgba(229, 169, 60, 0.10)',
+                  border: '1.5px solid rgba(229, 169, 60, 0.30)',
+                  color: '#E5A93C',
                 }}
               >
                 <span
                   className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: '#C98438' }}
+                  style={{ background: '#E5A93C' }}
                   aria-hidden="true"
                 />
                 About Our Facility
@@ -251,49 +250,47 @@ export default function AboutSection() {
               <br />
               <span
                 style={{
-                  background: 'linear-gradient(90deg, #C98438 0%, #A86828 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
+                  color: '#E5A93C',
                 }}
               >
                 Facility in Tamil Nadu
               </span>
             </motion.h2>
 
-            {/* ── Description 1 ── */}
-            <motion.p
-              variants={fadeUp(0.28)}
-              initial="hidden"
-              animate={isInView ? 'visible' : 'hidden'}
-              className="mt-5 leading-relaxed"
-              style={{
-                fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
-                color: '#4A3C28',
-                maxWidth: '540px',
-              }}
-            >
-              Founded in 2009 and headquartered in Pollachi, Tamil Nadu, our
-              manufacturing facility operates with advanced machinery, strict quality
-              control processes, and globally recognized production standards.
-            </motion.p>
+            {/* ── Descriptions with balanced spacing ── */}
+            <div className="space-y-4 mt-5">
+              <motion.p
+                variants={fadeUp(0.28)}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                className="leading-relaxed"
+                style={{
+                  fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
+                  color: '#4A3C28',
+                  maxWidth: '540px',
+                }}
+              >
+                Founded in 2009 and headquartered in Pollachi, Tamil Nadu, our
+                manufacturing facility operates with advanced machinery, strict quality
+                control processes, and globally recognized production standards.
+              </motion.p>
 
-            {/* ── Description 2 ── */}
-            <motion.p
-              variants={fadeUp(0.36)}
-              initial="hidden"
-              animate={isInView ? 'visible' : 'hidden'}
-              className="mt-4 leading-relaxed"
-              style={{
-                fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
-                color: '#4A3C28',
-                maxWidth: '540px',
-              }}
-            >
-              We serve international importers, agricultural businesses, greenhouse
-              operators, and commercial distributors across multiple countries,
-              delivering premium-quality products with factory-direct efficiency.
-            </motion.p>
+              <motion.p
+                variants={fadeUp(0.36)}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                className="leading-relaxed"
+                style={{
+                  fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
+                  color: '#4A3C28',
+                  maxWidth: '540px',
+                }}
+              >
+                We serve international importers, agricultural businesses, greenhouse
+                operators, and commercial distributors across multiple countries,
+                delivering premium-quality products with factory-direct efficiency.
+              </motion.p>
+            </div>
 
             {/* ── Certification Badges ── */}
             <motion.div
@@ -311,12 +308,12 @@ export default function AboutSection() {
                   className="inline-flex items-center px-4 py-[7px] rounded-full text-[12px] font-semibold cursor-default select-none"
                   style={{
                     background: i === 0
-                      ? 'rgba(195,130,50,0.10)'
+                      ? 'rgba(229, 169, 60, 0.10)'
                       : 'rgba(30,20,10,0.05)',
                     border: i === 0
-                      ? '1.5px solid rgba(195,130,50,0.40)'
+                      ? '1.5px solid rgba(229, 169, 60, 0.40)'
                       : '1.5px solid rgba(30,20,10,0.10)',
-                    color: i === 0 ? '#9A6018' : '#5A4830',
+                    color: i === 0 ? '#E5A93C' : '#5A4830',
                   }}
                 >
                   {cert}
@@ -365,7 +362,7 @@ export default function AboutSection() {
                   {/* Subtle underline accent */}
                   <motion.div
                     className="mt-2 h-[2.5px] rounded-full"
-                    style={{ background: 'linear-gradient(90deg, #D9A56A, transparent)' }}
+                    style={{ background: 'linear-gradient(90deg, #E5A93C, transparent)' }}
                     initial={{ scaleX: 0, originX: 0 }}
                     animate={isInView ? { scaleX: 1 } : {}}
                     transition={{
@@ -385,20 +382,23 @@ export default function AboutSection() {
               animate={isInView ? 'visible' : 'hidden'}
               className="mt-8"
             >
-              <motion.a
-                href="#quote"
-                onClick={(e) => { e.preventDefault(); openModal('export'); }}
+              <motion.button
+                onClick={() => openModal('export')}
                 whileHover={shouldReduce ? {} : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduce ? {} : { scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                 aria-label="Request a quote from Mariah Coirs"
-                className="inline-flex items-center gap-2.5 px-7 py-[13px] rounded-xl font-bold text-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                className="inline-flex items-center gap-2.5 px-7 py-[13px] rounded-lg font-bold text-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 style={{
-                  background: 'linear-gradient(135deg, #D9A56A 0%, #B87038 100%)',
+                  background: '#E5A93C',
                   color: '#160D03',
-                  boxShadow: '0 6px 24px rgba(185,110,50,0.38), 0 2px 6px rgba(0,0,0,0.10)',
+                  boxShadow: '0 6px 24px rgba(229, 169, 60, 0.35), 0 2px 6px rgba(0,0,0,0.10)',
                   letterSpacing: '0.01em',
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#D99828'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#E5A93C'; }}
               >
                 Request a Quote
                 <svg
@@ -415,7 +415,7 @@ export default function AboutSection() {
                   <polyline points="3 8 13 8" />
                   <polyline points="9 4 13 8 9 12" />
                 </svg>
-              </motion.a>
+              </motion.button>
             </motion.div>
 
           </motion.div>
