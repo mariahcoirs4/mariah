@@ -3,5 +3,5 @@ services:
     name: mariah-backend
     runtime: node
     rootDir: backend
-    buildCommand: npm install --include=dev && npm run build
+    buildCommand: rm -rf node_modules && npm install --include=dev && npm run build
     startCommand: npm start

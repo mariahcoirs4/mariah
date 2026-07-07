@@ -5,11 +5,11 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "prisma generate && prisma migrate deploy && tsc",
+    "build": "node ./node_modules/prisma/build/index.js generate && node ./node_modules/prisma/build/index.js migrate deploy && node ./node_modules/typescript/bin/tsc",
     "start": "node dist/app.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
+    "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate dev",
+    "prisma:migrate:deploy": "node ./node_modules/prisma/build/index.js migrate deploy",
     "prisma:seed": "ts-node prisma/seed.ts",
     "seed:products": "ts-node --transpile-only src/seed.ts"
   },
