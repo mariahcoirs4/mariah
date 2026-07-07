@@ -9,7 +9,9 @@
     "start": "node dist/app.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "seed:products": "ts-node --transpile-only src/seed.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

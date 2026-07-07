@@ -3,6 +3,7 @@ export declare const env: {
     NODE_ENV: "development" | "production" | "test";
     CORS_ORIGIN: string;
     DATABASE_URL: string;
+    DIRECT_URL: string;
     JWT_SECRET: string;
     JWT_EXPIRES_IN: string;
     ADMIN_EMAIL: string;

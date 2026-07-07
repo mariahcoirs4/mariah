@@ -8,5 +8,14 @@ const prisma = new client_1.PrismaClient({
         : ['error'],
 });
 exports.prisma = prisma;
+const disconnect = () => prisma.$disconnect();
+process.on('SIGINT', async () => {
+    await disconnect();
+    process.exit(0);
+});
+process.on('SIGTERM', async () => {
+    await disconnect();
+    process.exit(0);
+});
 exports.default = prisma;
 //# sourceMappingURL=prisma.js.map

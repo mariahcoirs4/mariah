@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { blogApi, API_BASE_URL } from '../lib/api';
+import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -117,7 +117,7 @@ export default function BlogDetail() {
           }}
         >
           <img
-            src={`${API_BASE_URL}/uploads/${blog.featuredImage}`}
+            src={getUploadUrl(blog.featuredImage)}
             alt={blog.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }}
           />

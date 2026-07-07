@@ -14,6 +14,7 @@ const envSchema = zod_1.z.object({
     NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
     CORS_ORIGIN: zod_1.z.string().default('http://localhost:5173'),
     DATABASE_URL: zod_1.z.string().min(1, 'DATABASE_URL is required'),
+    DIRECT_URL: zod_1.z.string().min(1, 'DIRECT_URL is required'),
     JWT_SECRET: zod_1.z.string().min(8, 'JWT_SECRET must be at least 8 characters'),
     JWT_EXPIRES_IN: zod_1.z.string().default('7d'),
     ADMIN_EMAIL: zod_1.z.string().email('Invalid ADMIN_EMAIL format'),

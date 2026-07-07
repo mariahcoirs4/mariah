@@ -6,7 +6,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { productApi, API_BASE_URL } from '../lib/api';
+import { productApi, getUploadUrl } from '../lib/api';
 import type { ApiProduct } from '../lib/api';
 import { useModal } from '../context/ModalContext';
 
@@ -31,7 +31,7 @@ const cardVariant: Variants = {
 function getImageSrc(img: string | undefined): string {
   if (!img) return '';
   if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) return img;
-  return `${API_BASE_URL}/uploads/${img}`;
+  return getUploadUrl(img);
 }
 
 // ─── Product Card ─────────────────────────────────────────────────

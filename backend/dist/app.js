@@ -17,6 +17,7 @@ const blog_routes_1 = __importDefault(require("./routes/blog.routes"));
 const enquiry_routes_1 = __importDefault(require("./routes/enquiry.routes"));
 const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"));
 const product_routes_1 = __importDefault(require("./routes/product.routes"));
+const prisma_1 = __importDefault(require("./config/prisma"));
 const app = (0, express_1.default)();
 // ─── Security Middleware ──────────────────────────────────────────
 app.use((0, helmet_1.default)({
@@ -83,12 +84,21 @@ app.use(error_middleware_1.errorHandler);
 async function main() {
     // Ensure default admin exists on startup
     await auth_service_1.authService.ensureDefaultAdminExists();
-    app.listen(env_1.env.PORT, () => {
+    const server = app.listen(env_1.env.PORT, () => {
         console.log(`\n🚀 Mariah Coirs API running at http://localhost:${env_1.env.PORT}`);
         console.log(`📁 Uploads served at http://localhost:${env_1.env.PORT}/uploads`);
         console.log(`🌐 CORS origin: ${env_1.env.CORS_ORIGIN}`);
         console.log(`📦 Environment: ${env_1.env.NODE_ENV}\n`);
     });
+    const shutdown = async (signal) => {
+        console.log(`\n${signal} received — shutting down gracefully`);
+        server.close(async () => {
+            await prisma_1.default.$disconnect();
+            process.exit(0);
+        });
+    };
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
 }
 main().catch((err) => {
     console.error('❌ Fatal startup error:', err);
