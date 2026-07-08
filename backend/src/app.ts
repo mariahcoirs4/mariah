@@ -16,6 +16,9 @@ import prisma from './config/prisma';
 
 const app = express();
 
+// Render/Vercel sit behind a reverse proxy — required for rate limiting and req.ip
+app.set('trust proxy', 1);
+
 // ─── Security Middleware ──────────────────────────────────────────
 app.use(
   helmet({
