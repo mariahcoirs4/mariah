@@ -38,10 +38,12 @@ export class BlogController {
     try {
       // Validate schema (multer text fields are put in req.body)
       const validatedInput = createBlogSchema.parse(req.body);
-      
+      const imageUrl = req.body.featuredImageUrl || undefined;
+
       const blog = await blogService.createBlog(
         validatedInput,
-        uploadedFile ? uploadedFile.filename : undefined
+        uploadedFile ? uploadedFile.filename : undefined,
+        imageUrl
       );
 
       return res.status(201).json({
@@ -76,10 +78,14 @@ export class BlogController {
         });
       }
 
+      // Pass imageUrl only if it was explicitly provided in the body
+      const imageUrl = 'featuredImageUrl' in req.body ? (req.body.featuredImageUrl || '') : undefined;
+
       const blog = await blogService.updateBlog(
         blogId,
         validatedInput,
-        uploadedFile ? uploadedFile.filename : undefined
+        uploadedFile ? uploadedFile.filename : undefined,
+        imageUrl
       );
 
       return res.status(200).json({

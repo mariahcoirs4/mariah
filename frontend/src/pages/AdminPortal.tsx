@@ -1,7 +1,85 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, getUploadUrl, productApi } from '../lib/api';
 import type { Blog, Enquiry, DashboardSummary } from '../lib/api';
+
+// ─── Reusable Pagination Component ───────────────────────────────────────────
+const PAGE_SIZE_OPTIONS = [10, 20, 50];
+
+function Pagination({
+  total, page, pageSize, onPage, onPageSize,
+}: {
+  total: number;
+  page: number;
+  pageSize: number;
+  onPage: (p: number) => void;
+  onPageSize: (s: number) => void;
+}) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
+
+  const btnBase: React.CSSProperties = {
+    padding: '7px 13px', borderRadius: '8px', border: '1px solid #E4E7EC',
+    background: '#FFFFFF', cursor: 'pointer', fontFamily: 'inherit',
+    fontSize: '13px', fontWeight: 600, color: '#374151', transition: 'all 0.15s',
+  };
+  const btnActive: React.CSSProperties = {
+    ...btnBase, background: '#111', color: '#FFF', borderColor: '#111',
+  };
+  const btnDisabled: React.CSSProperties = {
+    ...btnBase, opacity: 0.4, cursor: 'not-allowed',
+  };
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '12px 20px', borderTop: '1px solid #F3F4F6', flexWrap: 'wrap', gap: '10px',
+    }}>
+      <span style={{ fontSize: '13px', color: '#667085' }}>
+        Showing <strong style={{ color: '#111' }}>{from}–{to}</strong> of <strong style={{ color: '#111' }}>{total}</strong>
+      </span>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        {/* Per-page selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '12px', color: '#667085' }}>Per page:</span>
+          {PAGE_SIZE_OPTIONS.map((s) => (
+            <button key={s}
+              onClick={() => { onPageSize(s); onPage(1); }}
+              style={pageSize === s ? btnActive : btnBase}
+            >{s}</button>
+          ))}
+        </div>
+
+        <div style={{ width: '1px', height: '20px', background: '#E4E7EC' }} />
+
+        {/* Prev / page numbers / Next */}
+        <button onClick={() => onPage(page - 1)} disabled={page <= 1}
+          style={page <= 1 ? btnDisabled : btnBase}>‹ Prev</button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+          .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+            if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('...');
+            acc.push(p);
+            return acc;
+          }, [])
+          .map((item, idx) =>
+            item === '...' ? (
+              <span key={`ellipsis-${idx}`} style={{ fontSize: '13px', color: '#A0A0A0', padding: '0 4px' }}>…</span>
+            ) : (
+              <button key={item} onClick={() => onPage(item as number)}
+                style={item === page ? btnActive : btnBase}>{item}</button>
+            )
+          )}
+
+        <button onClick={() => onPage(page + 1)} disabled={page >= totalPages}
+          style={page >= totalPages ? btnDisabled : btnBase}>Next ›</button>
+      </div>
+    </div>
+  );
+}
 
 // ─── Product Types ────────────────────────────────────────────────
 type ProductCategory = 'Cocopeat' | 'Coir Fibre' | 'Geotextiles' | 'Chips mixed Cocopeat blocks' | 'Grow bags' | 'Custom';
@@ -29,13 +107,6 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   Archived: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
 };
 
-function getProductImageUrl(img: string | undefined) {
-  if (!img) return '';
-  if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) {
-    return img;
-  }
-  return getUploadUrl(img);
-}
 
 // ─── Delete Confirm Modal ─────────────────────────────────────────
 function DeleteConfirmModal({ productName, onConfirm, onCancel }: { productName: string; onConfirm: () => void; onCancel: () => void }) {
@@ -75,14 +146,14 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
   const [status, setStatus] = useState<string>(product?.status ?? 'Draft');
   const [description, setDescription] = useState(product?.description ?? '');
 
-  const [existingImages, setExistingImages] = useState<string[]>(product?.images ?? []);
-  const [newFiles, setNewFiles] = useState<{ id: string; file: File; preview: string }[]>([]);
+  // Image URL inputs — one per line
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    product?.images && product.images.length > 0 ? product.images : ['']
+  );
   const [specs, setSpecs] = useState<{ label: string; value: string }[]>(product?.specs ?? []);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isDragOver, setIsDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Close on Escape
   useEffect(() => {
@@ -90,32 +161,6 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
-
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-    const added = Array.from(files).map((file) => ({
-      id: `${file.name}-${Date.now()}-${Math.random()}`,
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    setNewFiles((prev) => [...prev, ...added]);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    handleFiles(e.dataTransfer.files);
-  };
-
-  const removeNewFile = (id: string) => {
-    setNewFiles((prev) => {
-      const match = prev.find((item) => item.id === id);
-      if (match) {
-        URL.revokeObjectURL(match.preview);
-      }
-      return prev.filter((item) => item.id !== id);
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,17 +175,17 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
     fd.append('status', status);
     fd.append('description', description.trim());
 
-    // Filter specs that have either label or value
     const filteredSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
     fd.append('specs', JSON.stringify(filteredSpecs));
 
-    if (isEdit) {
-      fd.append('existingImages', JSON.stringify(existingImages));
-    }
+    // Send all non-empty image URLs as a JSON array
+    const validUrls = imageUrls.filter((u) => u.trim());
+    fd.append('imageUrls', JSON.stringify(validUrls));
 
-    newFiles.forEach((item) => {
-      fd.append('images', item.file);
-    });
+    // For edit mode, no existing images to "keep" — all are managed via imageUrls
+    if (isEdit) {
+      fd.append('existingImages', JSON.stringify([]));
+    }
 
     try {
       if (isEdit && product) {
@@ -327,45 +372,61 @@ function ProductFormDrawer({ product, onClose, onSaved }: { product: Product | n
             </button>
           </div>
 
-          {/* Image Uploader */}
+          {/* Image URL Inputs */}
           <div>
-            <label style={labelStyle}>Product Images</label>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDrop={handleDrop}
-              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-              onDragLeave={() => setIsDragOver(false)}
+            <label style={labelStyle}>Product Image URLs</label>
+            <p style={{ fontSize: '12px', color: '#A0A0A0', marginBottom: '10px' }}>
+              Paste direct image URLs (e.g. from Cloudinary, ImgBB, or any CDN). Add one per row.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {imageUrls.map((url, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => {
+                        const next = [...imageUrls];
+                        next[idx] = e.target.value;
+                        setImageUrls(next);
+                      }}
+                      placeholder="https://example.com/product-image.jpg"
+                      style={inputStyle}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}
+                    />
+                    {url && url.startsWith('http') && (
+                      <img src={url} alt="preview"
+                        style={{ marginTop: '6px', height: '64px', width: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid #E4E7EC' }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
+                  <button type="button"
+                    onClick={() => setImageUrls((prev) => prev.filter((_, i) => i !== idx))}
+                    disabled={imageUrls.length === 1}
+                    style={{
+                      background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.15)',
+                      color: '#DC2626', borderRadius: '8px', width: '36px', height: '36px',
+                      cursor: imageUrls.length === 1 ? 'not-allowed' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                      opacity: imageUrls.length === 1 ? 0.4 : 1,
+                    }}>✕</button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setImageUrls((prev) => [...prev, ''])}
               style={{
-                border: `2px dashed ${isDragOver ? '#C99B67' : '#E4E7EC'}`,
-                borderRadius: '12px', padding: '24px', textAlign: 'center', cursor: 'pointer',
-                background: isDragOver ? 'rgba(201,155,103,0.04)' : '#FAFAFA',
-                transition: 'all 0.2s',
+                marginTop: '10px', background: 'rgba(201,155,103,0.08)',
+                border: '1px solid rgba(201,155,103,0.25)', color: '#7A5C3A',
+                padding: '8px 16px', borderRadius: '8px', cursor: 'pointer',
+                fontSize: '12px', fontWeight: 700,
               }}
             >
-              <div style={{ fontSize: '28px', marginBottom: '8px' }}>📸</div>
-              <p style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Drop images here or <span style={{ color: '#C99B67' }}>browse</span></p>
-              <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '4px' }}>PNG, JPG, WEBP — up to 5 MB each</p>
-            </div>
-            <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={(e) => handleFiles(e.target.files)} style={{ display: 'none' }} />
-            {/* Preview thumbnails */}
-            {(existingImages.length > 0 || newFiles.length > 0) && (
-              <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' as const }}>
-                {existingImages.map((src, i) => (
-                  <div key={`existing-${i}`} style={{ position: 'relative' }}>
-                    <img src={getProductImageUrl(src)} alt={`preview-ext-${i}`} style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
-                    <button type="button" onClick={() => setExistingImages((prev) => prev.filter((_, idx) => idx !== i))}
-                      style={{ position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#DC2626', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
-                  </div>
-                ))}
-                {newFiles.map((item) => (
-                  <div key={item.id} style={{ position: 'relative' }}>
-                    <img src={item.preview} alt="preview-new" style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }} />
-                    <button type="button" onClick={() => removeNewFile(item.id)}
-                      style={{ position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#DC2626', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
-                  </div>
-                ))}
-              </div>
-            )}
+              + Add Another Image URL
+            </button>
           </div>
 
           {/* Footer Actions */}
@@ -395,6 +456,8 @@ function ProductsTab() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -412,6 +475,9 @@ function ProductsTab() {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [searchQuery, filterCategory, filterStatus, pageSize]);
+
   // Derive unique categories from loaded products
   const dynamicCategories = Array.from(new Set(products.map((p) => p.category))).sort();
 
@@ -421,6 +487,8 @@ function ProductsTab() {
     const matchStatus = filterStatus === 'All' || p.status === filterStatus;
     return matchSearch && matchCat && matchStatus;
   });
+
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const openCreate = () => { setSelectedProduct(null); setIsFormOpen(true); };
   const openEdit = (p: Product) => { setSelectedProduct(p); setIsFormOpen(true); };
@@ -509,7 +577,7 @@ function ProductsTab() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, i) => {
+              {paginated.map((p, i) => {
                 const st = STATUS_STYLE[p.status] || { bg: 'rgba(100,116,139,0.1)', color: '#64748B' };
                 return (
                   <motion.tr
@@ -524,7 +592,7 @@ function ProductsTab() {
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)', border: '1px solid rgba(201,155,103,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0, overflow: 'hidden' }}>
-                          {p.images[0] ? <img src={getProductImageUrl(p.images[0])} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+                          {p.images[0] ? <img src={getUploadUrl(p.images[0])} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
                         </div>
                         <div>
                           <p style={{ fontSize: '14px', fontWeight: 700, color: '#111', whiteSpace: 'nowrap' }}>{p.name}</p>
@@ -580,9 +648,13 @@ function ProductsTab() {
               })}
             </tbody>
           </table>
-          <div style={{ padding: '12px 20px', borderTop: '1px solid #F3F4F6', fontSize: '13px', color: '#A0A0A0' }}>
-            Showing {filtered.length} of {products.length} product{products.length !== 1 ? 's' : ''}
-          </div>
+          <Pagination
+            total={filtered.length}
+            page={page}
+            pageSize={pageSize}
+            onPage={setPage}
+            onPageSize={setPageSize}
+          />
         </div>
       )}
 
@@ -728,20 +800,14 @@ function BlogFormModal({
   const [shortDesc, setShortDesc] = useState(blog?.shortDescription ?? '');
   const [content, setContent] = useState(blog?.content ?? '');
   const [isPublished, setIsPublished] = useState(blog?.isPublished ?? false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    blog?.featuredImage ? getUploadUrl(blog.featuredImage) : null
+  // Image URL field — replaces file upload to save server disk space
+  const [imageUrl, setImageUrl] = useState(
+    blog?.featuredImage
+      ? (blog.featuredImage.startsWith('http') ? blog.featuredImage : getUploadUrl(blog.featuredImage))
+      : ''
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setImageFile(f);
-    setImagePreview(URL.createObjectURL(f));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -756,7 +822,8 @@ function BlogFormModal({
     fd.append('shortDescription', shortDesc.trim());
     fd.append('content', content.trim());
     fd.append('isPublished', String(isPublished));
-    if (imageFile) fd.append('featuredImage', imageFile);
+    // Send URL instead of uploading a file
+    fd.append('featuredImageUrl', imageUrl.trim());
 
     try {
       if (blog) {
@@ -856,28 +923,29 @@ function BlogFormModal({
               onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
           </div>
 
-          {/* Featured Image */}
+          {/* Featured Image URL */}
           <div>
-            <label style={labelStyle}>Featured Image (JPEG/PNG/WEBP, max 5MB)</label>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                border: '2px dashed #E4E7EC', borderRadius: '12px', padding: '20px', textAlign: 'center',
-                cursor: 'pointer', transition: 'border-color 0.2s',
-              }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = '#C99B67')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = '#E4E7EC')}
-            >
-              {imagePreview ? (
-                <img src={imagePreview} alt="Preview" style={{ maxHeight: '160px', borderRadius: '8px', margin: '0 auto' }} />
-              ) : (
-                <div style={{ color: '#A0A0A0', fontSize: '14px' }}>
-                  <span style={{ fontSize: '28px' }}>📸</span>
-                  <p style={{ marginTop: '8px' }}>Click to upload featured image</p>
-                </div>
-              )}
-            </div>
-            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: 'none' }} />
+            <label style={labelStyle}>Featured Image URL</label>
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://example.com/blog-cover.jpg"
+              style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}
+            />
+            <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '5px' }}>
+              Paste a direct image URL (Cloudinary, ImgBB, CDN, etc.). No file upload needed.
+            </p>
+            {imageUrl && imageUrl.startsWith('http') && (
+              <img
+                src={imageUrl}
+                alt="Preview"
+                style={{ marginTop: '10px', maxHeight: '160px', width: '100%', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            )}
           </div>
 
           {/* Publish toggle + Submit */}
@@ -978,6 +1046,8 @@ function BlogsTab() {
   const [loading, setLoading] = useState(true);
   const [modalBlog, setModalBlog] = useState<Blog | null | 'new'>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const fetchBlogs = useCallback(() => {
     setLoading(true);
@@ -988,6 +1058,9 @@ function BlogsTab() {
   }, []);
 
   useEffect(() => { fetchBlogs(); }, [fetchBlogs]);
+
+  // Reset to page 1 when page size changes
+  useEffect(() => { setPage(1); }, [pageSize]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this blog post? This cannot be undone.')) return;
@@ -1001,6 +1074,8 @@ function BlogsTab() {
       setDeleting(null);
     }
   };
+
+  const paginated = blogs.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div>
@@ -1034,7 +1109,7 @@ function BlogsTab() {
               </tr>
             </thead>
             <tbody>
-              {blogs.map((blog) => (
+              {paginated.map((blog) => (
                 <tr key={blog.id} style={{ borderTop: '1px solid #F3F4F6', transition: 'background 0.15s' }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#FAFAFA')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}>
@@ -1070,6 +1145,13 @@ function BlogsTab() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            total={blogs.length}
+            page={page}
+            pageSize={pageSize}
+            onPage={setPage}
+            onPageSize={setPageSize}
+          />
         </div>
       )}
 

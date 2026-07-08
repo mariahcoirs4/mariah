@@ -9,6 +9,7 @@ export const createBlogSchema = z.object({
   content: z.string().min(10, 'Content must be at least 10 characters long'),
   isPublished: z.boolean().or(z.string().transform((val) => val === 'true')).optional().default(false),
   canonicalUrl: z.string().url('Invalid URL format').optional().or(z.literal('')).nullable(),
+  featuredImageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
 });
 
 export const updateBlogSchema = createBlogSchema.partial();

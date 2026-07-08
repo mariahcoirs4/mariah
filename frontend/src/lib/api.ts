@@ -2,6 +2,8 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000';
 
 export function getUploadUrl(filename: string): string {
+  // If it's already a full URL, return as-is
+  if (filename.startsWith('http') || filename.startsWith('//')) return filename;
   return `${API_BASE_URL}/uploads/${filename}`;
 }
 

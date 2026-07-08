@@ -16,9 +16,12 @@ export class BlogService {
     return blog;
   }
 
-  async createBlog(input: CreateBlogInput, filename?: string) {
+  async createBlog(input: CreateBlogInput, filename?: string, imageUrl?: string) {
     const slug = await this.generateUniqueSlug(input.slug || input.title);
-    
+
+    // Prefer uploaded file; fall back to URL; fall back to null
+    const featuredImage = filename ?? imageUrl ?? null;
+
     return blogRepository.create({
       title: input.title,
       slug,
@@ -26,13 +29,13 @@ export class BlogService {
       metaDescription: input.metaDescription || input.shortDescription,
       shortDescription: input.shortDescription,
       content: input.content,
-      featuredImage: filename || null,
+      featuredImage,
       isPublished: input.isPublished ?? false,
       canonicalUrl: input.canonicalUrl || null,
     });
   }
 
-  async updateBlog(id: number, input: UpdateBlogInput, filename?: string) {
+  async updateBlog(id: number, input: UpdateBlogInput, filename?: string, imageUrl?: string) {
     const existing = await blogRepository.findById(id);
     if (!existing) {
       throw new Error('Blog post not found');
@@ -40,10 +43,17 @@ export class BlogService {
 
     const updatedData: any = { ...input };
 
-    // If new image is uploaded, delete the old featured image from disk
     if (filename) {
+      // New file uploaded — use it and delete the old file from disk (if it was a local file)
       updatedData.featuredImage = filename;
-      if (existing.featuredImage) {
+      if (existing.featuredImage && !existing.featuredImage.startsWith('http')) {
+        this.deleteImageFile(existing.featuredImage);
+      }
+    } else if (imageUrl !== undefined) {
+      // URL provided (may be empty string to clear)
+      updatedData.featuredImage = imageUrl || null;
+      // Delete old local file if switching to URL
+      if (existing.featuredImage && !existing.featuredImage.startsWith('http')) {
         this.deleteImageFile(existing.featuredImage);
       }
     }
@@ -52,7 +62,6 @@ export class BlogService {
     if (input.slug && input.slug !== existing.slug) {
       updatedData.slug = await this.generateUniqueSlug(input.slug);
     } else if (input.title && !input.slug && this.slugify(input.title) !== existing.slug) {
-      // If title changed and slug not manually passed, generate new slug
       updatedData.slug = await this.generateUniqueSlug(input.title);
     }
 
@@ -65,8 +74,8 @@ export class BlogService {
       throw new Error('Blog post not found');
     }
 
-    // Delete featured image from disk
-    if (existing.featuredImage) {
+    // Only delete from disk if it's a local file (not an external URL)
+    if (existing.featuredImage && !existing.featuredImage.startsWith('http')) {
       this.deleteImageFile(existing.featuredImage);
     }
 
@@ -78,18 +87,18 @@ export class BlogService {
       .toString()
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-      .replace(/\-\-+/g, '-') // Replace multiple - with single -
-      .replace(/^-+/, '') // Trim - from start
-      .replace(/-+$/, ''); // Trim - from end
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
   }
 
   private async generateUniqueSlug(text: string): Promise<string> {
     const baseSlug = this.slugify(text) || 'post';
     let slug = baseSlug;
     let counter = 1;
-    
+
     while (true) {
       const existing = await blogRepository.findBySlug(slug);
       if (!existing) {
@@ -113,3 +122,4 @@ export class BlogService {
 }
 
 export const blogService = new BlogService();
+
