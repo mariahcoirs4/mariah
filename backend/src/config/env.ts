@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 const envSchema = z.object({
   PORT: z.coerce.number().default(5000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  CORS_ORIGIN: z.string().optional(),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   DIRECT_URL: z.string().min(1, 'DIRECT_URL is required'),
   JWT_SECRET: z.string().min(8, 'JWT_SECRET must be at least 8 characters'),
