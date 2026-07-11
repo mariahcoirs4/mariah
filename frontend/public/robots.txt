@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block admin and private routes
+Disallow: /admin
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://www.mariahcoirsexport.com/sitemap.xml

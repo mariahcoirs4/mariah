@@ -754,7 +754,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
                 type={field}
                 value={field === 'email' ? email : password}
                 onChange={(e) => field === 'email' ? setEmail(e.target.value) : setPassword(e.target.value)}
-                placeholder={field === 'email' ? 'admin@mariahcoirs.com' : '••••••••••'}
+                placeholder={field === 'email' ? 'admin@mariahcoirsexport.com' : '••••••••••'}
                 required
                 style={{
                   width: '100%', border: '1px solid #E4E7EC', borderRadius: '12px',

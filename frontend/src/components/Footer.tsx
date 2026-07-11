@@ -184,20 +184,20 @@ export default function Footer() {
             </h3>
             <ul className="flex flex-col gap-3">
               {[
-                'Coco Peat Blocks',
-                'Grow Bags',
-                'Briquettes & Discs',
-                'Husk Chips',
-                'Coir Fibre Bales',
-                'Custom Packaging',
+                { name: 'Coco Peat Blocks', href: '/products' },
+                { name: 'Grow Bags', href: '/products' },
+                { name: 'Briquettes & Discs', href: '/products' },
+                { name: 'Husk Chips', href: '/products' },
+                { name: 'Coir Fibre Bales', href: '/products' },
+                { name: 'Custom Packaging', href: '/products' },
               ].map(item => (
-                <li key={item} className="overflow-hidden">
-                  <a
-                    href="/#products"
+                <li key={item.name} className="overflow-hidden">
+                  <Link
+                    to={item.href}
                     className="inline-block text-[14px] text-white/65 hover:text-white hover:translate-x-1 transition-all duration-200 ease-out font-sans font-medium focus-visible:outline-none focus-visible:underline focus-visible:text-white"
                   >
-                    {item}
-                  </a>
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -210,20 +210,20 @@ export default function Footer() {
             </h3>
             <ul className="flex flex-col gap-3">
               {[
-                'Hydroponics',
-                'Floriculture',
-                'Greenhouse',
-                'Landscaping',
-                'Animal Bedding',
-                'Environmental',
+                { name: 'Hydroponics', href: '/industries' },
+                { name: 'Floriculture', href: '/industries' },
+                { name: 'Greenhouse', href: '/industries' },
+                { name: 'Landscaping', href: '/industries' },
+                { name: 'Animal Bedding', href: '/industries' },
+                { name: 'Environmental', href: '/industries' },
               ].map(item => (
-                <li key={item} className="overflow-hidden">
-                  <a
-                    href="/#industries"
+                <li key={item.name} className="overflow-hidden">
+                  <Link
+                    to={item.href}
                     className="inline-block text-[14px] text-white/65 hover:text-white hover:translate-x-1 transition-all duration-200 ease-out font-sans font-medium focus-visible:outline-none focus-visible:underline focus-visible:text-white"
                   >
-                    {item}
-                  </a>
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -236,29 +236,29 @@ export default function Footer() {
             </h3>
             <ul className="flex flex-col gap-3">
               {[
-                { name: 'About Us', href: '/#about' },
-                { name: 'Manufacturing', href: '/#about' },
+                { name: 'About Us', href: '/about' },
+                { name: 'Manufacturing', href: '/about' },
                 { name: 'Gallery', href: '/#gallery' },
-                { name: 'Certifications', href: '/#certifications' },
-                { name: 'Export Process', href: '/#process' },
-                { name: 'Industry Insights', href: '/blogs', isRoute: true },
-                { name: 'Contact Us', href: '/#contact' },
+                { name: 'Certifications', href: '/certifications' },
+                { name: 'Export Process', href: '/export-process' },
+                { name: 'Industry Insights', href: '/blogs' },
+                { name: 'Contact Us', href: '/contact' },
               ].map(item => (
                 <li key={item.name} className="overflow-hidden">
-                  {item.isRoute ? (
-                    <Link
-                      to={item.href}
-                      className="inline-block text-[14px] text-white/65 hover:text-white hover:translate-x-1 transition-all duration-200 ease-out font-sans font-medium focus-visible:outline-none focus-visible:underline focus-visible:text-white"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
+                  {item.href.startsWith('/#') ? (
                     <a
                       href={item.href}
                       className="inline-block text-[14px] text-white/65 hover:text-white hover:translate-x-1 transition-all duration-200 ease-out font-sans font-medium focus-visible:outline-none focus-visible:underline focus-visible:text-white"
                     >
                       {item.name}
                     </a>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className="inline-block text-[14px] text-white/65 hover:text-white hover:translate-x-1 transition-all duration-200 ease-out font-sans font-medium focus-visible:outline-none focus-visible:underline focus-visible:text-white"
+                    >
+                      {item.name}
+                    </Link>
                   )}
                 </li>
               ))}

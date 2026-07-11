@@ -3,6 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
+import { articleSchema, breadcrumbSchema } from '../hooks/useSEO';
+
+const SITE_URL = 'https://www.mariahcoirsexport.com';
+const DEFAULT_OG_IMAGE = `${SITE_URL}/mariahcoirs/og-image.jpg`;
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -30,32 +34,66 @@ export default function BlogDetail() {
         setBlog(b);
 
         // ── Dynamic SEO ──────────────────────────────────────────
-        document.title = b.metaTitle ?? `${b.title} | Mariah Coirs`;
+        const pageTitle = b.metaTitle ?? `${b.title} | Mariah Coirs`;
+        const pageDesc = b.metaDescription ?? b.shortDescription;
+        const pageUrl = b.canonicalUrl ?? `${SITE_URL}/blog/${b.slug}`;
+        const pageImage = b.featuredImage ? getUploadUrl(b.featuredImage) : DEFAULT_OG_IMAGE;
 
-        // Meta description
-        let metaDesc = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-        if (!metaDesc) {
-          metaDesc = document.createElement('meta');
-          metaDesc.name = 'description';
-          document.head.appendChild(metaDesc);
-        }
-        metaDesc.content = b.metaDescription ?? b.shortDescription;
+        document.title = pageTitle;
 
-        // Canonical URL
-        let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-        if (!canonical) {
-          canonical = document.createElement('link');
-          canonical.rel = 'canonical';
-          document.head.appendChild(canonical);
-        }
-        canonical.href = b.canonicalUrl ?? window.location.href;
+        const setMeta = (nameOrProp: string, content: string, isProperty = false) => {
+          const attr = isProperty ? 'property' : 'name';
+          let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${nameOrProp}"]`);
+          if (!el) { el = document.createElement('meta'); el.setAttribute(attr, nameOrProp); document.head.appendChild(el); }
+          el.setAttribute('content', content);
+        };
+        const setLink = (rel: string, href: string) => {
+          let el = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+          if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); }
+          el.href = href;
+        };
+
+        setMeta('description', pageDesc);
+        setMeta('robots', 'index, follow');
+        setLink('canonical', pageUrl);
+
+        // Open Graph
+        setMeta('og:title', pageTitle, true);
+        setMeta('og:description', pageDesc, true);
+        setMeta('og:type', 'article', true);
+        setMeta('og:url', pageUrl, true);
+        setMeta('og:image', pageImage, true);
+        setMeta('og:site_name', 'Mariah Coirs', true);
+
+        // Twitter
+        setMeta('twitter:card', 'summary_large_image');
+        setMeta('twitter:title', pageTitle);
+        setMeta('twitter:description', pageDesc);
+        setMeta('twitter:image', pageImage);
+
+        // Article + Breadcrumb JSON-LD
+        document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach(s => s.remove());
+        [
+          articleSchema({ title: b.title, description: pageDesc, image: pageImage, datePublished: b.createdAt, dateModified: b.updatedAt, url: pageUrl }),
+          breadcrumbSchema([
+            { name: 'Home', url: `${SITE_URL}/` },
+            { name: 'Blog', url: `${SITE_URL}/blogs` },
+            { name: b.title, url: pageUrl },
+          ]),
+        ].forEach(schema => {
+          const script = document.createElement('script');
+          script.type = 'application/ld+json';
+          script.setAttribute('data-seo', 'true');
+          script.textContent = JSON.stringify(schema);
+          document.head.appendChild(script);
+        });
       })
       .catch(() => setError('Article not found or has been removed.'))
       .finally(() => setLoading(false));
 
     return () => {
-      // Reset title on unmount
-      document.title = 'Mariah Coirs Export';
+      document.title = 'Mariah Coirs | Premium Coir Products Exporter from India';
+      document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach(s => s.remove());
     };
   }, [slug]);
 

@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
+import { useSEO, breadcrumbSchema } from '../hooks/useSEO';
+
+const SITE_URL = 'https://www.mariahcoirsexport.com';
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -19,11 +22,18 @@ export default function BlogListing() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    document.title = 'Blog | Mariah Coirs Export';
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', 'Read expert articles on coco peat, coir products, hydroponics, and export tips from Mariah Coirs.');
+  useSEO({
+    title: 'Blog | Coir & Cocopeat Industry Insights — Mariah Coirs',
+    description: 'Expert articles on coco peat, coir fiber, hydroponics, greenhouse growing, export logistics, and coir industry news from Mariah Coirs — India\'s leading coir product manufacturer.',
+    canonical: `${SITE_URL}/blogs`,
+    keywords: 'coir blog, coco peat articles, cocopeat hydroponics guide, coir export tips, coir industry news, coir manufacturer blog',
+    jsonLd: breadcrumbSchema([
+      { name: 'Home', url: `${SITE_URL}/` },
+      { name: 'Blog', url: `${SITE_URL}/blogs` },
+    ]),
+  });
 
+  useEffect(() => {
     blogApi
       .getAll(true)
       .then((res) => setBlogs(res.data))
