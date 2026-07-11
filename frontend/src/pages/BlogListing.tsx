@@ -1,20 +1,154 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
 import { useSEO, breadcrumbSchema } from '../hooks/useSEO';
+import { authorInitials, estimateReadingTime, formatBlogDate, splitList } from '../lib/blogContent';
 
 const SITE_URL = 'https://www.mariahcoirsexport.com';
-
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function BlogAvatar({ blog }: { blog: Blog }) {
+  if (blog.authorAvatar) {
+    return <img src={blog.authorAvatar} alt={blog.authorName ?? blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+  }
+
+  return (
+    <span style={{ fontWeight: 800, letterSpacing: '-0.03em', color: '#102A1D' }}>
+      {authorInitials(blog.authorName)}
+    </span>
+  );
+}
+
+function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }) {
+  const tags = splitList(blog.tags).slice(0, 3);
+  const readingTime = estimateReadingTime(blog.content);
+  const imageAlt = blog.featuredImageAlt || blog.title;
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.5, ease: EASE_CUBIC }}
+      whileHover={{ y: -6 }}
+      style={{
+        background: '#fffaf4',
+        borderRadius: featured ? '28px' : '22px',
+        overflow: 'hidden',
+        border: '1px solid rgba(119, 84, 42, 0.12)',
+        boxShadow: '0 20px 50px rgba(16, 24, 40, 0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+      }}
+    >
+      <Link to={`/blog/${blog.slug}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+        <div
+          style={{
+            position: 'relative',
+            aspectRatio: featured ? '16/10' : '16/9',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #0D1B14 0%, #7A4E14 100%)',
+          }}
+        >
+          {blog.featuredImage ? (
+            <img
+              src={getUploadUrl(blog.featuredImage)}
+              alt={imageAlt}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.45s ease' }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+            />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', color: '#F3E8D6' }}>
+              <span style={{ fontSize: featured ? '64px' : '42px' }}>✦</span>
+            </div>
+          )}
+
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: featured
+                ? 'linear-gradient(180deg, rgba(7, 15, 10, 0.08) 0%, rgba(7, 15, 10, 0.72) 100%)'
+                : 'linear-gradient(180deg, rgba(7, 15, 10, 0.02) 0%, rgba(7, 15, 10, 0.2) 100%)',
+            }}
+          />
+
+          <div style={{ position: 'absolute', left: '18px', top: '18px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {blog.category && (
+              <span style={{ background: 'rgba(255, 255, 255, 0.92)', color: '#1A3B2A', padding: '7px 12px', borderRadius: '999px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {blog.category}
+              </span>
+            )}
+            {featured && (
+              <span style={{ background: '#D98C2B', color: '#fff', padding: '7px 12px', borderRadius: '999px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                Featured Post
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      <div style={{ padding: featured ? '28px' : '24px', display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8F5D22' }}>
+            {formatBlogDate(blog.publishedAt)}
+          </span>
+          <span style={{ fontSize: '12px', color: '#6B7280', fontWeight: 600 }}>
+            {readingTime} min read
+          </span>
+        </div>
+
+        <div>
+          <Link to={`/blog/${blog.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <h2
+              style={{
+                fontSize: featured ? 'clamp(1.9rem, 4vw, 3rem)' : '1.3rem',
+                lineHeight: 1.08,
+                letterSpacing: '-0.04em',
+                color: '#101828',
+                margin: 0,
+              }}
+            >
+              {blog.title}
+            </h2>
+          </Link>
+          <p style={{ marginTop: '12px', fontSize: featured ? '1.05rem' : '0.98rem', lineHeight: 1.75, color: '#5B6472' }}>
+            {blog.shortDescription}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '18px', flexWrap: 'wrap', marginTop: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg, #EBD8B7 0%, #D99C3C 100%)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+              <BlogAvatar blog={blog} />
+            </div>
+            <div>
+              <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#102A1D' }}>
+                {blog.authorName ?? 'Mariah Coirs Editorial Team'}
+              </p>
+              <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#6B7280' }}>
+                {blog.authorRole ?? 'Editorial Insights'}
+              </p>
+            </div>
+          </div>
+
+          {tags.length > 0 && (
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {tags.map((tag) => (
+                <span key={tag} style={{ background: '#F5EAD8', color: '#7A4E14', padding: '7px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 700 }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.article>
+  );
 }
 
 export default function BlogListing() {
@@ -23,10 +157,12 @@ export default function BlogListing() {
   const [error, setError] = useState('');
 
   useSEO({
-    title: 'Blog | Coir & Cocopeat Industry Insights — Mariah Coirs',
-    description: 'Expert articles on coco peat, coir fiber, hydroponics, greenhouse growing, export logistics, and coir industry news from Mariah Coirs — India\'s leading coir product manufacturer.',
+    title: 'Insights | Coir, Cocopeat & Sustainable Farming',
+    description:
+      'Editorial guides on coco peat, coir fiber, greenhouse substrates, export logistics, and sustainable agriculture from Mariah Coirs.',
     canonical: `${SITE_URL}/blogs`,
-    keywords: 'coir blog, coco peat articles, cocopeat hydroponics guide, coir export tips, coir industry news, coir manufacturer blog',
+    keywords:
+      'coir blog, coco peat insights, cocopeat exports, greenhouse growing, coir fiber, sustainable agriculture, coconut husk processing',
     jsonLd: breadcrumbSchema([
       { name: 'Home', url: `${SITE_URL}/` },
       { name: 'Blog', url: `${SITE_URL}/blogs` },
@@ -41,239 +177,120 @@ export default function BlogListing() {
       .finally(() => setLoading(false));
   }, []);
 
+  const featuredBlog = blogs[0];
+  const secondaryBlogs = blogs.slice(1, 4);
+  const remainingBlogs = blogs.slice(4);
+
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F1EB' }}>
-      {/* ── Navbar placeholder: push content below fixed nav ── */}
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F7F1E7 0%, #FFFDF9 100%)' }}>
       <div style={{ height: '72px' }} aria-hidden="true" />
 
-      {/* ── Hero Header ── */}
       <section
-        className="py-10 sm:py-20"
         style={{
-          background: '#0A0A0A',
-          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          borderBottom: '1px solid rgba(16, 24, 40, 0.08)',
+          background:
+            'radial-gradient(circle at top left, rgba(217, 140, 43, 0.16), transparent 36%), radial-gradient(circle at top right, rgba(28, 94, 65, 0.12), transparent 30%), linear-gradient(180deg, #FFF8EF 0%, #F5EEE1 100%)',
         }}
       >
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '56px 24px 48px' }}>
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE_CUBIC }}
+            transition={{ duration: 0.65, ease: EASE_CUBIC }}
+            style={{ display: 'grid', gap: '20px' }}
           >
-            <span
-              style={{
-                display: 'inline-block',
-                fontSize: '11px',
-                fontWeight: 700,
-                letterSpacing: '4px',
-                textTransform: 'uppercase',
-                color: '#C99B67',
-                marginBottom: '16px',
-              }}
-            >
+            <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8F5D22' }}>
               Knowledge Hub
             </span>
-            <h1
-              style={{
-                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-                fontWeight: 800,
-                color: '#FFFFFF',
-                letterSpacing: '-0.025em',
-                lineHeight: 1.1,
-                marginBottom: '20px',
-              }}
-            >
-              Coir &amp; Cocopeat Insights
+            <h1 style={{ margin: 0, maxWidth: '13ch', fontSize: 'clamp(2.6rem, 6vw, 5rem)', lineHeight: 0.96, letterSpacing: '-0.06em', color: '#102A1D' }}>
+              Coir stories worth reading.
             </h1>
-            <p style={{ fontSize: '18px', color: '#667085', maxWidth: '550px', margin: '0 auto', lineHeight: 1.7 }}>
-              Expert articles on coco peat, coir products, hydroponics, and export tips from our team.
+            <p style={{ margin: 0, maxWidth: '680px', fontSize: '1.05rem', lineHeight: 1.8, color: '#54606B' }}>
+              Deep dives on coco peat, coir fiber, greenhouse substrates, export logistics, and the practical side of building a sustainable supply chain.
             </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(16,24,40,0.08)' }}>
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.18em', color: '#8F5D22', fontWeight: 800 }}>Published Guides</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#102A1D' }}>{blogs.length.toString().padStart(2, '0')}</div>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(16,24,40,0.08)' }}>
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.18em', color: '#8F5D22', fontWeight: 800 }}>Focus</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#102A1D' }}>Sustainable farming</div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Blog Grid ── */}
-      <section
-        className="py-10 sm:py-20 px-4 sm:px-6"
-        style={{ maxWidth: '1280px', margin: '0 auto' }}
-      >
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 24px 84px' }}>
         {loading && (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                border: '3px solid rgba(201,155,103,0.2)',
-                borderTopColor: '#C99B67',
-                animation: 'spin 0.8s linear infinite',
-              }}
-            />
+          <div style={{ display: 'grid', placeItems: 'center', padding: '100px 0' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', border: '3px solid rgba(143,93,34,0.18)', borderTopColor: '#8F5D22', animation: 'spin 0.85s linear infinite' }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
           </div>
         )}
 
-        {error && (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '60px 0',
-              color: '#667085',
-              fontSize: '16px',
-            }}
-          >
+        {error && !loading && (
+          <div style={{ padding: '60px 24px', textAlign: 'center', color: '#54606B' }}>
             {error}
           </div>
         )}
 
         {!loading && !error && blogs.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <p style={{ fontSize: '18px', color: '#667085' }}>No articles published yet. Check back soon!</p>
+          <div style={{ padding: '80px 24px', textAlign: 'center', color: '#54606B' }}>
+            No articles have been published yet.
           </div>
         )}
 
-        {!loading && blogs.length > 0 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.1 } },
-            }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '28px',
-            }}
-          >
-            {blogs.map((blog) => (
-              <motion.article
-                key={blog.id}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_CUBIC } },
-                }}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                style={{
-                  background: '#FFFFFF',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(0,0,0,0.06)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                {/* Featured Image */}
-                <Link to={`/blog/${blog.slug}`} style={{ display: 'block', textDecoration: 'none' }}>
-                  <div
-                    style={{
-                      width: '100%',
-                      aspectRatio: '16/9',
-                      background: 'linear-gradient(135deg, #1a1a1a 0%, #2a1f0a 100%)',
-                      overflow: 'hidden',
-                      position: 'relative',
-                    }}
-                  >
-                    {blog.featuredImage ? (
-                      <img
-                        src={getUploadUrl(blog.featuredImage)}
-                        alt={blog.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                      />
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <span style={{ fontSize: '48px' }}>🌿</span>
-                      </div>
-                    )}
+        {!loading && !error && blogs.length > 0 && featuredBlog && (
+          <div style={{ display: 'grid', gap: '32px' }}>
+            <section style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'minmax(0, 1.6fr) minmax(320px, 0.9fr)' }}>
+              <BlogCard blog={featuredBlog} featured />
+              <div style={{ display: 'grid', gap: '18px' }}>
+                <div style={{ padding: '26px', borderRadius: '28px', border: '1px solid rgba(119, 84, 42, 0.12)', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 24px 50px rgba(16, 42, 29, 0.18)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#E6B46B' }}>
+                    Editor’s pick
                   </div>
-                </Link>
-
-                {/* Card Body */}
-                <div
-                  className="p-5 sm:p-7"
-                  style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
-                >
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                      color: '#C99B67',
-                      marginBottom: '10px',
-                    }}
-                  >
-                    {formatDate(blog.createdAt)}
-                  </span>
-
-                  <Link to={`/blog/${blog.slug}`} style={{ textDecoration: 'none' }}>
-                    <h2
-                      style={{
-                        fontSize: '20px',
-                        fontWeight: 800,
-                        color: '#111111',
-                        letterSpacing: '-0.015em',
-                        lineHeight: 1.3,
-                        marginBottom: '12px',
-                        transition: 'color 0.2s',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#C99B67')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#111111')}
-                    >
-                      {blog.title}
-                    </h2>
-                  </Link>
-
-                  <p
-                    style={{
-                      fontSize: '15px',
-                      color: '#667085',
-                      lineHeight: 1.7,
-                      marginBottom: '20px',
-                      flex: 1,
-                    }}
-                  >
-                    {blog.shortDescription.length > 120
-                      ? blog.shortDescription.slice(0, 120) + '…'
-                      : blog.shortDescription}
+                  <h2 style={{ margin: '12px 0 0', fontSize: '1.55rem', lineHeight: 1.05, letterSpacing: '-0.04em' }}>
+                    A practical take on sustainable coir production
+                  </h2>
+                  <p style={{ margin: '12px 0 0', color: 'rgba(247, 241, 231, 0.84)', lineHeight: 1.7 }}>
+                    Browse the latest field notes, processing tips, and export-ready quality practices built for modern growers and buyers.
                   </p>
-
-                  <Link
-                    to={`/blog/${blog.slug}`}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      color: '#C99B67',
-                      textDecoration: 'none',
-                      transition: 'gap 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.gap = '10px';
-                    }}
-                    onMouseLeave={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.gap = '6px';
-                    }}
-                  >
-                    Read Article
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </Link>
                 </div>
-              </motion.article>
-            ))}
-          </motion.div>
+
+                {secondaryBlogs.map((blog) => (
+                  <BlogCard key={blog.id} blog={blog} />
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: '16px', marginBottom: '18px', flexWrap: 'wrap' }}>
+                <div>
+                  <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#8F5D22' }}>
+                    All Articles
+                  </span>
+                  <h2 style={{ margin: '8px 0 0', fontSize: 'clamp(1.5rem, 3vw, 2.3rem)', letterSpacing: '-0.04em', color: '#102A1D' }}>
+                    Explore the archive
+                  </h2>
+                </div>
+                <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                  {remainingBlogs.length} more post{remainingBlogs.length === 1 ? '' : 's'}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                {remainingBlogs.map((blog) => (
+                  <BlogCard key={blog.id} blog={blog} />
+                ))}
+              </div>
+            </section>
+          </div>
         )}
-      </section>
+      </main>
     </div>
   );
 }

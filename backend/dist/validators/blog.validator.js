@@ -7,10 +7,19 @@ exports.createBlogSchema = zod_1.z.object({
     slug: zod_1.z.string().max(200).optional().nullable(),
     metaTitle: zod_1.z.string().max(200).optional().nullable(),
     metaDescription: zod_1.z.string().max(500).optional().nullable(),
+    focusKeywords: zod_1.z.string().max(500).optional().nullable(),
     shortDescription: zod_1.z.string().min(10, 'Short description must be at least 10 characters long').max(500),
     content: zod_1.z.string().min(10, 'Content must be at least 10 characters long'),
+    category: zod_1.z.string().max(120).optional().nullable(),
+    tags: zod_1.z.string().max(500).optional().nullable(),
+    authorName: zod_1.z.string().max(120).optional().nullable(),
+    authorRole: zod_1.z.string().max(120).optional().nullable(),
+    authorBio: zod_1.z.string().max(1000).optional().nullable(),
+    authorAvatar: zod_1.z.string().url('Invalid avatar URL').optional().or(zod_1.z.literal('')).nullable(),
+    featuredImageAlt: zod_1.z.string().max(160).optional().nullable(),
     isPublished: zod_1.z.boolean().or(zod_1.z.string().transform((val) => val === 'true')).optional().default(false),
     canonicalUrl: zod_1.z.string().url('Invalid URL format').optional().or(zod_1.z.literal('')).nullable(),
+    featuredImageUrl: zod_1.z.string().url('Invalid image URL').optional().or(zod_1.z.literal('')).nullable(),
 });
 exports.updateBlogSchema = exports.createBlogSchema.partial();
 //# sourceMappingURL=blog.validator.js.map

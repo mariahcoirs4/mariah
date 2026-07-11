@@ -176,6 +176,7 @@ export function articleSchema({
   datePublished,
   dateModified,
   url,
+  author,
 }: {
   title: string;
   description: string;
@@ -183,6 +184,7 @@ export function articleSchema({
   datePublished: string;
   dateModified?: string;
   url: string;
+  author?: { name: string; url?: string };
 }) {
   return {
     '@context': 'https://schema.org',
@@ -193,11 +195,9 @@ export function articleSchema({
     datePublished,
     dateModified: dateModified ?? datePublished,
     url,
-    author: {
-      '@type': 'Organization',
-      name: 'Mariah Coirs',
-      url: SITE_URL,
-    },
+    author: author
+      ? { '@type': 'Person', name: author.name, url: author.url ?? SITE_URL }
+      : { '@type': 'Organization', name: 'Mariah Coirs', url: SITE_URL },
     publisher: {
       '@type': 'Organization',
       name: 'Mariah Coirs',

@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authApi, blogApi, enquiryApi, dashboardApi, setAdminToken, clearAdminToken, getAdminToken, getUploadUrl, productApi } from '../lib/api';
 import type { Blog, Enquiry, DashboardSummary } from '../lib/api';
+import { authorInitials, estimateReadingTime, renderBlogContent, slugify, splitList } from '../lib/blogContent';
 
 // ─── Reusable Pagination Component ───────────────────────────────────────────
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -586,9 +587,8 @@ function ProductsTab() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25, delay: i * 0.04, ease: 'easeOut' }}
                     style={{ borderTop: '1px solid #F3F4F6' }}
-                    className="hover:bg-black/[0.02] transition-colors duration-200"
+                    className="hover:bg-black/2 transition-colors duration-200"
                   >
-                    {/* Product Info */}
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)', border: '1px solid rgba(201,155,103,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0, overflow: 'hidden' }}>
@@ -600,19 +600,14 @@ function ProductsTab() {
                         </div>
                       </div>
                     </td>
-                    {/* Category */}
                     <td style={{ padding: '14px 20px', fontSize: '13px', color: '#374151', whiteSpace: 'nowrap' }}>{p.category}</td>
-                    {/* MOQ */}
                     <td style={{ padding: '14px 20px', fontSize: '13px', color: '#374151', whiteSpace: 'nowrap' }}>{p.moq}</td>
-                    {/* Status */}
                     <td style={{ padding: '14px 20px' }}>
                       <span style={{ padding: '4px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 700, background: st.bg, color: st.color, whiteSpace: 'nowrap' }}>{p.status}</span>
                     </td>
-                    {/* Updated */}
                     <td style={{ padding: '14px 20px', fontSize: '12px', color: '#A0A0A0', whiteSpace: 'nowrap' }}>
                       {new Date(p.updatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
-                    {/* Actions */}
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <button
@@ -795,19 +790,81 @@ function BlogFormModal({
 }) {
   const [title, setTitle] = useState(blog?.title ?? '');
   const [slug, setSlug] = useState(blog?.slug ?? '');
+  const [slugTouched, setSlugTouched] = useState(Boolean(blog?.slug));
   const [metaTitle, setMetaTitle] = useState(blog?.metaTitle ?? '');
   const [metaDesc, setMetaDesc] = useState(blog?.metaDescription ?? '');
+  const [focusKeywords, setFocusKeywords] = useState(blog?.focusKeywords ?? '');
   const [shortDesc, setShortDesc] = useState(blog?.shortDescription ?? '');
   const [content, setContent] = useState(blog?.content ?? '');
+  const [category, setCategory] = useState(blog?.category ?? '');
+  const [tags, setTags] = useState(blog?.tags ?? '');
+  const [authorName, setAuthorName] = useState(blog?.authorName ?? '');
+  const [authorRole, setAuthorRole] = useState(blog?.authorRole ?? '');
+  const [authorBio, setAuthorBio] = useState(blog?.authorBio ?? '');
+  const [authorAvatar, setAuthorAvatar] = useState(blog?.authorAvatar ?? '');
+  const [featuredImageAlt, setFeaturedImageAlt] = useState(blog?.featuredImageAlt ?? '');
+  const [canonicalUrl, setCanonicalUrl] = useState(blog?.canonicalUrl ?? '');
   const [isPublished, setIsPublished] = useState(blog?.isPublished ?? false);
-  // Image URL field — replaces file upload to save server disk space
+  const [activeTab, setActiveTab] = useState<'content' | 'seo'>('content');
   const [imageUrl, setImageUrl] = useState(
     blog?.featuredImage
       ? (blog.featuredImage.startsWith('http') ? blog.featuredImage : getUploadUrl(blog.featuredImage))
       : ''
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(
+    blog?.featuredImage
+      ? (blog.featuredImage.startsWith('http') ? blog.featuredImage : getUploadUrl(blog.featuredImage))
+      : ''
+  );
+  const [imageTouched, setImageTouched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!slugTouched) {
+      setSlug(slugify(title));
+    }
+  }, [title, slugTouched]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, [imagePreviewUrl]);
+
+  const applyImageFile = (file: File) => {
+    setImageTouched(true);
+    setImageFile(file);
+    setImageUrl('');
+    setImagePreviewUrl((current) => {
+      if (current.startsWith('blob:')) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const applyImageUrl = (value: string) => {
+    setImageTouched(true);
+    setImageFile(null);
+    setImageUrl(value);
+    setImagePreviewUrl((current) => {
+      if (current.startsWith('blob:')) URL.revokeObjectURL(current);
+      return value;
+    });
+  };
+
+  const clearImage = () => {
+    setImageTouched(true);
+    setImageFile(null);
+    setImageUrl('');
+    setImagePreviewUrl((current) => {
+      if (current.startsWith('blob:')) URL.revokeObjectURL(current);
+      return '';
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -817,13 +874,26 @@ function BlogFormModal({
     const fd = new FormData();
     fd.append('title', title.trim());
     fd.append('slug', slug.trim() || title.trim());
-    fd.append('metaTitle', metaTitle.trim() || title.trim());
-    fd.append('metaDescription', metaDesc.trim() || shortDesc.trim());
+    fd.append('metaTitle', metaTitle.trim());
+    fd.append('metaDescription', metaDesc.trim());
+    fd.append('focusKeywords', focusKeywords.trim());
     fd.append('shortDescription', shortDesc.trim());
     fd.append('content', content.trim());
     fd.append('isPublished', String(isPublished));
-    // Send URL instead of uploading a file
-    fd.append('featuredImageUrl', imageUrl.trim());
+    fd.append('category', category.trim());
+    fd.append('tags', tags.trim());
+    fd.append('authorName', authorName.trim());
+    fd.append('authorRole', authorRole.trim());
+    fd.append('authorBio', authorBio.trim());
+    fd.append('authorAvatar', authorAvatar.trim());
+    fd.append('featuredImageAlt', featuredImageAlt.trim());
+    fd.append('canonicalUrl', canonicalUrl.trim());
+
+    if (imageFile) {
+      fd.append('featuredImage', imageFile);
+    } else if (imageTouched) {
+      fd.append('featuredImageUrl', imageUrl.trim());
+    }
 
     try {
       if (blog) {
@@ -840,144 +910,363 @@ function BlogFormModal({
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', border: '1px solid #E4E7EC', borderRadius: '10px',
-    padding: '12px 14px', fontSize: '14px', outline: 'none', fontFamily: 'inherit',
-    boxSizing: 'border-box', background: '#FFFFFF',
+    width: '100%',
+    border: '1px solid #E4E7EC',
+    borderRadius: '14px',
+    padding: '12px 14px',
+    fontSize: '14px',
+    outline: 'none',
+    fontFamily: 'inherit',
+    boxSizing: 'border-box',
+    background: '#FFFFFF',
+    color: '#111111',
   };
+
   const labelStyle: React.CSSProperties = {
-    fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-    letterSpacing: '1px', color: '#667085', display: 'block', marginBottom: '5px',
+    fontSize: '11px',
+    fontWeight: 800,
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    color: '#667085',
+    display: 'block',
+    marginBottom: '6px',
   };
+
+  const activeImagePreview = imagePreviewUrl || '';
+  const previewHtml = renderBlogContent(content || '<p>Your article preview will appear here.</p>');
+  const metaTitleCount = metaTitle.trim().length;
+  const metaDescCount = metaDesc.trim().length;
+  const canonicalPreview = canonicalUrl.trim() || (slug.trim() ? `https://www.mariahcoirsexport.com/blog/${slugify(slug)}` : 'https://www.mariahcoirsexport.com/blog/your-post');
 
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.6)',
-        backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-start',
-        justifyContent: 'center', padding: '12px', overflowY: 'auto',
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        background: 'rgba(6, 15, 11, 0.68)',
+        backdropFilter: 'blur(10px)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '18px',
+        overflowY: 'auto',
       }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="p-5 sm:p-10"
         style={{
-          background: '#FFFFFF', borderRadius: '20px',
-          width: '100%', maxWidth: '780px', boxShadow: '0 24px 60px rgba(0,0,0,0.3)',
+          background: '#FFFCF7',
+          borderRadius: '28px',
+          width: '100%',
+          maxWidth: '1200px',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.28)',
+          border: '1px solid rgba(255,255,255,0.7)',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>
-            {blog ? 'Edit Blog Post' : 'New Blog Post'}
-          </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: '#667085', lineHeight: 1 }}>✕</button>
+        <div style={{ padding: '22px 24px', borderBottom: '1px solid rgba(16,24,40,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#8F5D22' }}>Blog Studio</div>
+            <h2 style={{ margin: '8px 0 0', fontSize: '24px', fontWeight: 800, letterSpacing: '-0.03em', color: '#102A1D' }}>
+              {blog ? 'Edit Blog Post' : 'Create Blog Post'}
+            </h2>
+          </div>
+          <button onClick={onClose} style={{ width: '40px', height: '40px', borderRadius: '12px', border: '1px solid rgba(16,24,40,0.08)', background: '#fff', cursor: 'pointer', fontSize: '18px', color: '#667085' }}>
+            ✕
+          </button>
         </div>
 
         {error && (
-          <div style={{ padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '10px', color: '#DC2626', fontSize: '14px', marginBottom: '20px' }}>
+          <div style={{ margin: '20px 24px 0', padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '14px', color: '#DC2626', fontSize: '14px', fontWeight: 600 }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          {/* Title */}
-          <div>
-            <label style={labelStyle}>Title *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} required style={inputStyle}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-          </div>
-
-          {/* Slug + Meta Title row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label style={labelStyle}>URL Slug (auto-generated)</label>
-              <input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="benefits-of-coco-peat" style={inputStyle}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-            </div>
-            <div>
-              <label style={labelStyle}>SEO Meta Title</label>
-              <input value={metaTitle} onChange={(e) => setMetaTitle(e.target.value)} style={inputStyle}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-            </div>
-          </div>
-
-          {/* Meta description */}
-          <div>
-            <label style={labelStyle}>SEO Meta Description</label>
-            <textarea value={metaDesc} onChange={(e) => setMetaDesc(e.target.value)} rows={2} style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-          </div>
-
-          {/* Short Description */}
-          <div>
-            <label style={labelStyle}>Short Description *</label>
-            <textarea value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} rows={2} required style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-          </div>
-
-          {/* Content */}
-          <div>
-            <label style={labelStyle}>Content (HTML supported) *</label>
-            <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={10} required
-              placeholder="<h2>Your heading</h2><p>Blog content here...</p>"
-              style={{ ...inputStyle, resize: 'vertical', fontFamily: 'monospace', fontSize: '13px' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
-          </div>
-
-          {/* Featured Image URL */}
-          <div>
-            <label style={labelStyle}>Featured Image URL</label>
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://example.com/blog-cover.jpg"
-              style={inputStyle}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')}
-            />
-            <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '5px' }}>
-              Paste a direct image URL (Cloudinary, ImgBB, CDN, etc.). No file upload needed.
-            </p>
-            {imageUrl && imageUrl.startsWith('http') && (
-              <img
-                src={imageUrl}
-                alt="Preview"
-                style={{ marginTop: '10px', maxHeight: '160px', width: '100%', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E4E7EC' }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-            )}
-          </div>
-
-          {/* Publish toggle + Submit */}
-          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between pt-2">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-              <div
-                onClick={() => setIsPublished(prev => !prev)}
+        <div style={{ padding: '18px 24px 0', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {(['content', 'seo'] as const).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
                 style={{
-                  width: '44px', height: '24px', borderRadius: '999px',
-                  background: isPublished ? '#C99B67' : '#E4E7EC',
-                  transition: 'background 0.2s', position: 'relative', cursor: 'pointer', flexShrink: 0,
+                  border: `1px solid ${isActive ? 'rgba(143,93,34,0.3)' : 'rgba(16,24,40,0.08)'}`,
+                  background: isActive ? 'rgba(143,93,34,0.08)' : '#fff',
+                  color: isActive ? '#8F5D22' : '#334155',
+                  borderRadius: '999px',
+                  padding: '10px 16px',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{
-                  position: 'absolute', top: '3px', left: isPublished ? '23px' : '3px',
-                  width: '18px', height: '18px', borderRadius: '50%', background: '#FFFFFF',
-                  transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-                }} />
+                {tab === 'content' ? 'Content' : 'SEO / Metadata'}
+              </button>
+            );
+          })}
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: '18px 24px 24px' }}>
+          {activeTab === 'content' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) minmax(320px, 0.95fr)', gap: '18px', alignItems: 'start' }}>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                <section style={{ padding: '18px', borderRadius: '22px', background: '#FFFFFF', border: '1px solid rgba(16,24,40,0.08)' }}>
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>Title *</label>
+                    <input value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="Coconut Coir and the Next Wave of Sustainable Greenhouses" style={inputStyle} />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Custom URL Slug</label>
+                      <input
+                        value={slug}
+                        onChange={(e) => {
+                          setSlugTouched(true);
+                          setSlug(slugify(e.target.value));
+                        }}
+                        placeholder="coconut-coir-sustainable-greenhouses"
+                        style={inputStyle}
+                      />
+                      <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#667085' }}>Auto-generated from the title until you edit it manually.</p>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Category</label>
+                      <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Cocopeat Insights" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>Short Description / Excerpt *</label>
+                    <textarea value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} rows={3} required placeholder="A concise summary that appears on the blog cards and in search results." style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }} />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label style={labelStyle}>Author Name</label>
+                      <input value={authorName} onChange={(e) => setAuthorName(e.target.value)} placeholder="Mariah Coirs Editorial Team" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Author Role</label>
+                      <input value={authorRole} onChange={(e) => setAuthorRole(e.target.value)} placeholder="Operations & Agronomy" style={inputStyle} />
+                    </div>
+                  </div>
+                </section>
+
+                <section style={{ padding: '18px', borderRadius: '22px', background: '#FFFFFF', border: '1px solid rgba(16,24,40,0.08)' }}>
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>Article Content *</label>
+                    <textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      rows={18}
+                      required
+                      placeholder={'# Heading\n\nWrite in Markdown or rich text HTML.\n\n## Section Heading\n\n- Bullet one\n- Bullet two'}
+                      style={{ ...inputStyle, resize: 'vertical', minHeight: '420px', lineHeight: 1.7, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label style={labelStyle}>Tags</label>
+                      <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="coir, cocopeat, greenhouse, export" style={inputStyle} />
+                      <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#667085' }}>Use commas to separate multiple tags.</p>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Author Avatar URL</label>
+                      <input value={authorAvatar} onChange={(e) => setAuthorAvatar(e.target.value)} placeholder="https://..." style={inputStyle} />
+                    </div>
+                  </div>
+                </section>
               </div>
-              <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                {isPublished ? '✅ Published' : '📝 Draft'}
-              </span>
+
+              <div style={{ display: 'grid', gap: '16px', position: 'sticky', top: '24px' }}>
+                <section style={{ padding: '18px', borderRadius: '22px', background: '#FFFFFF', border: '1px solid rgba(16,24,40,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <label style={labelStyle}>Featured Image</label>
+                    <button type="button" onClick={clearImage} style={{ border: 'none', background: 'transparent', color: '#8F5D22', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                      Clear
+                    </button>
+                  </div>
+
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.style.borderColor = '#8F5D22';
+                      e.currentTarget.style.background = 'rgba(143,93,34,0.06)';
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(16,24,40,0.12)';
+                      e.currentTarget.style.background = '#FAFAF7';
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.style.borderColor = 'rgba(16,24,40,0.12)';
+                      e.currentTarget.style.background = '#FAFAF7';
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) applyImageFile(file);
+                    }}
+                    style={{
+                      border: '1.5px dashed rgba(16,24,40,0.12)',
+                      borderRadius: '20px',
+                      padding: '18px',
+                      background: '#FAFAF7',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {activeImagePreview ? (
+                      <img src={activeImagePreview} alt={featuredImageAlt || title || 'Featured preview'} style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '16px' }} />
+                    ) : (
+                      <div style={{ minHeight: '220px', display: 'grid', placeItems: 'center', textAlign: 'center', color: '#667085' }}>
+                        <div>
+                          <div style={{ fontSize: '34px' }}>⬆︎</div>
+                          <div style={{ marginTop: '8px', fontWeight: 700 }}>Drop an image here or click to upload</div>
+                          <div style={{ marginTop: '4px', fontSize: '13px' }}>PNG, JPG, WEBP, or GIF up to 5MB</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) applyImageFile(file);
+                  }} />
+
+                  <div style={{ marginTop: '12px' }}>
+                    <label style={labelStyle}>Or Featured Image URL</label>
+                    <input value={imageUrl} onChange={(e) => applyImageUrl(e.target.value)} placeholder="https://example.com/blog-cover.jpg" style={inputStyle} />
+                  </div>
+
+                  <div style={{ marginTop: '12px' }}>
+                    <label style={labelStyle}>Alt Text for Image</label>
+                    <input value={featuredImageAlt} onChange={(e) => setFeaturedImageAlt(e.target.value)} placeholder="Workers processing coco husk fibers at the Mariah Coirs plant" style={inputStyle} />
+                  </div>
+                </section>
+
+                <section style={{ padding: '18px', borderRadius: '22px', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 20px 40px rgba(16,42,29,0.14)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#E6B46B' }}>Live Preview</div>
+                  <div style={{ marginTop: '14px', borderRadius: '18px', overflow: 'hidden', background: '#fffaf4', color: '#102A1D' }}>
+                    {activeImagePreview && <img src={activeImagePreview} alt={featuredImageAlt || title || 'Featured preview'} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />}
+                    <div style={{ padding: '18px' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                        {category && <span style={{ padding: '6px 10px', borderRadius: '999px', background: '#F5EAD8', color: '#8F5D22', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{category}</span>}
+                        <span style={{ padding: '6px 10px', borderRadius: '999px', background: 'rgba(16,42,29,0.06)', color: '#334155', fontSize: '11px', fontWeight: 800 }}> {estimateReadingTime(content)} min read</span>
+                      </div>
+                      <h3 style={{ margin: 0, fontSize: '1.25rem', lineHeight: 1.15, letterSpacing: '-0.04em' }}>{title || 'Your article title will appear here'}</h3>
+                      <p style={{ margin: '10px 0 0', color: '#5B6472', lineHeight: 1.7 }}>{shortDesc || 'Your excerpt and snippet preview will appear here.'}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #EBD8B7 0%, #D99C3C 100%)', display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+                          <span style={{ fontWeight: 800, color: '#102A1D' }}>{authorInitials(authorName || 'Mariah Coirs')}</span>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '14px', fontWeight: 700 }}>{authorName || 'Mariah Coirs Editorial Team'}</div>
+                          <div style={{ fontSize: '12px', color: '#6B7280' }}>{authorRole || 'Editorial insights'}</div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(16,24,40,0.08)' }}>
+                        <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8F5D22', marginBottom: '10px' }}>
+                          Article Preview
+                        </div>
+                        <div className="blog-rich-text" style={{ fontSize: '0.92rem' }} dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'seo' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(300px, 360px)', gap: '18px', alignItems: 'start' }}>
+              <section style={{ padding: '18px', borderRadius: '22px', background: '#FFFFFF', border: '1px solid rgba(16,24,40,0.08)', display: 'grid', gap: '14px' }}>
+                <div>
+                  <label style={labelStyle}>Meta Title</label>
+                  <input value={metaTitle} onChange={(e) => setMetaTitle(e.target.value)} placeholder="Search-friendly SEO title" maxLength={60} style={inputStyle} />
+                  <div style={{ marginTop: '6px', fontSize: '12px', color: metaTitleCount > 60 ? '#DC2626' : '#667085', textAlign: 'right' }}>{metaTitleCount}/60</div>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Meta Description</label>
+                  <textarea value={metaDesc} onChange={(e) => setMetaDesc(e.target.value)} rows={4} maxLength={160} placeholder="A concise 160-character summary for search engines." style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }} />
+                  <div style={{ marginTop: '6px', fontSize: '12px', color: metaDescCount > 160 ? '#DC2626' : '#667085', textAlign: 'right' }}>{metaDescCount}/160</div>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Focus Keywords</label>
+                  <input value={focusKeywords} onChange={(e) => setFocusKeywords(e.target.value)} placeholder="coco peat, coir fiber, greenhouse substrates" style={inputStyle} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Canonical URL</label>
+                  <input value={canonicalUrl} onChange={(e) => setCanonicalUrl(e.target.value)} placeholder="https://www.mariahcoirsexport.com/blog/canonical-slug" style={inputStyle} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Author Bio</label>
+                  <textarea value={authorBio} onChange={(e) => setAuthorBio(e.target.value)} rows={5} placeholder="A short author bio that can also be reused on the article page." style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }} />
+                </div>
+              </section>
+
+              <section style={{ padding: '18px', borderRadius: '22px', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 20px 40px rgba(16,42,29,0.14)', position: 'sticky', top: '24px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#E6B46B' }}>Search Preview</div>
+                <div style={{ marginTop: '14px', borderRadius: '18px', background: '#fffaf4', color: '#102A1D', padding: '16px' }}>
+                  <div style={{ color: '#1D4ED8', fontSize: '14px', fontWeight: 700, marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{metaTitle.trim() || title || 'Blog post title'}</div>
+                  <div style={{ color: '#16A34A', fontSize: '13px', marginBottom: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{canonicalPreview}</div>
+                  <p style={{ margin: 0, color: '#334155', fontSize: '14px', lineHeight: 1.6 }}>{metaDesc.trim() || shortDesc || 'Search engine snippet preview text will appear here.'}</p>
+                </div>
+                <div style={{ marginTop: '14px', padding: '14px', borderRadius: '18px', background: 'rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700 }}>SEO checks</div>
+                  <ul style={{ margin: '10px 0 0', paddingLeft: '18px', display: 'grid', gap: '8px', color: 'rgba(247,241,231,0.9)', lineHeight: 1.6 }}>
+                    <li>{metaTitleCount <= 60 ? 'Meta title length is within the recommended range.' : 'Meta title is longer than 60 characters.'}</li>
+                    <li>{metaDescCount <= 160 ? 'Meta description length is within the recommended range.' : 'Meta description is longer than 160 characters.'}</li>
+                    <li>{splitList(focusKeywords).length > 0 ? 'Focus keywords are set.' : 'Add focus keywords for search targeting.'}</li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+          )}
+
+          <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(16,24,40,0.08)', display: 'flex', gap: '12px', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+              <div
+                onClick={() => setIsPublished((prev) => !prev)}
+                style={{
+                  width: '46px',
+                  height: '26px',
+                  borderRadius: '999px',
+                  background: isPublished ? '#8F5D22' : '#E5E7EB',
+                  transition: 'background 0.2s',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '3px',
+                    left: isPublished ? '24px' : '3px',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    background: '#FFFFFF',
+                    transition: 'left 0.2s',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#334155' }}>{isPublished ? 'Published' : 'Draft'}</span>
             </label>
 
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button type="button" onClick={onClose}
-                style={{ padding: '12px 24px', background: 'transparent', border: '1px solid #E4E7EC', borderRadius: '12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 600, color: '#667085' }}>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginLeft: 'auto' }}>
+              <button type="button" onClick={onClose} style={{ padding: '12px 22px', background: 'transparent', border: '1px solid rgba(16,24,40,0.12)', borderRadius: '14px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#475569' }}>
                 Cancel
               </button>
-              <button type="submit" disabled={loading}
-                style={{ padding: '12px 28px', background: loading ? '#D4A96A' : '#C99B67', border: 'none', borderRadius: '12px', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 700, color: '#111' }}>
-                {loading ? 'Saving…' : (blog ? 'Update Post' : 'Create Post')}
+              <button type="submit" disabled={loading} style={{ padding: '12px 24px', background: loading ? '#B98940' : '#8F5D22', border: 'none', borderRadius: '14px', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit', fontSize: '14px', fontWeight: 800, color: '#fff', boxShadow: '0 8px 20px rgba(143,93,34,0.25)', opacity: loading ? 0.8 : 1 }}>
+                {loading ? 'Saving…' : blog ? 'Update Post' : 'Create Post'}
               </button>
             </div>
           </div>
@@ -1030,7 +1319,7 @@ function DashboardTab() {
             <div key={b.id} style={{ padding: '10px 0', borderBottom: '1px solid #F3F4F6' }}>
               <p style={{ fontSize: '14px', fontWeight: 700, color: '#111' }}>{b.title}</p>
               <p style={{ fontSize: '12px', color: b.isPublished ? '#16A34A' : '#A0A0A0' }}>
-                {b.isPublished ? '✅ Published' : '📝 Draft'} · {formatDate(b.createdAt)}
+                {b.isPublished ? '✅ Published' : '📝 Draft'} · {formatDate(b.publishedAt)}
               </p>
             </div>
           ))}
@@ -1213,7 +1502,7 @@ function EnquiriesTab() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-5">
         <input value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search name, email, country…" className="w-full sm:w-auto min-w-[260px] flex-1" style={inputStyle}
+          placeholder="Search name, email, country…" className="w-full sm:w-auto min-w-65 flex-1" style={inputStyle}
           onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full sm:w-auto" style={inputStyle}
           onFocus={(e) => (e.currentTarget.style.borderColor = '#C99B67')} onBlur={(e) => (e.currentTarget.style.borderColor = '#E4E7EC')} />
@@ -1405,7 +1694,7 @@ export default function AdminPortal() {
       <div className="flex flex-col md:flex-row" style={{ flex: 1 }}>
         {/* ── Sidebar ── */}
         <aside
-          className="w-full md:w-[220px] flex flex-row md:flex-col overflow-x-auto p-4 md:p-6 md:py-8 border-b md:border-b-0 md:border-r shrink-0 gap-1"
+          className="w-full md:w-55 flex flex-row md:flex-col overflow-x-auto p-4 md:p-6 md:py-8 border-b md:border-b-0 md:border-r shrink-0 gap-1"
           style={{
             background: '#FFFFFF',
             borderColor: 'rgba(0,0,0,0.06)',

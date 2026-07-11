@@ -63,9 +63,11 @@ class ProductController {
     createProduct = async (req, res, next) => {
         try {
             const { name, sku, category, moq, status, description, specs } = req.body;
-            // Build image filenames from uploaded files
+            // Build image list: uploaded files + explicit URL strings
             const files = req.files ?? [];
-            const images = files.map((f) => f.filename);
+            const uploadedFilenames = files.map((f) => f.filename);
+            const urlImages = safeJsonParse(req.body.imageUrls ?? '[]', []);
+            const images = [...urlImages, ...uploadedFilenames];
             const product = await product_repository_1.productRepository.create({
                 name: name?.trim() ?? '',
                 sku: sku?.trim() ?? '',
@@ -96,18 +98,21 @@ class ProductController {
                 return;
             }
             const { name, sku, category, moq, status, description, specs, existingImages } = req.body;
-            // Merge existing kept images with newly uploaded ones
+            // Merge kept existing images + new URL images + newly uploaded files
             const kept = safeJsonParse(existingImages ?? '[]', []);
+            const newUrlImages = safeJsonParse(req.body.imageUrls ?? '[]', []);
             const newFiles = req.files ?? [];
             const newFilenames = newFiles.map((f) => f.filename);
-            const mergedImages = [...kept, ...newFilenames];
-            // Delete images that are no longer used
+            const mergedImages = [...kept, ...newUrlImages, ...newFilenames];
+            // Delete local files that are no longer used (skip URL-based images)
             const previousImages = safeJsonParse(existing.images, []);
             const removed = previousImages.filter((img) => !kept.includes(img));
             for (const img of removed) {
-                const imgPath = path_1.default.join(__dirname, '../../uploads', img);
-                if (fs_1.default.existsSync(imgPath))
-                    fs_1.default.unlinkSync(imgPath);
+                if (!img.startsWith('http')) {
+                    const imgPath = path_1.default.join(__dirname, '../../uploads', img);
+                    if (fs_1.default.existsSync(imgPath))
+                        fs_1.default.unlinkSync(imgPath);
+                }
             }
             const product = await product_repository_1.productRepository.update(id, {
                 name: name?.trim(),
@@ -142,12 +147,14 @@ class ProductController {
                 res.status(404).json({ success: false, message: 'Product not found' });
                 return;
             }
-            // Clean up uploaded image files
+            // Clean up only local uploaded files (skip URL-based images)
             const images = safeJsonParse(existing.images, []);
             for (const img of images) {
-                const imgPath = path_1.default.join(__dirname, '../../uploads', img);
-                if (fs_1.default.existsSync(imgPath))
-                    fs_1.default.unlinkSync(imgPath);
+                if (!img.startsWith('http')) {
+                    const imgPath = path_1.default.join(__dirname, '../../uploads', img);
+                    if (fs_1.default.existsSync(imgPath))
+                        fs_1.default.unlinkSync(imgPath);
+                }
             }
             await product_repository_1.productRepository.delete(id);
             res.json({ success: true, message: 'Product deleted successfully' });

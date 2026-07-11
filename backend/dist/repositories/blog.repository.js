@@ -9,7 +9,7 @@ class BlogRepository {
     async findAll(publishedOnly = false) {
         return prisma_1.default.blog.findMany({
             where: publishedOnly ? { isPublished: true } : {},
-            orderBy: { createdAt: 'desc' },
+            orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
         });
     }
     async findById(id) {
@@ -46,7 +46,7 @@ class BlogRepository {
     async findRecent(limit = 5) {
         return prisma_1.default.blog.findMany({
             take: limit,
-            orderBy: { createdAt: 'desc' },
+            orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
         });
     }
 }

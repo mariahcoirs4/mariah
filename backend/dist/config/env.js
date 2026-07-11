@@ -25,6 +25,7 @@ const envSchema = zod_1.z.object({
     SMTP_USER: zod_1.z.string().optional(),
     SMTP_PASSWORD: zod_1.z.string().optional(),
     EMAIL_FROM: zod_1.z.string().optional(),
+    RESEND_API_KEY: zod_1.z.string().optional(),
 });
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {

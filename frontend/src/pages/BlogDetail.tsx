@@ -1,115 +1,156 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
-import { articleSchema, breadcrumbSchema } from '../hooks/useSEO';
+import { useSEO, articleSchema, breadcrumbSchema } from '../hooks/useSEO';
+import {
+  authorInitials,
+  estimateReadingTime,
+  extractTableOfContents,
+  formatBlogDate,
+  renderBlogContent,
+  splitList,
+} from '../lib/blogContent';
 
 const SITE_URL = 'https://www.mariahcoirsexport.com';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/mariahcoirs/og-image.jpg`;
-
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function Avatar({ blog }: { blog: Blog }) {
+  if (blog.authorAvatar) {
+    return <img src={blog.authorAvatar} alt={blog.authorName ?? blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+  }
+
+  return <span style={{ fontWeight: 800, letterSpacing: '-0.03em', color: '#102A1D' }}>{authorInitials(blog.authorName)}</span>;
+}
+
+function RelatedCard({ blog }: { blog: Blog }) {
+  const imageAlt = blog.featuredImageAlt || blog.title;
+  const readingTime = estimateReadingTime(blog.content);
+
+  return (
+    <Link
+      to={`/blog/${blog.slug}`}
+      style={{
+        textDecoration: 'none',
+        color: 'inherit',
+        background: '#fffaf4',
+        borderRadius: '22px',
+        overflow: 'hidden',
+        border: '1px solid rgba(119,84,42,0.12)',
+        boxShadow: '0 16px 34px rgba(16, 24, 40, 0.07)',
+        display: 'grid',
+        gridTemplateRows: '180px 1fr',
+      }}
+    >
+      <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #0D1B14 0%, #7A4E14 100%)' }}>
+        {blog.featuredImage ? (
+          <img src={getUploadUrl(blog.featuredImage)} alt={imageAlt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', color: '#F3E8D6', fontSize: '42px' }}>✦</div>
+        )}
+      </div>
+      <div style={{ padding: '20px', display: 'grid', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+          {blog.category && <span style={{ fontSize: '11px', fontWeight: 800, color: '#8F5D22', letterSpacing: '0.18em', textTransform: 'uppercase' }}>{blog.category}</span>}
+          <span style={{ fontSize: '12px', color: '#6B7280' }}>{readingTime} min read</span>
+        </div>
+        <h3 style={{ margin: 0, fontSize: '1.05rem', lineHeight: 1.2, letterSpacing: '-0.03em', color: '#102A1D' }}>{blog.title}</h3>
+        <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: 1.7, color: '#5B6472' }}>{blog.shortDescription}</p>
+      </div>
+    </Link>
+  );
 }
 
 export default function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [blog, setBlog] = useState<Blog | null>(null);
+  const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!slug) return;
 
+    setLoading(true);
+    setError('');
+    setBlog(null);
+    setAllBlogs([]);
+
     blogApi
       .getBySlug(slug)
-      .then((res) => {
-        const b = res.data;
-        setBlog(b);
+      .then((res) => setBlog(res.data))
+      .catch(() => setError('Article not found or has been removed.'))
+      .finally(() => setLoading(false));
+  }, [slug]);
 
-        // ── Dynamic SEO ──────────────────────────────────────────
-        const pageTitle = b.metaTitle ?? `${b.title} | Mariah Coirs`;
-        const pageDesc = b.metaDescription ?? b.shortDescription;
-        const pageUrl = b.canonicalUrl ?? `${SITE_URL}/blog/${b.slug}`;
-        const pageImage = b.featuredImage ? getUploadUrl(b.featuredImage) : DEFAULT_OG_IMAGE;
+  useEffect(() => {
+    if (!blog) return;
 
-        document.title = pageTitle;
+    blogApi
+      .getAll(true)
+      .then((res) => setAllBlogs(res.data))
+      .catch(() => setAllBlogs([]));
+  }, [blog]);
 
-        const setMeta = (nameOrProp: string, content: string, isProperty = false) => {
-          const attr = isProperty ? 'property' : 'name';
-          let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${nameOrProp}"]`);
-          if (!el) { el = document.createElement('meta'); el.setAttribute(attr, nameOrProp); document.head.appendChild(el); }
-          el.setAttribute('content', content);
-        };
-        const setLink = (rel: string, href: string) => {
-          let el = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
-          if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); }
-          el.href = href;
-        };
+  const contentHtml = useMemo(() => (blog ? renderBlogContent(blog.content) : ''), [blog]);
+  const tocEntries = useMemo(() => (blog ? extractTableOfContents(blog.content) : []), [blog]);
+  const relatedPosts = useMemo(() => {
+    if (!blog) return [] as Blog[];
 
-        setMeta('description', pageDesc);
-        setMeta('robots', 'index, follow');
-        setLink('canonical', pageUrl);
+    const currentTags = splitList(blog.tags);
+    return allBlogs
+      .filter((candidate) => candidate.id !== blog.id)
+      .map((candidate) => {
+        const candidateTags = splitList(candidate.tags);
+        const score =
+          Number(candidate.category && blog.category && candidate.category === blog.category) * 3 +
+          candidateTags.filter((tag) => currentTags.includes(tag)).length * 2 +
+          (candidate.authorName === blog.authorName ? 1 : 0);
+        return { candidate, score };
+      })
+      .sort((left, right) => right.score - left.score)
+      .slice(0, 3)
+      .map(({ candidate }) => candidate);
+  }, [allBlogs, blog]);
 
-        // Open Graph
-        setMeta('og:title', pageTitle, true);
-        setMeta('og:description', pageDesc, true);
-        setMeta('og:type', 'article', true);
-        setMeta('og:url', pageUrl, true);
-        setMeta('og:image', pageImage, true);
-        setMeta('og:site_name', 'Mariah Coirs', true);
+  const seoKeywords = [blog?.focusKeywords, blog?.category, blog?.tags].filter(Boolean).join(', ');
 
-        // Twitter
-        setMeta('twitter:card', 'summary_large_image');
-        setMeta('twitter:title', pageTitle);
-        setMeta('twitter:description', pageDesc);
-        setMeta('twitter:image', pageImage);
-
-        // Article + Breadcrumb JSON-LD
-        document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach(s => s.remove());
-        [
-          articleSchema({ title: b.title, description: pageDesc, image: pageImage, datePublished: b.createdAt, dateModified: b.updatedAt, url: pageUrl }),
+  useSEO({
+    title: blog ? blog.metaTitle || blog.title : 'Blog | Mariah Coirs',
+    description: blog ? blog.metaDescription || blog.shortDescription : 'Insights on coir, cocopeat, and sustainable agriculture from Mariah Coirs.',
+    canonical: blog ? blog.canonicalUrl || `${SITE_URL}/blog/${blog.slug}` : `${SITE_URL}/blogs`,
+    ogImage: blog?.featuredImage ? getUploadUrl(blog.featuredImage) : DEFAULT_OG_IMAGE,
+    ogType: 'article',
+    keywords: seoKeywords || 'coir blog, coco peat insights, sustainable agriculture, greenhouse growing',
+    jsonLd: blog
+      ? [
+          articleSchema({
+            title: blog.title,
+            description: blog.metaDescription || blog.shortDescription,
+            image: blog.featuredImage ? getUploadUrl(blog.featuredImage) : DEFAULT_OG_IMAGE,
+            datePublished: blog.publishedAt,
+            dateModified: blog.updatedAt,
+            url: blog.canonicalUrl || `${SITE_URL}/blog/${blog.slug}`,
+            author: blog.authorName ? { name: blog.authorName } : undefined,
+          }),
           breadcrumbSchema([
             { name: 'Home', url: `${SITE_URL}/` },
             { name: 'Blog', url: `${SITE_URL}/blogs` },
-            { name: b.title, url: pageUrl },
+            { name: blog.title, url: blog.canonicalUrl || `${SITE_URL}/blog/${blog.slug}` },
           ]),
-        ].forEach(schema => {
-          const script = document.createElement('script');
-          script.type = 'application/ld+json';
-          script.setAttribute('data-seo', 'true');
-          script.textContent = JSON.stringify(schema);
-          document.head.appendChild(script);
-        });
-      })
-      .catch(() => setError('Article not found or has been removed.'))
-      .finally(() => setLoading(false));
-
-    return () => {
-      document.title = 'Mariah Coirs | Premium Coir Products Exporter from India';
-      document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach(s => s.remove());
-    };
-  }, [slug]);
+        ]
+      : breadcrumbSchema([
+          { name: 'Home', url: `${SITE_URL}/` },
+          { name: 'Blog', url: `${SITE_URL}/blogs` },
+        ]),
+  });
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#F5F1EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: '3px solid rgba(201,155,103,0.2)',
-            borderTopColor: '#C99B67',
-            animation: 'spin 0.8s linear infinite',
-          }}
-        />
+      <div style={{ minHeight: '100vh', background: '#F8F3EA', display: 'grid', placeItems: 'center' }}>
+        <div style={{ width: '44px', height: '44px', borderRadius: '50%', border: '3px solid rgba(143,93,34,0.16)', borderTopColor: '#8F5D22', animation: 'spin 0.85s linear infinite' }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
@@ -117,192 +158,183 @@ export default function BlogDetail() {
 
   if (error || !blog) {
     return (
-      <div style={{ minHeight: '100vh', background: '#F5F1EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px' }}>
-        <span style={{ fontSize: '48px' }}>🌿</span>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111111' }}>Article Not Found</h1>
-        <p style={{ color: '#667085', fontSize: '16px' }}>{error}</p>
-        <Link
-          to="/blogs"
-          style={{
-            marginTop: '8px',
-            padding: '12px 24px',
-            background: '#C99B67',
-            color: '#111111',
-            fontWeight: 700,
-            borderRadius: '12px',
-            textDecoration: 'none',
-          }}
-        >
-          ← Back to Blog
-        </Link>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F7F1E7 0%, #FFFDF9 100%)', display: 'grid', placeItems: 'center', padding: '24px' }}>
+        <div style={{ maxWidth: '560px', width: '100%', textAlign: 'center', padding: '40px 28px', borderRadius: '28px', border: '1px solid rgba(16,24,40,0.08)', background: 'rgba(255,255,255,0.82)', boxShadow: '0 30px 70px rgba(16,24,40,0.08)' }}>
+          <div style={{ width: '76px', height: '76px', borderRadius: '22px', margin: '0 auto 18px', display: 'grid', placeItems: 'center', background: '#102A1D', color: '#E6B46B', fontSize: '30px' }}>✦</div>
+          <h1 style={{ margin: 0, fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', letterSpacing: '-0.05em', color: '#102A1D' }}>Article Not Found</h1>
+          <p style={{ margin: '12px 0 0', color: '#5B6472', lineHeight: 1.7 }}>{error || 'The article is unavailable right now.'}</p>
+          <Link to="/blogs" style={{ display: 'inline-flex', marginTop: '22px', padding: '12px 18px', borderRadius: '999px', background: '#8F5D22', color: '#fff', textDecoration: 'none', fontWeight: 700 }}>
+            Back to Blog
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const readingTime = estimateReadingTime(blog.content);
+  const tags = splitList(blog.tags);
+  const toc = tocEntries.length > 0 ? tocEntries : [];
+
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F1EB' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F7F1E7 0%, #FFFDF9 100%)' }}>
       <div style={{ height: '72px' }} aria-hidden="true" />
 
-      {/* ── Hero Image ── */}
-      {blog.featuredImage && (
-        <div
-          className="h-[200px] sm:h-[420px]"
-          style={{
-            width: '100%',
-            overflow: 'hidden',
-            position: 'relative',
-            background: '#0A0A0A',
-          }}
-        >
-          <img
-            src={getUploadUrl(blog.featuredImage)}
-            alt={blog.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(to bottom, transparent 40%, rgba(10,10,10,0.8) 100%)',
-            }}
-          />
+      <section style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #102A1D 0%, #1F4A33 44%, #2A1A11 100%)' }}>
+        {blog.featuredImage ? (
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <img src={getUploadUrl(blog.featuredImage)} alt={blog.featuredImageAlt || blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }} />
+          </div>
+        ) : null}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(16,42,29,0.35) 0%, rgba(16,42,29,0.78) 100%)' }} />
+        <div style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '48px 24px 42px' }}>
+          <motion.nav
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE_CUBIC }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', flexWrap: 'wrap' }}
+            aria-label="Breadcrumb"
+          >
+            <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+            <span>/</span>
+            <Link to="/blogs" style={{ color: 'inherit', textDecoration: 'none' }}>Blog</Link>
+            <span>/</span>
+            <span style={{ color: '#fff', maxWidth: '54ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{blog.title}</span>
+          </motion.nav>
+
+          <div style={{ marginTop: '22px', maxWidth: '980px' }}>
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE_CUBIC }} style={{ display: 'grid', gap: '16px' }}>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {blog.category && <span style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.16)', color: '#FDEBD2', fontSize: '11px', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase' }}>{blog.category}</span>}
+                <span style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: '11px', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                  {formatBlogDate(blog.publishedAt)}
+                </span>
+                <span style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: '11px', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                  {readingTime} min read
+                </span>
+              </div>
+              <h1 style={{ margin: 0, maxWidth: '14ch', fontSize: 'clamp(2.8rem, 6vw, 5.1rem)', lineHeight: 0.96, letterSpacing: '-0.07em', color: '#fff' }}>
+                {blog.title}
+              </h1>
+              <p style={{ margin: 0, maxWidth: '760px', fontSize: '1.06rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.84)' }}>
+                {blog.shortDescription}
+              </p>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginTop: '8px' }}>
+                <div style={{ width: '54px', height: '54px', borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg, #EBD8B7 0%, #D99C3C 100%)', display: 'grid', placeItems: 'center' }}>
+                  <Avatar blog={blog} />
+                </div>
+                <div>
+                  <p style={{ margin: 0, color: '#fff', fontWeight: 700 }}>{blog.authorName ?? 'Mariah Coirs Editorial Team'}</p>
+                  <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.78)', fontSize: '14px' }}>{blog.authorRole ?? 'Sustainable supply chain editorial'}</p>
+                </div>
+                {tags.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginLeft: 'auto' }}>
+                    {tags.map((tag) => (
+                      <span key={tag} style={{ padding: '8px 11px', borderRadius: '999px', background: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: '12px', fontWeight: 700 }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
         </div>
-      )}
+      </section>
 
-      {/* ── Article Body ── */}
-      <main
-        className="py-8 px-4 sm:py-16 sm:px-6"
-        style={{ maxWidth: '820px', margin: '0 auto' }}
-      >
-        {/* Breadcrumb */}
-        <motion.nav
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE_CUBIC }}
-          style={{ marginBottom: '32px', display: 'flex', gap: '8px', alignItems: 'center', fontSize: '13px', color: '#A0A0A0' }}
-          aria-label="Breadcrumb"
-        >
-          <Link to="/" style={{ color: '#A0A0A0', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#C99B67')} onMouseLeave={e => (e.currentTarget.style.color = '#A0A0A0')}>
-            Home
-          </Link>
-          <span>/</span>
-          <Link to="/blogs" style={{ color: '#A0A0A0', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#C99B67')} onMouseLeave={e => (e.currentTarget.style.color = '#A0A0A0')}>
-            Blog
-          </Link>
-          <span className="hidden sm:inline">/</span>
-          <span className="hidden sm:inline" style={{ color: '#667085', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '220px' }}>
-            {blog.title}
-          </span>
-        </motion.nav>
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 24px 88px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: '32px', alignItems: 'start' }}>
+          <article>
+            <div style={{ display: 'grid', gap: '26px' }}>
+              {blog.featuredImage && (
+                <div style={{ borderRadius: '28px', overflow: 'hidden', boxShadow: '0 24px 50px rgba(16,24,40,0.12)', background: '#102A1D' }}>
+                  <img src={getUploadUrl(blog.featuredImage)} alt={blog.featuredImageAlt || blog.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
+                </div>
+              )}
 
-        <motion.article
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE_CUBIC }}
-        >
-          {/* Meta label */}
-          <span
-            style={{
-              display: 'inline-block',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              color: '#C99B67',
-              marginBottom: '16px',
-            }}
-          >
-            {formatDate(blog.createdAt)}
-          </span>
+              <div style={{ padding: '28px', borderRadius: '28px', background: '#fffaf4', border: '1px solid rgba(119,84,42,0.12)', boxShadow: '0 18px 40px rgba(16,24,40,0.06)' }}>
+                <p style={{ margin: 0, color: '#5B6472', fontSize: '1.05rem', lineHeight: 1.8, borderLeft: '4px solid #8F5D22', paddingLeft: '18px' }}>
+                  {blog.metaDescription || blog.shortDescription}
+                </p>
+              </div>
 
-          {/* Title */}
-          <h1
-            style={{
-              fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-              fontWeight: 800,
-              color: '#111111',
-              letterSpacing: '-0.025em',
-              lineHeight: 1.15,
-              marginBottom: '20px',
-            }}
-          >
-            {blog.title}
-          </h1>
+              <div className="blog-rich-text" dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
-          {/* Short description */}
-          <p
-            style={{
-              fontSize: '18px',
-              color: '#667085',
-              lineHeight: 1.8,
-              borderLeft: '3px solid #C99B67',
-              paddingLeft: '20px',
-              marginBottom: '40px',
-            }}
-          >
-            {blog.shortDescription}
-          </p>
+              <section style={{ padding: '26px', borderRadius: '26px', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 20px 42px rgba(16,42,29,0.12)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ width: '72px', height: '72px', borderRadius: '22px', overflow: 'hidden', background: 'linear-gradient(135deg, #EBD8B7 0%, #D99C3C 100%)', display: 'grid', placeItems: 'center' }}>
+                    <Avatar blog={blog} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#E6B46B' }}>Author bio</div>
+                    <h2 style={{ margin: '10px 0 0', fontSize: '1.5rem', letterSpacing: '-0.04em' }}>{blog.authorName ?? 'Mariah Coirs Editorial Team'}</h2>
+                    <p style={{ margin: '6px 0 0', color: 'rgba(247,241,231,0.8)' }}>{blog.authorRole ?? 'Operations and agronomy specialists sharing sourcing insights.'}</p>
+                  </div>
+                </div>
+                {blog.authorBio && <p style={{ margin: '18px 0 0', lineHeight: 1.8, color: 'rgba(247,241,231,0.86)' }}>{blog.authorBio}</p>}
+              </section>
 
-          {/* Divider */}
-          <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.08)', marginBottom: '40px' }} />
+              {relatedPosts.length > 0 && (
+                <section style={{ display: 'grid', gap: '18px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8F5D22' }}>
+                      Related Posts
+                    </span>
+                    <h2 style={{ margin: '8px 0 0', fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.04em', color: '#102A1D' }}>
+                      More articles from the archive
+                    </h2>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                    {relatedPosts.map((related) => (
+                      <RelatedCard key={related.id} blog={related} />
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          </article>
 
-          {/* Rich Content */}
-          <div
-            className="prose-mariah"
-            style={{
-              fontSize: '17px',
-              lineHeight: 1.85,
-              color: '#374151',
-            }}
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          />
-        </motion.article>
+          <aside style={{ position: 'sticky', top: '108px', display: 'grid', gap: '16px' }}>
+            <div style={{ padding: '20px', borderRadius: '24px', border: '1px solid rgba(119,84,42,0.12)', background: '#fffaf4', boxShadow: '0 18px 34px rgba(16,24,40,0.06)' }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8F5D22' }}>On This Page</div>
+              <h3 style={{ margin: '10px 0 0', fontSize: '1rem', color: '#102A1D' }}>Table of contents</h3>
+              {toc.length > 0 ? (
+                <nav style={{ display: 'grid', gap: '8px', marginTop: '14px' }} aria-label="Table of contents">
+                  {toc.map((entry) => (
+                    <a
+                      key={entry.id}
+                      href={`#${entry.id}`}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '14px',
+                        textDecoration: 'none',
+                        color: '#3F4A55',
+                        background: entry.level === 2 ? 'rgba(143,93,34,0.07)' : 'transparent',
+                        marginLeft: `${Math.max(0, entry.level - 2) * 10}px`,
+                        fontWeight: entry.level === 2 ? 700 : 600,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {entry.text}
+                    </a>
+                  ))}
+                </nav>
+              ) : (
+                <p style={{ margin: '12px 0 0', color: '#6B7280', lineHeight: 1.7 }}>This article does not include section headings.</p>
+              )}
+            </div>
 
-        {/* ── Back link ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          style={{ marginTop: '64px', paddingTop: '32px', borderTop: '1px solid rgba(0,0,0,0.08)' }}
-        >
-          <Link
-            to="/blogs"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '15px',
-              fontWeight: 700,
-              color: '#111111',
-              textDecoration: 'none',
-              padding: '12px 24px',
-              background: 'rgba(201,155,103,0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(201,155,103,0.2)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,155,103,0.2)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,155,103,0.1)'; }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to All Articles
-          </Link>
-        </motion.div>
+            <div style={{ padding: '20px', borderRadius: '24px', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 18px 34px rgba(16,42,29,0.12)' }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#E6B46B' }}>Quick Facts</div>
+              <ul style={{ margin: '14px 0 0', paddingLeft: '18px', display: 'grid', gap: '10px', lineHeight: 1.65 }}>
+                <li>{formatBlogDate(blog.publishedAt)}</li>
+                <li>{readingTime} minute read</li>
+                <li>{blog.category || 'Coir & cocopeat editorial'}</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
       </main>
-
-      {/* ── Prose styling ── */}
-      <style>{`
-        .prose-mariah h2 { font-size: 1.6rem; font-weight: 800; color: #111; margin: 2.5rem 0 1rem; letter-spacing: -0.02em; }
-        .prose-mariah h3 { font-size: 1.2rem; font-weight: 700; color: #111; margin: 2rem 0 0.75rem; }
-        .prose-mariah p  { margin-bottom: 1.25rem; }
-        .prose-mariah ul, .prose-mariah ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-        .prose-mariah li { margin-bottom: 0.6rem; }
-        .prose-mariah strong { font-weight: 700; color: #111; }
-        .prose-mariah a { color: #C99B67; text-decoration: underline; }
-        .prose-mariah blockquote { border-left: 3px solid #C99B67; padding-left: 20px; color: #667085; font-style: italic; margin: 2rem 0; }
-      `}</style>
     </div>
   );
 }
