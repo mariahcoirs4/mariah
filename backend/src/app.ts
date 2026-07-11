@@ -28,7 +28,7 @@ app.use(
 
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -106,7 +106,7 @@ async function main() {
   const server = app.listen(env.PORT, () => {
     console.log(`\n🚀 Mariah Coirs API running at http://localhost:${env.PORT}`);
     console.log(`📁 Uploads served at http://localhost:${env.PORT}/uploads`);
-    console.log(`🌐 CORS origin: ${env.CORS_ORIGIN}`);
+    console.log(`🌐 CORS: all origins allowed`);
     console.log(`📦 Environment: ${env.NODE_ENV}\n`);
   });
 
