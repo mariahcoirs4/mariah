@@ -130,7 +130,7 @@ function ProductCard({
           {product.description}
         </p>
 
-        {/* Specs commented out
+        Specs commented out
         {product.specs && product.specs.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
             {product.specs.map(({ label, value }) => (
@@ -151,13 +151,11 @@ function ProductCard({
             ))}
           </div>
         )}
-        */}
+       
 
-        {/* Spacer commented out
         <div className="flex-1" />
-        */}
+       
 
-        {/* Buttons commented out
         <div className="mt-5 flex gap-2.5">
           <motion.a
             href="#quote"
@@ -174,7 +172,7 @@ function ProductCard({
             Request Quote
           </motion.a>
 
-          <motion.a
+          {/* <motion.a
             href={`#product-${product.id}`}
             whileHover={reduce ? {} : { scale: 1.03, background: '#F5F0E8' }}
             whileTap={reduce ? {} : { scale: 0.97 }}
@@ -188,9 +186,9 @@ function ProductCard({
             }}
           >
             View Details
-          </motion.a>
+          </motion.a> */}
         </div>
-        */}
+       
       </div>
     </motion.article>
   );
