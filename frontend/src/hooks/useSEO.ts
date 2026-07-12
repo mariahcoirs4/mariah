@@ -111,9 +111,10 @@ export const ORGANIZATION_SCHEMA = {
   foundingDate: '2009',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Pollachi',
+    streetAddress: '206-13B Krishnapuram Road, Kalladipatti',
+    addressLocality: 'Nilakottai',
     addressRegion: 'Tamil Nadu',
-    postalCode: '642002',
+    postalCode: '624201',
     addressCountry: 'IN',
   },
   contactPoint: [
@@ -138,7 +139,7 @@ export const WEBSITE_SCHEMA = {
   name: 'Mariah Coirs',
   url: SITE_URL,
   description:
-    'Premium coco peat blocks, coir fiber, grow bags, and coir products manufactured and exported from Pollachi, Tamil Nadu, India.',
+    'Premium coco peat blocks, coir fiber, grow bags, and coir products manufactured and exported from Nilakottai, Dindigul District, Tamil Nadu, India.',
 };
 
 export function breadcrumbSchema(items: { name: string; url: string }[]) {

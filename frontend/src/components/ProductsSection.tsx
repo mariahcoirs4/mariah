@@ -39,10 +39,12 @@ function ProductCard({
   product,
   index,
   reduce,
+  openModal,
 }: {
   product: ApiProduct;
   index: number;
   reduce: boolean;
+  openModal: (type: 'export' | 'domestic') => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const firstImage = product.images?.[0];
@@ -157,8 +159,9 @@ function ProductCard({
        
 
         <div className="mt-5 flex gap-2.5">
-          <motion.a
-            href="#quote"
+          <motion.button
+            type="button"
+            onClick={() => openModal('export')}
             whileHover={reduce ? {} : { scale: 1.03 }}
             whileTap={reduce ? {} : { scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
@@ -167,10 +170,13 @@ function ProductCard({
             style={{
               background: '#0F0A04',
               boxShadow: '0 3px 12px rgba(0,0,0,0.22)',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
             }}
           >
             Request Quote
-          </motion.a>
+          </motion.button>
 
           {/* <motion.a
             href={`#product-${product.id}`}
@@ -379,6 +385,7 @@ export default function ProductsSection() {
                     product={product}
                     index={i}
                     reduce={!!shouldReduce}
+                    openModal={openModal}
                   />
                 ))}
               </motion.div>

@@ -33,6 +33,7 @@ import IndustriesPage from './pages/IndustriesPage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import SitemapPage from './pages/SitemapPage'
+import GalleryPage from './pages/GalleryPage'
 
 import { useSEO, ORGANIZATION_SCHEMA, WEBSITE_SCHEMA } from './hooks/useSEO'
 
@@ -108,6 +109,7 @@ function App() {
           <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
           <Route path="/export-process" element={<PublicLayout><ExportProcessPage /></PublicLayout>} />
           <Route path="/industries" element={<PublicLayout><IndustriesPage /></PublicLayout>} />
+          <Route path="/gallery" element={<PublicLayout><GalleryPage /></PublicLayout>} />
 
           {/* Legal & Utility */}
           <Route path="/privacy" element={<PublicLayout><PrivacyPage /></PublicLayout>} />

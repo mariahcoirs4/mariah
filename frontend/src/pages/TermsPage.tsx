@@ -79,10 +79,10 @@ export default function TermsPage() {
           <p>All content on this website, including logos, images, and text, is the property of Mariah Coirs and may not be reproduced or redistributed without written permission.</p>
 
           <h2 style={H2_STYLE}>9. Governing Law</h2>
-          <p>These Terms are governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts of Pollachi, Tamil Nadu.</p>
+          <p>These Terms are governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts of Dindigul District, Tamil Nadu.</p>
 
           <h2 style={H2_STYLE}>10. Contact</h2>
-          <p>For any questions about these Terms, contact us at:<br /><strong>Mariah Coirs Pvt. Ltd.</strong>, Pollachi, Tamil Nadu, India<br />Email: <a href="mailto:exports@mariahcoirsexport.com" style={{ color: '#C99B67' }}>exports@mariahcoirsexport.com</a></p>
+          <p>For any questions about these Terms, contact us at:<br /><strong>Mariah Coirs Pvt. Ltd.</strong><br />206-13B Krishnapuram Road, Kalladipatti,<br />Nilakottai, Dindigul District, Tamil Nadu — 624 201, India<br />Email: <a href="mailto:exports@mariahcoirsexport.com" style={{ color: '#C99B67' }}>exports@mariahcoirsexport.com</a></p>
         </div>
       </main>
     </div>

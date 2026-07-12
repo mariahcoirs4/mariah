@@ -90,7 +90,7 @@ export default function GallerySection() {
   }, [activeImage]);
 
   return (
-    <section id="gallery" className="w-full bg-[#F7F4EF] py-20 lg:py-28 scroll-mt-20" aria-labelledby="gallery-title">
+    <section className="w-full bg-[#F7F4EF] py-20 lg:py-28" aria-labelledby="gallery-title">
       <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-10 lg:mb-14">
           <div>
@@ -126,7 +126,7 @@ export default function GallerySection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
           {YOUTUBE_VIDEOS.map(video => (
             <YouTubeVideo key={video.id} {...video} />
           ))}
