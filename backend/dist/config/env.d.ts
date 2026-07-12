@@ -14,5 +14,6 @@ export declare const env: {
     SMTP_USER?: string | undefined;
     SMTP_PASSWORD?: string | undefined;
     EMAIL_FROM?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
 };
 export default env;

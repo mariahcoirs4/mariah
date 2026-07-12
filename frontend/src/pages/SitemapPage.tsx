@@ -42,6 +42,7 @@ const SITEMAP_GROUPS: SitemapGroup[] = [
   {
     title: 'Company',
     links: [
+      { label: 'Gallery', href: '/gallery' },
       { label: 'Certifications & Standards', href: '/certifications' },
       { label: 'Export Process', href: '/export-process' },
       { label: 'FAQ', href: '/faq' },

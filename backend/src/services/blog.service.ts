@@ -27,9 +27,17 @@ export class BlogService {
       slug,
       metaTitle: input.metaTitle || input.title,
       metaDescription: input.metaDescription || input.shortDescription,
+      focusKeywords: input.focusKeywords || null,
       shortDescription: input.shortDescription,
       content: input.content,
       featuredImage,
+      featuredImageAlt: input.featuredImageAlt || null,
+      authorName: input.authorName || null,
+      authorRole: input.authorRole || null,
+      authorBio: input.authorBio || null,
+      authorAvatar: input.authorAvatar || null,
+      category: input.category || null,
+      tags: input.tags || null,
       isPublished: input.isPublished ?? false,
       canonicalUrl: input.canonicalUrl || null,
     });
@@ -41,7 +49,30 @@ export class BlogService {
       throw new Error('Blog post not found');
     }
 
-    const updatedData: any = { ...input };
+    const updatedData: any = {};
+
+    const assignIfDefined = (key: keyof UpdateBlogInput, value: unknown) => {
+      if (value !== undefined) {
+        updatedData[key] = value === '' ? null : value;
+      }
+    };
+
+    assignIfDefined('title', input.title);
+    assignIfDefined('slug', input.slug);
+    assignIfDefined('metaTitle', input.metaTitle);
+    assignIfDefined('metaDescription', input.metaDescription);
+    assignIfDefined('focusKeywords', input.focusKeywords);
+    assignIfDefined('shortDescription', input.shortDescription);
+    assignIfDefined('content', input.content);
+    assignIfDefined('isPublished', input.isPublished);
+    assignIfDefined('canonicalUrl', input.canonicalUrl);
+    assignIfDefined('featuredImageAlt', input.featuredImageAlt);
+    assignIfDefined('authorName', input.authorName);
+    assignIfDefined('authorRole', input.authorRole);
+    assignIfDefined('authorBio', input.authorBio);
+    assignIfDefined('authorAvatar', input.authorAvatar);
+    assignIfDefined('category', input.category);
+    assignIfDefined('tags', input.tags);
 
     if (filename) {
       // New file uploaded — use it and delete the old file from disk (if it was a local file)

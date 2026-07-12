@@ -22,9 +22,18 @@ model Blog {
   slug             String   @unique
   metaTitle        String?
   metaDescription  String?
+  focusKeywords    String?
   shortDescription String   @db.VarChar(500)
   content          String   @db.Text
   featuredImage    String?
+  featuredImageAlt String?
+  authorName       String?
+  authorRole       String?
+  authorBio        String?
+  authorAvatar     String?
+  category         String?
+  tags             String?
+  publishedAt      DateTime @default(now())
   isPublished      Boolean  @default(false)
   canonicalUrl     String?
   createdAt        DateTime @default(now())

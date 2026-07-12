@@ -24,67 +24,260 @@ async function main() {
   }
 
   // ── Seed Sample Blogs ───────────────────────────────────────────
-  const blogCount = await prisma.blog.count();
-  if (blogCount === 0) {
-    await prisma.blog.createMany({
-      data: [
-        {
-          title: 'Benefits of Coco Peat for Hydroponics',
-          slug: 'benefits-of-coco-peat-for-hydroponics',
-          metaTitle: 'Coco Peat for Hydroponics | Mariah Coirs',
-          metaDescription: 'Discover why coco peat is the preferred growing medium for hydroponic farmers worldwide. Learn about its benefits, EC levels, and ideal applications.',
-          shortDescription: 'Coco peat is the ideal growing medium for hydroponic systems, offering superior water retention, excellent aeration, and sustainable sourcing.',
-          content: `<h2>Why Coco Peat is the Preferred Growing Medium</h2>
-<p>Coco peat (also called coir pith) has become the go-to growing medium for hydroponic growers worldwide. Sourced from the fibrous husks of coconuts, it offers a sustainable, renewable alternative to peat moss or rockwool.</p>
+  const blogSeeds = [
+    {
+      title: 'Low-EC Coco Peat: What Export Buyers Actually Test',
+      slug: 'low-ec-coco-peat-export-tests',
+      metaTitle: 'Low-EC Coco Peat Export Tests | Mariah Coirs',
+      metaDescription: 'A practical guide to EC, pH, moisture, and compression testing for export-grade coco peat and coir pith products.',
+      focusKeywords: 'low EC coco peat, export quality tests, coco peat EC, coir pith testing',
+      shortDescription: 'Understand the exact quality checkpoints buyers use when approving low-EC coco peat for greenhouse and hydroponic programs.',
+      category: 'Quality Control',
+      tags: 'cocopeat, EC testing, pH, quality control, export',
+      authorName: 'Ananya Iyer',
+      authorRole: 'Quality & Lab Lead',
+      authorBio: 'Ananya manages wash, buffer, and testing protocols for export-grade coco peat. She focuses on repeatable quality checks that growers can trust.',
+      featuredImage: '/mariahcoirs/raw_material.jpeg',
+      featuredImageAlt: 'Workers preparing raw coconut material for low-EC coco peat processing',
+      canonicalUrl: 'https://www.mariahcoirsexport.com/blog/low-ec-coco-peat-export-tests',
+      publishedAt: new Date('2026-06-24T09:00:00.000Z'),
+      isPublished: true,
+      content: `# Low-EC Coco Peat: What Export Buyers Actually Test
 
-<h3>Key Benefits</h3>
-<ul>
-<li><strong>Superior Water Retention</strong> – Holds 8-9 times its weight in water while maintaining excellent drainage.</li>
-<li><strong>Ideal pH Range</strong> – Naturally buffered between 5.5 and 6.5, perfect for most crops.</li>
-<li><strong>Excellent Aeration</strong> – High air-filled porosity promotes healthy root development.</li>
-<li><strong>Biodegradable &amp; Sustainable</strong> – 100% natural and eco-friendly.</li>
-<li><strong>Low EC Availability</strong> – Buffered and washed coco peat is ready for sensitive crops like strawberries and herbs.</li>
-</ul>
+Buyers rarely approve coco peat because of a single spec sheet line. They look for consistency across **EC, pH, moisture, compression ratio, and particle structure**. A batch that looks perfect on paper can still fail if the wash cycle, buffering, or packaging is not controlled.
 
-<h3>Mariah Coirs Low EC Coco Peat</h3>
-<p>Our export-grade low EC coco peat is triple-washed and buffer-treated to ensure EC levels below 0.5 mS/cm. This makes it suitable for the most demanding hydroponic operations in Europe, North America, and Australia.</p>`,
-          isPublished: true,
-        },
-        {
-          title: 'Understanding EC and pH in Coco Peat Products',
-          slug: 'understanding-ec-and-ph-in-coco-peat',
-          metaTitle: 'EC and pH in Coco Peat | Mariah Coirs Export',
-          metaDescription: 'Understand how EC and pH values in coco peat affect plant growth and why proper washing and buffering is critical for export-grade products.',
-          shortDescription: 'Learn why EC and pH measurements are critical quality indicators in coco peat exports, and how Mariah Coirs maintains world-class quality standards.',
-          content: `<h2>EC and pH: The Quality Markers of Coco Peat</h2>
-<p>When sourcing coco peat for commercial growing, two parameters matter most: Electrical Conductivity (EC) and pH. These directly influence nutrient availability and plant health.</p>
+## 1. Electrical Conductivity matters first
 
-<h3>What is EC in Coco Peat?</h3>
-<p>EC measures the salt content in the growing medium. High EC indicates excess salts that can block nutrient uptake. Premium export-grade coco peat should have EC below 1.0 mS/cm, ideally below 0.5 for sensitive crops.</p>
+EC reveals how much soluble salt remains in the substrate. For sensitive crops, buyers often want:
 
-<h3>Our Multi-Cycle Washing Process</h3>
-<p>At Mariah Coirs, all export-grade coco peat undergoes a rigorous 3-cycle washing process followed by lab testing. Each batch is certified with a physical analysis report including EC, pH, and moisture content.</p>`,
-          isPublished: true,
-        },
-        {
-          title: 'Coir Grow Bags for Greenhouse Horticulture',
-          slug: 'coir-grow-bags-greenhouse-horticulture',
-          metaTitle: 'Coir Grow Bags for Greenhouse | Mariah Coirs',
-          metaDescription: 'Premium coir grow bags for greenhouse tomatoes, cucumbers, and peppers. Learn how to select the right density and volume for your crop.',
-          shortDescription: 'Explore our range of premium coir grow bags engineered for high-yield greenhouse production of tomatoes, cucumbers, peppers, and berries.',
-          content: `<h2>Coir Grow Bags: The Greenhouse Standard</h2>
-<p>Coir grow bags have replaced rockwool as the preferred growing substrate in high-tech greenhouse operations across Europe, North America, and Australia. Their superior drainage, reusability, and organic certification make them ideal for modern agriculture.</p>
+- low EC under 0.5 mS/cm after hydration
+- predictable readings from bag to bag
+- a clean lab report tied to the batch number
 
-<h3>Why Choose Mariah Coirs Grow Bags?</h3>
-<p>Our grow bags are manufactured from premium, triple-washed coir pith with controlled density and air-filled porosity. Each bag is filled to consistent weights and sealed under strict quality control.</p>`,
-          isPublished: false,
-        },
-      ],
+## 2. pH and buffering need to match the crop
+
+Most greenhouse crops perform well in a slightly acidic range. The right buffering process keeps the root zone stable after the grower rehydrates the block or grow bag.
+
+> A good coco peat supplier does not just lower the EC. They make the reading repeatable after compression, transport, and hydration.
+
+## 3. Moisture content affects shipping and storage
+
+Buyers watch moisture because it changes weight, storage behavior, and the shelf life of the product. Too dry and dust increases. Too wet and the product can deform in the container.
+
+## 4. The final approval checklist
+
+Export buyers usually want:
+
+1. batch-level COA or lab sheet
+2. moisture and expansion data
+3. compression ratio and dimensions
+4. packaging photos and pallet configuration
+5. a consistent point of contact for re-orders
+
+When these five checkpoints stay stable, repeat orders usually follow quickly.`,
+    },
+    {
+      title: 'How Coir Fibre Improves Water Management in Greenhouse Beds',
+      slug: 'coir-fibre-water-management-greenhouse-beds',
+      metaTitle: 'Coir Fibre Water Management in Greenhouse Beds | Mariah Coirs',
+      metaDescription: 'Learn how coir fibre and coir pith improve water distribution, root aeration, and crop uniformity inside modern greenhouse beds.',
+      focusKeywords: 'coir fibre water management, greenhouse beds, root aeration, coir fibre',
+      shortDescription: 'Coir fibre is more than filler material. It shapes the water profile of greenhouse beds and keeps roots supplied with oxygen.',
+      category: 'Greenhouse Growing',
+      tags: 'coir fibre, greenhouse, water management, root zone, crop uniformity',
+      authorName: 'Rohan Menon',
+      authorRole: 'Agronomy Specialist',
+      authorBio: 'Rohan advises greenhouse growers on substrate structure, irrigation timing, and root-zone performance across tropical and temperate crops.',
+      featuredImage: '/mariahcoirs/coir_group.jpeg',
+      featuredImageAlt: 'Coir fibre bundles ready for substrate blending',
+      canonicalUrl: 'https://www.mariahcoirsexport.com/blog/coir-fibre-water-management-greenhouse-beds',
+      publishedAt: new Date('2026-06-11T08:30:00.000Z'),
+      isPublished: true,
+      content: `# How Coir Fibre Improves Water Management in Greenhouse Beds
+
+Coir fibre gives greenhouse substrates a structure that holds water while still leaving room for air. That balance matters because roots do not grow well in a medium that is permanently saturated.
+
+## Why the fibre fraction matters
+
+Long fibres improve the physical structure of the bed by creating channels that let excess water drain while the finer fraction holds moisture for later use.
+
+### Practical outcomes for growers
+
+- better drainage after heavy irrigation
+- more oxygen available at the root zone
+- fewer swings between dry and saturated media
+
+## Matching fibre with coco peat
+
+The best blends are not the same for every crop. Tomatoes, cucumbers, strawberries, and peppers all respond differently to substrate density and water-holding capacity.
+
+## Irrigation gets easier when the substrate is stable
+
+When the media has a predictable structure, growers can program irrigation more accurately and reduce waste. That often leads to more even fruit set and a cleaner harvest window.
+
+## What to ask your supplier
+
+Before you place a container order, ask for:
+
+1. fibre length range
+2. dust percentage
+3. moisture target
+4. recommended mix ratio with coco peat
+5. packing density
+
+Those five details determine how the bed behaves once it reaches the greenhouse.`,
+    },
+    {
+      title: 'Inside a Modern Coir Plant: From Husk to Compression Block',
+      slug: 'modern-coir-plant-husk-to-compression-block',
+      metaTitle: 'Inside a Modern Coir Plant | Mariah Coirs',
+      metaDescription: 'A step-by-step look at how coconut husk becomes washed, dried, screened, and compressed into export-ready coir blocks.',
+      focusKeywords: 'modern coir plant, coconut husk processing, coir block production, export ready coir',
+      shortDescription: 'See how raw coconut husk moves through cutting, washing, drying, screening, and compression before it is packed for export.',
+      category: 'Processing',
+      tags: 'processing, coir blocks, coconut husk, compression, manufacturing',
+      authorName: 'Mariah Coirs Research Desk',
+      authorRole: 'Process Engineering Team',
+      authorBio: 'The research desk documents production flow, machine settings, and packing standards used across the Mariah Coirs facility.',
+      featuredImage: '/mariahcoirs/process.jpeg',
+      featuredImageAlt: 'Industrial coir processing line inside a modern plant',
+      canonicalUrl: 'https://www.mariahcoirsexport.com/blog/modern-coir-plant-husk-to-compression-block',
+      publishedAt: new Date('2026-05-29T09:15:00.000Z'),
+      isPublished: true,
+      content: `# Inside a Modern Coir Plant: From Husk to Compression Block
+
+People often imagine coir production as a simple drying operation. In practice, the workflow is closer to a controlled manufacturing line where each stage affects the next.
+
+## Step 1: Raw material reception
+
+The process begins with sorted husk arriving at the yard. Material quality, moisture level, and contamination are checked before the batch is accepted.
+
+## Step 2: Cutting and separation
+
+The husk is cut so the fibre and pith can be separated efficiently. This stage determines how much dust, fibre, and chip fraction end up in the final blend.
+
+## Step 3: Washing and drying
+
+The washed material is dried to a controlled moisture level. If the product dries unevenly, compression performance and expansion ratio become inconsistent.
+
+## Step 4: Screening and blending
+
+Screening removes oversize material while blending creates the texture the grower expects. The goal is consistency, not just volume.
+
+## Step 5: Compression and packing
+
+The final block must be dense enough for export but still expand properly on hydration. Packaging and palletization then protect the product during transit.
+
+## Why this matters to buyers
+
+The plant process is what makes the lab report believable. When the workflow is repeatable, buyers can plan storage, irrigation, and crop cycles with much more confidence.`,
+    },
+    {
+      title: 'Choosing the Right Grow Bag Density for Tomatoes, Cucumbers, and Strawberries',
+      slug: 'choosing-right-grow-bag-density',
+      metaTitle: 'Choosing Grow Bag Density | Mariah Coirs',
+      metaDescription: 'A grower-focused guide to choosing coir grow bag density and volume for tomato, cucumber, and strawberry production.',
+      focusKeywords: 'grow bag density, coir grow bags, tomatoes, cucumbers, strawberries',
+      shortDescription: 'Grow bag density changes irrigation behavior, root spread, and crop stability. Here is how to select the right range.',
+      category: 'Hydroponics',
+      tags: 'grow bags, hydroponics, tomatoes, cucumbers, strawberries',
+      authorName: 'Meera Suresh',
+      authorRole: 'Hydroponic Systems Advisor',
+      authorBio: 'Meera works with protected-cultivation growers to tune substrate density, irrigation frequency, and root-zone performance.',
+      featuredImage: '/mariahcoirs/package_unit.jpg',
+      featuredImageAlt: 'Packed coir grow bags prepared for greenhouse shipment',
+      canonicalUrl: 'https://www.mariahcoirsexport.com/blog/choosing-right-grow-bag-density',
+      publishedAt: new Date('2026-05-18T07:45:00.000Z'),
+      isPublished: true,
+      content: `# Choosing the Right Grow Bag Density for Tomatoes, Cucumbers, and Strawberries
+
+Grow bag density is not just a manufacturing number. It changes how quickly water moves, how much air stays in the root zone, and how reliably the crop responds to fertigation.
+
+## Tomatoes
+
+Tomato crops usually prefer a stable medium with enough structure to support a long season. A medium-density bag often gives the best balance between drainage and moisture reserve.
+
+## Cucumbers
+
+Cucumber roots are fast and responsive. They need a media that drains cleanly after each irrigation pulse so the root zone does not stay saturated.
+
+## Strawberries
+
+Strawberry production demands precision. A low-salt, consistent bag with balanced water retention helps berries stay uniform through the season.
+
+## A simple selection rule
+
+When comparing products, ask three questions:
+
+1. How fast does the bag rehydrate?
+2. How much water stays available after drainage?
+3. Does the density remain stable across the entire pallet?
+
+If the answers are consistent, irrigation planning becomes much easier and crop variation drops.
+
+## Closing note
+
+The right grow bag is the one that matches the crop, climate, and irrigation strategy. Density is the starting point, not the final decision.`,
+    },
+    {
+      title: 'Export Checklist for Cocopeat Shipments: Moisture, Compression, and Documentation',
+      slug: 'export-checklist-cocopeat-shipments',
+      metaTitle: 'Cocopeat Export Checklist | Mariah Coirs',
+      metaDescription: 'A practical checklist covering moisture, compression, pallet patterns, labeling, and documents for cocopeat export shipments.',
+      focusKeywords: 'cocopeat export checklist, moisture control, pallet documentation, compressed blocks',
+      shortDescription: 'Use this checklist to reduce delays, protect quality, and keep your cocopeat containers export-ready from day one.',
+      category: 'Export Logistics',
+      tags: 'export, documentation, moisture, compression, shipping',
+      authorName: 'Karthik Raj',
+      authorRole: 'Export Operations Manager',
+      authorBio: 'Karthik coordinates container bookings, packing rules, and documentation so every export batch leaves the port correctly prepared.',
+      featuredImage: '/mariahcoirs/machine_pack.jpg',
+      featuredImageAlt: 'Packed cocopeat products loaded for export shipment',
+      canonicalUrl: 'https://www.mariahcoirsexport.com/blog/export-checklist-cocopeat-shipments',
+      publishedAt: new Date('2026-04-30T10:00:00.000Z'),
+      isPublished: true,
+      content: `# Export Checklist for Cocopeat Shipments: Moisture, Compression, and Documentation
+
+The export side of cocopeat is where many shipments lose time. Delays usually come from small details such as moisture drift, pallet labeling, or missing batch paperwork.
+
+## Before the truck arrives
+
+- confirm final moisture target
+- verify block or bag count against the order
+- check that each pallet is labeled with the correct batch and product code
+
+## During packing
+
+Compression should stay consistent throughout the container. If one pallet expands differently from the others, the buyer will notice immediately.
+
+## Documentation buyers expect
+
+Most buyers want:
+
+1. commercial invoice
+2. packing list
+3. certificate of origin
+4. product specification sheet
+5. lab or batch report
+
+## Container loading tips
+
+Keep the load pattern balanced and make sure moisture-sensitive packs are not exposed to condensation. Small gaps, proper pallet wrap, and clean stacking all matter.
+
+## Final review before dispatch
+
+The final sign-off should answer one question: would you be comfortable opening this container in front of the customer? If the answer is yes, the shipment is ready.`,
+    },
+  ];
+
+  for (const blog of blogSeeds) {
+    await prisma.blog.upsert({
+      where: { slug: blog.slug },
+      create: blog,
+      update: blog,
     });
-    console.log('✅ Sample blogs seeded (3 posts)');
-  } else {
-    console.log(`ℹ️  Blogs already seeded (${blogCount} exist)`);
   }
+  console.log('✅ Sample blogs seeded (5 posts upserted)');
 
   // ── Seed Sample Enquiries ───────────────────────────────────────
   const enquiryCount = await prisma.enquiry.count();

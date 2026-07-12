@@ -104,7 +104,7 @@ export default function Footer() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.08 }}
-        className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 pt-[100px] pb-[60px]"
+        className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 pt-[100px] pb-[110px] md:pb-[100px]"
       >
         {/* ─── Main Footer Columns ─────────────────────────────────────── */}
         {/* Mobile: 2 columns / 2 rows, Desktop: 4 columns / 1 row */}
@@ -238,7 +238,7 @@ export default function Footer() {
               {[
                 { name: 'About Us', href: '/about' },
                 { name: 'Manufacturing', href: '/about' },
-                { name: 'Gallery', href: '/#gallery' },
+                { name: 'Gallery', href: '/gallery' },
                 { name: 'Certifications', href: '/certifications' },
                 { name: 'Export Process', href: '/export-process' },
                 { name: 'Industry Insights', href: '/blogs' },

@@ -89,7 +89,7 @@ export default function PrivacyPage() {
 
           <h2 style={H2_STYLE}>8. Contact Us</h2>
           <p>If you have questions or concerns about this policy, please contact us:</p>
-          <p><strong>Mariah Coirs Pvt. Ltd.</strong><br />Pollachi, Tamil Nadu — 642 002, India<br />Email: <a href="mailto:exports@mariahcoirsexport.com" style={{ color: '#C99B67' }}>exports@mariahcoirsexport.com</a></p>
+          <p><strong>Mariah Coirs Pvt. Ltd.</strong><br />206-13B Krishnapuram Road, Kalladipatti,<br />Nilakottai, Dindigul District,<br />Tamil Nadu — 624 201, India<br />Email: <a href="mailto:exports@mariahcoirsexport.com" style={{ color: '#C99B67' }}>exports@mariahcoirsexport.com</a></p>
         </div>
       </main>
     </div>

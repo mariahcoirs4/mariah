@@ -5,8 +5,8 @@ export declare class ProductRepository {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        sku: string;
         category: string;
+        sku: string;
         moq: string;
         description: string;
         images: string;
@@ -18,8 +18,8 @@ export declare class ProductRepository {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        sku: string;
         category: string;
+        sku: string;
         moq: string;
         description: string;
         images: string;
@@ -40,8 +40,8 @@ export declare class ProductRepository {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        sku: string;
         category: string;
+        sku: string;
         moq: string;
         description: string;
         images: string;
@@ -62,8 +62,8 @@ export declare class ProductRepository {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        sku: string;
         category: string;
+        sku: string;
         moq: string;
         description: string;
         images: string;
@@ -75,8 +75,8 @@ export declare class ProductRepository {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        sku: string;
         category: string;
+        sku: string;
         moq: string;
         description: string;
         images: string;

@@ -41,7 +41,8 @@ class BlogController {
         try {
             // Validate schema (multer text fields are put in req.body)
             const validatedInput = blog_validator_1.createBlogSchema.parse(req.body);
-            const blog = await blog_service_1.blogService.createBlog(validatedInput, uploadedFile ? uploadedFile.filename : undefined);
+            const imageUrl = req.body.featuredImageUrl || undefined;
+            const blog = await blog_service_1.blogService.createBlog(validatedInput, uploadedFile ? uploadedFile.filename : undefined, imageUrl);
             return res.status(201).json({
                 success: true,
                 message: 'Blog post created successfully',
@@ -73,7 +74,9 @@ class BlogController {
                     message: 'Invalid blog ID format',
                 });
             }
-            const blog = await blog_service_1.blogService.updateBlog(blogId, validatedInput, uploadedFile ? uploadedFile.filename : undefined);
+            // Pass imageUrl only if it was explicitly provided in the body
+            const imageUrl = 'featuredImageUrl' in req.body ? (req.body.featuredImageUrl || '') : undefined;
+            const blog = await blog_service_1.blogService.updateBlog(blogId, validatedInput, uploadedFile ? uploadedFile.filename : undefined, imageUrl);
             return res.status(200).json({
                 success: true,
                 message: 'Blog post updated successfully',

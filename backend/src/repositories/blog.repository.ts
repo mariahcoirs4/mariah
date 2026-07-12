@@ -4,7 +4,7 @@ export class BlogRepository {
   async findAll(publishedOnly = false) {
     return prisma.blog.findMany({
       where: publishedOnly ? { isPublished: true } : {},
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -48,7 +48,7 @@ export class BlogRepository {
   async findRecent(limit = 5) {
     return prisma.blog.findMany({
       take: limit,
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
     });
   }
 }

@@ -3,7 +3,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:50
 
 export function getUploadUrl(filename: string): string {
   // If it's already a full URL, return as-is
-  if (filename.startsWith('http') || filename.startsWith('//')) return filename;
+  if (filename.startsWith('http') || filename.startsWith('//') || filename.startsWith('/')) return filename;
   return `${API_BASE_URL}/uploads/${filename}`;
 }
 
@@ -63,9 +63,18 @@ export interface Blog {
   slug: string;
   metaTitle: string | null;
   metaDescription: string | null;
+  focusKeywords: string | null;
   shortDescription: string;
   content: string;
   featuredImage: string | null;
+  featuredImageAlt: string | null;
+  authorName: string | null;
+  authorRole: string | null;
+  authorBio: string | null;
+  authorAvatar: string | null;
+  category: string | null;
+  tags: string | null;
+  publishedAt: string;
   isPublished: boolean;
   canonicalUrl: string | null;
   createdAt: string;

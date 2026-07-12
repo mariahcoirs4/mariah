@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { label: 'About', href: '/about', isRoute: true },
   { label: 'Industries', href: '/industries', isRoute: true },
   { label: 'Process', href: '/export-process', isRoute: true },
-  { label: 'Gallery', href: '/#gallery' },
+  { label: 'Gallery', href: '/gallery', isRoute: true },
   { label: 'Certifications', href: '/certifications', isRoute: true },
   { label: 'Faq', href: '/faq', isRoute: true },
   // { label: 'Global Reach',href: '/#global-reach'},

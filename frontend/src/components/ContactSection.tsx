@@ -21,10 +21,17 @@ const sectionFade: Variants = {
 };
 
 // ─── Contact Info Data ────────────────────────────────────────────
+const MAP_URL = 'https://share.google/77OchJpcylLqnEawb';
+
 const OFFICES = [
   {
     label: 'Factory & Head Office',
-    lines: ['Mariah Coirs Pvt. Ltd.', 'Pollachi, Tamil Nadu — 642 002', 'India'],
+    lines: [
+      'Mariah Coirs Pvt. Ltd.',
+      '206-13B Krishnapuram Road, Kalladipatti,',
+      'Nilakottai, Dindigul District,',
+      'Tamil Nadu — 624 201, India',
+    ],
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
@@ -48,8 +55,8 @@ const CONTACT_ROWS = [
   {
     id: 'export-email',
     label: 'Export Email',
-    value: 'exports@mariahcoirsexport.com',
-    href: 'mailto:exports@mariahcoirsexport.com',
+    value: 'mariahcoirs4@gmail.com',
+    href: 'mailto:mariahcoirs4@gmail.com',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
@@ -208,7 +215,7 @@ export default function ContactSection() {
 
             {/* Office */}
             {OFFICES.map(o => (
-              <div key={o.label} className="flex items-start gap-4 mb-6">
+              <div key={o.label} className="flex items-start gap-4 mb-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: 'rgba(201,155,103,0.1)', color: '#C99B67' }}
@@ -220,13 +227,36 @@ export default function ContactSection() {
                     {o.label}
                   </p>
                   {o.lines.map((line, i) => (
-                    <p key={i} style={{ fontSize: '15px', fontWeight: i === 0 ? 700 : 500, color: '#111111', lineHeight: 1.65 }}>
+                    <p key={i} style={{ fontSize: '14px', fontWeight: i === 0 ? 700 : 500, color: '#111111', lineHeight: 1.65 }}>
                       {line}
                     </p>
                   ))}
                 </div>
               </div>
             ))}
+            {/* Get Directions CTA */}
+            <a
+              href={MAP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="contact-directions-link"
+              className="inline-flex items-center gap-2 mb-6"
+              style={{
+                fontSize: '13px',
+                fontWeight: 700,
+                color: '#C99B67',
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="3 11 22 2 13 21 11 13 3 11" />
+              </svg>
+              Get Directions on Google Maps
+            </a>
 
             {/* Contact Rows */}
             <div className="flex flex-col" style={{ marginBottom: '32px' }}>
@@ -342,168 +372,116 @@ export default function ContactSection() {
           </motion.div>
 
           {/* ════════════════════════════════════════
-              RIGHT COLUMN — Image Card
+              RIGHT COLUMN — Map + Stats
           ════════════════════════════════════════ */}
           <motion.div
             variants={shouldReduce ? {} : rightFade}
-            className="relative w-full"
+            className="relative w-full flex flex-col gap-4"
           >
+            {/* ── Google Maps Embed ── */}
             <div
-              className="relative w-full overflow-hidden min-h-[280px] sm:min-h-0"
-              style={{ borderRadius: '32px', aspectRatio: '4/3', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}
+              className="relative w-full overflow-hidden"
+              style={{ borderRadius: '24px', boxShadow: '0 40px 80px rgba(0,0,0,0.18)', aspectRatio: '4/3' }}
             >
-              {/* Hero Image */}
-              <img
-                src="/mariahcoirs/package_unit.jpg"
-                alt="Mariah Coirs export-ready packaged coir products"
-                className="w-full h-full object-cover"
-                style={{ filter: 'brightness(0.82) saturate(1.1)', transform: 'scale(1.04)' }}
+              <iframe
+                title="Mariah Coirs Factory Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3921.15!2d77.9125!3d10.1834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c3b3b3b3b3b3%3A0x0!2s206-13B+Krishnapuram+Road%2C+Kalladipatti%2C+Nilakottai%2C+Tamil+Nadu+624201!5e0!3m2!1sen!2sin!4v1720000000000!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0, position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+                allowFullScreen
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                aria-label="Google Maps showing Mariah Coirs factory location"
               />
-
-              {/* Gradient overlay */}
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(175deg, transparent 35%, rgba(10,8,5,0.75) 100%)' }}
-                aria-hidden="true"
-              />
-
-              {/* Top-left floating pill — desktop only */}
+              {/* Address overlay — top-left */}
               <motion.div
                 initial={{ opacity: 0, x: -16 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.55, duration: 0.55, ease: EASE_CUBIC }}
-                className="hidden sm:block"
-                style={{ position: 'absolute', top: '20px', left: '20px' }}
+                style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', zIndex: 2, pointerEvents: 'none' }}
               >
                 <div
                   style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 18px',
-                    borderRadius: '16px',
-                    background: 'rgba(255,255,255,0.94)',
+                    gap: '8px',
+                    padding: '10px 16px',
+                    borderRadius: '14px',
+                    background: 'rgba(255,255,255,0.96)',
                     backdropFilter: 'blur(14px)',
                     boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
                   }}
                 >
-                  <span style={{ fontSize: '22px' }}>🌍</span>
-                  <div>
-                    <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C99B67' }}>
-                      Export Reach
-                    </p>
-                    <p style={{ fontSize: '15px', fontWeight: 800, color: '#111111', letterSpacing: '-0.01em' }}>
-                      30+ Countries
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Bottom overlay card — desktop only */}
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.7, duration: 0.55, ease: EASE_CUBIC }}
-                className="hidden sm:block"
-                style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px' }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '18px 22px',
-                    borderRadius: '20px',
-                    background: 'rgba(10,8,5,0.78)',
-                    backdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(201,155,103,0.2)',
-                  }}
-                >
-                  <div>
-                    <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#C99B67' }}>
-                      Response Time
-                    </p>
-                    <p style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px', letterSpacing: '-0.01em' }}>
-                      Within 24 Business Hours
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span
-                      style={{
-                        width: '8px', height: '8px', borderRadius: '50%',
-                        background: '#4ADE80',
-                        boxShadow: '0 0 10px rgba(74,222,128,0.9)',
-                        display: 'block',
-                      }}
-                    />
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>Active</span>
-                  </div>
-                </div>
-
-                {/* Request Quote button inside card */}
-                <motion.button
-                  id="contact-card-quote-btn"
-                  onClick={() => openModal('export')}
-                  whileHover={shouldReduce ? {} : { scale: 1.04, y: -2 }}
-                  whileTap={shouldReduce ? {} : { scale: 0.97 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    width: '100%',
-                    marginTop: '10px',
-                    padding: '14px',
-                    borderRadius: '14px',
-                    background: '#C99B67',
-                    color: '#111111',
-                    fontWeight: 700,
-                    fontSize: '15px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    boxShadow: '0 4px 16px rgba(201,155,103,0.4)',
-                  }}
-                >
-                  Request Quote
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C99B67" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                   </svg>
-                </motion.button>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#111111', letterSpacing: '-0.01em' }}>
+                    Nilakottai, Dindigul District, Tamil Nadu
+                  </span>
+                </div>
               </motion.div>
             </div>
 
-            {/* Mobile info cards — stacked below image, no overlap */}
-            <div className="mt-4 flex flex-col gap-3 sm:hidden">
+            {/* ── Get Directions Button ── */}
+            <motion.a
+              id="contact-map-directions-btn"
+              href={MAP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={shouldReduce ? {} : { scale: 1.03, y: -2 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                width: '100%',
+                padding: '15px 24px',
+                borderRadius: '14px',
+                background: '#111111',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '15px',
+                textDecoration: 'none',
+                fontFamily: 'inherit',
+                boxShadow: '0 4px 18px rgba(0,0,0,0.18)',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C99B67" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="3 11 22 2 13 21 11 13 3 11" />
+              </svg>
+              Get Directions on Google Maps
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', opacity: 0.6 }}>
+                <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+              </svg>
+            </motion.a>
+
+            {/* ── Stats row ── */}
+            <div className="grid grid-cols-2 gap-3">
               <div
                 className="flex items-center gap-3 p-4 rounded-2xl"
-                style={{ background: 'rgba(255,255,255,0.94)', border: '1px solid rgba(201,155,103,0.2)' }}
+                style={{ background: 'rgba(201,155,103,0.06)', border: '1px solid rgba(201,155,103,0.15)' }}
               >
                 <span style={{ fontSize: '22px' }}>🌍</span>
                 <div>
-                  <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C99B67' }}>
-                    Export Reach
-                  </p>
-                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#111111' }}>30+ Countries</p>
+                  <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: '#C99B67' }}>Export Reach</p>
+                  <p style={{ fontSize: '16px', fontWeight: 800, color: '#111111', letterSpacing: '-0.01em' }}>50+ Countries</p>
                 </div>
               </div>
               <div
-                className="flex items-center justify-between p-4 rounded-2xl"
-                style={{ background: '#0A0A0A', border: '1px solid rgba(201,155,103,0.2)' }}
+                className="flex items-center gap-3 p-4 rounded-2xl"
+                style={{ background: '#0A0A0A', border: '1px solid rgba(201,155,103,0.15)' }}
               >
-                <div>
-                  <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#C99B67' }}>
-                    Response Time
-                  </p>
-                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
-                    Within 24 Business Hours
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ADE80', boxShadow: '0 0 10px rgba(74,222,128,0.9)', display: 'block' }} />
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>Active</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C99B67' }}>Response</p>
+                  <p style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF' }}>Within 24 hrs</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ADE80', boxShadow: '0 0 8px rgba(74,222,128,0.9)', display: 'block', flexShrink: 0 }} />
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#9CA3AF' }}>Active</span>
+                  </div>
                 </div>
               </div>
             </div>
