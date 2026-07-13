@@ -242,7 +242,9 @@ export default function Footer() {
                 { name: 'Certifications', href: '/certifications' },
                 { name: 'Export Process', href: '/export-process' },
                 { name: 'Industry Insights', href: '/blogs' },
+                { name: 'Enquiries', href: '/enquiries' },
                 { name: 'Contact Us', href: '/contact' },
+
               ].map(item => (
                 <li key={item.name} className="overflow-hidden">
                   {item.href.startsWith('/#') ? (

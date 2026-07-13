@@ -4,22 +4,10 @@ import { motion } from 'framer-motion';
 import { blogApi, getUploadUrl } from '../lib/api';
 import type { Blog } from '../lib/api';
 import { useSEO, breadcrumbSchema } from '../hooks/useSEO';
-import { authorInitials, estimateReadingTime, formatBlogDate, splitList } from '../lib/blogContent';
+import { estimateReadingTime, formatBlogDate, splitList } from '../lib/blogContent';
 
 const SITE_URL = 'https://www.mariahcoirsexport.com';
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-function BlogAvatar({ blog }: { blog: Blog }) {
-  if (blog.authorAvatar) {
-    return <img src={blog.authorAvatar} alt={blog.authorName ?? blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
-  }
-
-  return (
-    <span style={{ fontWeight: 800, letterSpacing: '-0.03em', color: '#102A1D' }}>
-      {authorInitials(blog.authorName)}
-    </span>
-  );
-}
 
 function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }) {
   const tags = splitList(blog.tags).slice(0, 3);
@@ -121,21 +109,7 @@ function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '18px', flexWrap: 'wrap', marginTop: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg, #EBD8B7 0%, #D99C3C 100%)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-              <BlogAvatar blog={blog} />
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#102A1D' }}>
-                {blog.authorName ?? 'Mariah Coirs Editorial Team'}
-              </p>
-              <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#6B7280' }}>
-                {blog.authorRole ?? 'Editorial Insights'}
-              </p>
-            </div>
-          </div>
-
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '18px', flexWrap: 'wrap', marginTop: 'auto' }}>
           {tags.length > 0 && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {tags.map((tag) => (
@@ -177,12 +151,29 @@ export default function BlogListing() {
       .finally(() => setLoading(false));
   }, []);
 
-  const featuredBlog = blogs[0];
-  const secondaryBlogs = blogs.slice(1, 4);
-  const remainingBlogs = blogs.slice(4);
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F7F1E7 0%, #FFFDF9 100%)' }}>
+      <style>{`
+        .mc-hero-inner { padding: 56px 24px 48px; }
+        .mc-main { padding: 36px 24px 84px; }
+        .mc-archive-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+        }
+        @media (max-width: 1100px) {
+          .mc-archive-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 860px) {
+          .mc-archive-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+          .mc-hero-inner { padding: 36px 16px 28px; }
+          .mc-main { padding: 24px 16px 56px; }
+          .mc-archive-grid { grid-template-columns: 1fr; gap: 18px; }
+        }
+      `}</style>
       <div style={{ height: '72px' }} aria-hidden="true" />
 
       <section
@@ -194,7 +185,7 @@ export default function BlogListing() {
             'radial-gradient(circle at top left, rgba(217, 140, 43, 0.16), transparent 36%), radial-gradient(circle at top right, rgba(28, 94, 65, 0.12), transparent 30%), linear-gradient(180deg, #FFF8EF 0%, #F5EEE1 100%)',
         }}
       >
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '56px 24px 48px' }}>
+        <div className="mc-hero-inner" style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -224,7 +215,7 @@ export default function BlogListing() {
         </div>
       </section>
 
-      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 24px 84px' }}>
+      <main className="mc-main" style={{ maxWidth: '1280px', margin: '0 auto' }}>
         {loading && (
           <div style={{ display: 'grid', placeItems: 'center', padding: '100px 0' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '50%', border: '3px solid rgba(143,93,34,0.18)', borderTopColor: '#8F5D22', animation: 'spin 0.85s linear infinite' }} />
@@ -244,29 +235,8 @@ export default function BlogListing() {
           </div>
         )}
 
-        {!loading && !error && blogs.length > 0 && featuredBlog && (
+        {!loading && !error && blogs.length > 0 && (
           <div style={{ display: 'grid', gap: '32px' }}>
-            <section style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'minmax(0, 1.6fr) minmax(320px, 0.9fr)' }}>
-              <BlogCard blog={featuredBlog} featured />
-              <div style={{ display: 'grid', gap: '18px' }}>
-                <div style={{ padding: '26px', borderRadius: '28px', border: '1px solid rgba(119, 84, 42, 0.12)', background: '#102A1D', color: '#F7F1E7', boxShadow: '0 24px 50px rgba(16, 42, 29, 0.18)' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#E6B46B' }}>
-                    Editor’s pick
-                  </div>
-                  <h2 style={{ margin: '12px 0 0', fontSize: '1.55rem', lineHeight: 1.05, letterSpacing: '-0.04em' }}>
-                    A practical take on sustainable coir production
-                  </h2>
-                  <p style={{ margin: '12px 0 0', color: 'rgba(247, 241, 231, 0.84)', lineHeight: 1.7 }}>
-                    Browse the latest field notes, processing tips, and export-ready quality practices built for modern growers and buyers.
-                  </p>
-                </div>
-
-                {secondaryBlogs.map((blog) => (
-                  <BlogCard key={blog.id} blog={blog} />
-                ))}
-              </div>
-            </section>
-
             <section>
               <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: '16px', marginBottom: '18px', flexWrap: 'wrap' }}>
                 <div>
@@ -278,12 +248,12 @@ export default function BlogListing() {
                   </h2>
                 </div>
                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                  {remainingBlogs.length} more post{remainingBlogs.length === 1 ? '' : 's'}
+                  {blogs.length} post{blogs.length === 1 ? '' : 's'}
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-                {remainingBlogs.map((blog) => (
+              <div className="mc-archive-grid">
+                {blogs.map((blog) => (
                   <BlogCard key={blog.id} blog={blog} />
                 ))}
               </div>
