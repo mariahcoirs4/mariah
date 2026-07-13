@@ -12,7 +12,9 @@ const NAV_LINKS = [
   { label: 'Faq', href: '/faq', isRoute: true },
   // { label: 'Global Reach',href: '/#global-reach'},
   { label: 'Blog', href: '/blogs', isRoute: true },
+  { label: 'Enquiries', href: '/enquiries', isRoute: true },
   { label: 'Contact', href: '/contact', isRoute: true },
+
 ];
 
 export default function Navbar() {

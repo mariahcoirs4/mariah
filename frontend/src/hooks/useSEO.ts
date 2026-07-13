@@ -120,7 +120,7 @@ export const ORGANIZATION_SCHEMA = {
   contactPoint: [
     {
       '@type': 'ContactPoint',
-      telephone: '+91-94860-00000',
+      telephone: '+91-96776-41979',
       contactType: 'customer service',
       areaServed: 'Worldwide',
       availableLanguage: 'English',
