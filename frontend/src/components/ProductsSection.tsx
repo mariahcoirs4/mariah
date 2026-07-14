@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   motion,
   AnimatePresence,
@@ -27,7 +28,17 @@ const cardVariant: Variants = {
   exit: { opacity: 0, scale: 0.95, y: -12, transition: { duration: 0.28, ease: 'easeIn' } },
 };
 
-// ─── Helper ───────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
+}
+
 function getImageSrc(img: string | undefined): string {
   if (!img) return '';
   if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:')) return img;
@@ -178,21 +189,19 @@ function ProductCard({
             Request Quote
           </motion.button>
 
-          {/* <motion.a
-            href={`#product-${product.id}`}
-            whileHover={reduce ? {} : { scale: 1.03, background: '#F5F0E8' }}
-            whileTap={reduce ? {} : { scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            aria-label={`View details for ${product.name}`}
+          <Link
+            to={`/product/${slugify(product.name)}`}
             className="flex-1 inline-flex items-center justify-center gap-1.5 py-[10px] rounded-xl font-semibold text-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
             style={{
               background: '#FFFFFF',
               border: '1.5px solid rgba(0,0,0,0.12)',
               color: '#3C2C18',
+              textDecoration: 'none',
+              textAlign: 'center',
             }}
           >
             View Details
-          </motion.a> */}
+          </Link>
         </div>
        
       </div>

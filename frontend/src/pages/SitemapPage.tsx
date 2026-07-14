@@ -1,75 +1,121 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '../hooks/useSEO';
+import { productApi, blogApi } from '../lib/api';
 
 const SITE_URL = 'https://www.mariahcoirsexport.com';
 
-interface SitemapGroup {
-  title: string;
-  links: { label: string; href: string; isExternal?: boolean }[];
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
 }
 
-const SITEMAP_GROUPS: SitemapGroup[] = [
-  {
-    title: 'Core Pages',
-    links: [
-      { label: 'Home', href: '/' },
-      { label: 'About Us', href: '/about' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
-  {
-    title: 'Products',
-    links: [
-      { label: 'Product Catalog', href: '/products' },
-      { label: 'Coco Peat Blocks', href: '/products' },
-      { label: 'Grow Bags', href: '/products' },
-      { label: 'Briquettes & Discs', href: '/products' },
-      { label: 'Husk Chips', href: '/products' },
-      { label: 'Coir Fibre Bales', href: '/products' },
-    ],
-  },
-  {
-    title: 'Industries',
-    links: [
-      { label: 'Industries We Serve', href: '/industries' },
-      { label: 'Hydroponics Farming', href: '/industries' },
-      { label: 'Floriculture', href: '/industries' },
-      { label: 'Greenhouse Cultivation', href: '/industries' },
-      { label: 'Horticulture & Agriculture', href: '/industries' },
-      { label: 'Landscaping', href: '/industries' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'Gallery', href: '/gallery' },
-      { label: 'Certifications & Standards', href: '/certifications' },
-      { label: 'Export Process', href: '/export-process' },
-      { label: 'FAQ', href: '/faq' },
-    ],
-  },
-  {
-    title: 'Blog & Knowledge Hub',
-    links: [
-      { label: 'All Articles', href: '/blogs' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms & Conditions', href: '/terms' },
-      { label: 'XML Sitemap', href: '/sitemap.xml', isExternal: true },
-    ],
-  },
-];
+interface SitemapLink {
+  label: string;
+  href: string;
+  isExternal?: boolean;
+}
+
+interface SitemapGroup {
+  title: string;
+  links: SitemapLink[];
+}
 
 export default function SitemapPage() {
+  const [productLinks, setProductLinks] = useState<SitemapLink[]>([
+    { label: 'Product Catalog', href: '/products' },
+  ]);
+  const [blogLinks, setBlogLinks] = useState<SitemapLink[]>([
+    { label: 'All Articles', href: '/blogs' },
+  ]);
+
   useSEO({
     title: 'Sitemap | Mariah Coirs',
     description: 'Browse the full site map of Mariah Coirs — all product pages, industry pages, company information, and blog articles.',
     canonical: `${SITE_URL}/sitemap`,
   });
+
+  useEffect(() => {
+    // Fetch products
+    productApi.getAll()
+      .then((res) => {
+        const dynamicProds = res.data.map((p) => ({
+          label: p.name,
+          href: `/product/${slugify(p.name)}`,
+        }));
+        setProductLinks([
+          { label: 'Product Catalog', href: '/products' },
+          ...dynamicProds,
+        ]);
+      })
+      .catch((err) => console.error('Sitemap failed to fetch products', err));
+
+    // Fetch blogs
+    blogApi.getAll(true)
+      .then((res) => {
+        const dynamicBlogs = res.data.map((b) => ({
+          label: b.title,
+          href: `/blog/${b.slug}`,
+        }));
+        setBlogLinks([
+          { label: 'All Articles', href: '/blogs' },
+          ...dynamicBlogs,
+        ]);
+      })
+      .catch((err) => console.error('Sitemap failed to fetch blogs', err));
+  }, []);
+
+  const sitemapGroups: SitemapGroup[] = [
+    {
+      title: 'Core Pages',
+      links: [
+        { label: 'Home', href: '/' },
+        { label: 'About Us', href: '/about' },
+        { label: 'Contact', href: '/contact' },
+      ],
+    },
+    {
+      title: 'Products',
+      links: productLinks,
+    },
+    {
+      title: 'Industries',
+      links: [
+        { label: 'Industries We Serve', href: '/industries' },
+        { label: 'Hydroponics Farming', href: '/industries' },
+        { label: 'Floriculture', href: '/industries' },
+        { label: 'Greenhouse Cultivation', href: '/industries' },
+        { label: 'Horticulture & Agriculture', href: '/industries' },
+        { label: 'Landscaping', href: '/industries' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'Gallery', href: '/gallery' },
+        { label: 'Certifications & Standards', href: '/certifications' },
+        { label: 'Export Process', href: '/export-process' },
+        { label: 'FAQ', href: '/faq' },
+      ],
+    },
+    {
+      title: 'Blog & Knowledge Hub',
+      links: blogLinks,
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms & Conditions', href: '/terms' },
+        { label: 'XML Sitemap', href: '/sitemap.xml', isExternal: true },
+      ],
+    },
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: '#F5F1EB' }}>
@@ -104,7 +150,7 @@ export default function SitemapPage() {
             gap: '32px',
           }}
         >
-          {SITEMAP_GROUPS.map((group) => (
+          {sitemapGroups.map((group) => (
             <div key={group.title}>
               <h2
                 style={{

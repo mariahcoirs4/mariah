@@ -6,7 +6,7 @@ const NAV_LINKS = [
   { label: 'Products', href: '/products', isRoute: true },
   { label: 'About', href: '/about', isRoute: true },
   { label: 'Industries', href: '/industries', isRoute: true },
-  { label: 'Process', href: '/export-process', isRoute: true },
+  // { label: 'Process', href: '/export-process', isRoute: true },
   { label: 'Gallery', href: '/gallery', isRoute: true },
   { label: 'Certifications', href: '/certifications', isRoute: true },
   { label: 'Faq', href: '/faq', isRoute: true },
@@ -89,11 +89,11 @@ export default function Navbar() {
                     key={label}
                     to={href}
                     className={[
-                `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
-                'rounded-md',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
-                'group',
-              ].join(' ')}
+                      `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
+                      'rounded-md',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                      'group',
+                    ].join(' ')}
                   >
                     {label}
                     <span aria-hidden="true" className={['absolute bottom-0 left-4 right-4 h-[1.5px] rounded-full', 'bg-[#E5A93C]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
@@ -103,11 +103,11 @@ export default function Navbar() {
                     key={label}
                     href={href}
                     className={[
-                `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
-                'rounded-md',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
-                'group',
-              ].join(' ')}
+                      `relative px-4 py-1.5 text-[14.5px] font-medium transition-colors duration-200 ${isHeroState ? 'text-white/80 hover:text-[#E5A93C]' : 'text-gray-600 hover:text-[#E5A93C]'}`,
+                      'rounded-md',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                      'group',
+                    ].join(' ')}
                   >
                     {label}
                     <span aria-hidden="true" className={['absolute bottom-0 left-4 right-4 h-[1.5px] rounded-full', 'bg-[#E5A93C]', 'scale-x-0 origin-left', 'transition-transform duration-250 ease-out', 'group-hover:scale-x-100'].join(' ')} />
@@ -119,34 +119,34 @@ export default function Navbar() {
             {/* ── Desktop CTA ── */}
             <div className="hidden xl:flex items-center">
               <button
-              id="navbar-export-quote-btn"
-              onClick={() => openModal('export')}
-              className={[
-                'inline-flex items-center justify-center',
-                'px-7 py-[13px] rounded-lg',
-                'text-[14px] font-semibold',
-                'transition-all duration-200 ease-out',
-                'hover:scale-[1.03]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                'active:scale-[0.98]',
-              ].join(' ')}
-              style={{
-                border: `1.5px solid ${isHeroState ? '#E5A93C' : '#E5A93C'}`,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                backgroundColor: 'transparent',
-                color: isHeroState ? '#E5A93C' : '#E5A93C',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(229, 169, 60, 0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-              aria-label="Get an export quote from Mariah Coirs"
-            >
-              Get Export Quote
-            </button>
+                id="navbar-export-quote-btn"
+                onClick={() => openModal('export')}
+                className={[
+                  'inline-flex items-center justify-center',
+                  'px-7 py-[13px] rounded-lg',
+                  'text-[14px] font-semibold',
+                  'transition-all duration-200 ease-out',
+                  'hover:scale-[1.03]',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  'active:scale-[0.98]',
+                ].join(' ')}
+                style={{
+                  border: `1.5px solid ${isHeroState ? '#E5A93C' : '#E5A93C'}`,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  backgroundColor: 'transparent',
+                  color: isHeroState ? '#E5A93C' : '#E5A93C',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(229, 169, 60, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+                aria-label="Get an export quote from Mariah Coirs"
+              >
+                Get Export Quote
+              </button>
             </div>
 
             {/* ── Mobile Hamburger ── */}
@@ -270,7 +270,7 @@ export default function Navbar() {
                   'flex items-center px-4 py-3 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
                   'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
-                'active:bg-[#E5A93C]/20',
+                  'active:bg-[#E5A93C]/20',
                   'transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
                 ].join(' ')}
@@ -290,7 +290,7 @@ export default function Navbar() {
                   'flex items-center px-4 py-3 rounded-xl',
                   'text-[16px] font-medium text-gray-700',
                   'hover:bg-[#E5A93C]/10 hover:text-[#E5A93C]',
-                'active:bg-[#E5A93C]/20',
+                  'active:bg-[#E5A93C]/20',
                   'transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700',
                 ].join(' ')}

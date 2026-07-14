@@ -35,6 +35,8 @@ import TermsPage from './pages/TermsPage'
 import SitemapPage from './pages/SitemapPage'
 import GalleryPage from './pages/GalleryPage'
 import EnquiriesPage from './pages/EnquiriesPage'
+import ProductDetail from './pages/ProductDetail'
+import TestimonialsSection from './components/TestimonialsSection'
 
 
 import { useSEO, ORGANIZATION_SCHEMA, WEBSITE_SCHEMA } from './hooks/useSEO'
@@ -68,6 +70,7 @@ function LandingPage() {
         <CertificationsSection />
         {/* <GlobalNetworkSection /> */}
         <DomesticSupplySection />
+        <TestimonialsSection />
         <FAQSection />
         <ContactSection />
       </main>
@@ -102,6 +105,9 @@ function App() {
           {/* Blog */}
           <Route path="/blogs" element={<PublicLayout><BlogListing /></PublicLayout>} />
           <Route path="/blog/:slug" element={<PublicLayout><BlogDetail /></PublicLayout>} />
+
+          {/* Products */}
+          <Route path="/product/:nameOrId" element={<PublicLayout><ProductDetail /></PublicLayout>} />
 
           {/* SEO Pages */}
           <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />

@@ -362,7 +362,7 @@ export default function BlogDetail() {
                       display: 'block',
                     }}
                   >
-                    {entry.text}
+                    • {entry.text}
                   </a>
                 ))}
               </nav>
@@ -478,7 +478,7 @@ export default function BlogDetail() {
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(143,93,34,0.12)')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = entry.level === 2 ? 'rgba(143,93,34,0.07)' : 'transparent')}
                     >
-                      {entry.text}
+                      • {entry.text}
                     </a>
                   ))}
                 </nav>
