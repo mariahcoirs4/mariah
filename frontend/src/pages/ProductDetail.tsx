@@ -239,10 +239,10 @@ export default function ProductDetail() {
       <div style={{ height: '72px' }} aria-hidden="true" />
 
       {/* Hero Header */}
-      <section style={{ background: '#0A0A0A', padding: '40px 24px 32px' }}>
+      <section style={{ background: '#0A0A0A', padding: 'clamp(28px, 5vw, 40px) clamp(16px, 4vw, 24px) clamp(24px, 4vw, 32px)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           {/* Breadcrumbs */}
-          <nav style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '13px', color: '#A0A0A0', marginBottom: '16px' }} aria-label="Breadcrumb">
+          <nav style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '13px', color: '#A0A0A0', marginBottom: '16px', flexWrap: 'wrap' }} aria-label="Breadcrumb">
             <Link to="/" style={{ color: '#A0A0A0', textDecoration: 'none' }}>Home</Link>
             <span>/</span>
             <Link to="/products" style={{ color: '#A0A0A0', textDecoration: 'none' }}>Products</Link>
@@ -265,7 +265,7 @@ export default function ProductDetail() {
       </section>
 
       {/* Main Grid */}
-      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '48px 24px 80px' }}>
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: 'clamp(24px, 5vw, 48px) clamp(16px, 4vw, 24px) clamp(48px, 8vw, 80px)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px' }} className="product-grid">
           
           {/* Admin Provided Content Section */}
@@ -274,7 +274,7 @@ export default function ProductDetail() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div
                 style={{
-                  height: '420px',
+                  height: 'clamp(280px, 45vw, 420px)',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   border: `1.5px solid ${P.border}`,
@@ -400,7 +400,7 @@ export default function ProductDetail() {
               background: '#FFFFFF',
               borderRadius: '24px',
               border: `1.5px solid ${P.border}`,
-              padding: '36px 32px',
+              padding: 'clamp(20px, 5vw, 36px) clamp(16px, 5vw, 32px)',
               display: 'grid',
               gridTemplateColumns: '1fr',
               gap: '32px',
@@ -423,11 +423,11 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            <div style={{ background: '#FAF8F4', borderRadius: '16px', padding: '24px' }}>
+            <div style={{ background: '#FAF8F4', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 800, color: P.dark, margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Standard Quality Benchmarks
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px' }}>
                 {staticInfo.keySpecs.map((spec, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{spec.label}</span>
@@ -450,7 +450,7 @@ export default function ProductDetail() {
                 </h2>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
                 {relatedProducts.map((p) => {
                   const relatedFirstImage = p.images?.[0];
                   return (

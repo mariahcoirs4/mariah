@@ -80,7 +80,7 @@ function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }
         </div>
       </Link>
 
-      <div style={{ padding: featured ? '28px' : '24px', display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+      <div style={{ padding: featured ? '28px' : 'clamp(14px, 3.5vw, 24px)', display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 2.5vw, 16px)', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8F5D22' }}>
             {formatBlogDate(blog.publishedAt)}
@@ -94,7 +94,7 @@ function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }
           <Link to={`/blog/${blog.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <h2
               style={{
-                fontSize: featured ? 'clamp(1.9rem, 4vw, 3rem)' : '1.3rem',
+                fontSize: featured ? 'clamp(1.9rem, 4vw, 3rem)' : 'clamp(1rem, 3.5vw, 1.3rem)',
                 lineHeight: 1.08,
                 letterSpacing: '-0.04em',
                 color: '#101828',
@@ -104,7 +104,7 @@ function BlogCard({ blog, featured = false }: { blog: Blog; featured?: boolean }
               {blog.title}
             </h2>
           </Link>
-          <p style={{ marginTop: '12px', fontSize: featured ? '1.05rem' : '0.98rem', lineHeight: 1.75, color: '#5B6472' }}>
+          <p style={{ marginTop: '12px', fontSize: featured ? '1.05rem' : 'clamp(0.8rem, 2.8vw, 0.98rem)', lineHeight: 1.75, color: '#5B6472' }}>
             {blog.shortDescription}
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function BlogListing() {
         @media (max-width: 640px) {
           .mc-hero-inner { padding: 36px 16px 28px; }
           .mc-main { padding: 24px 16px 56px; }
-          .mc-archive-grid { grid-template-columns: 1fr; gap: 18px; }
+          .mc-archive-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         }
       `}</style>
       <div style={{ height: '72px' }} aria-hidden="true" />

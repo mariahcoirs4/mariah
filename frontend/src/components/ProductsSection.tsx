@@ -15,12 +15,12 @@ const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // ─── Animation Variants ───────────────────────────────────────────
 const sectionFade: Variants = {
-  hidden:  { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE_CUBIC } },
 };
 
 const cardVariant: Variants = {
-  hidden:  { opacity: 0, y: 36, scale: 0.97 },
+  hidden: { opacity: 0, y: 36, scale: 0.97 },
   visible: (i: number) => ({
     opacity: 1, y: 0, scale: 1,
     transition: { duration: 0.55, ease: EASE_CUBIC, delay: i * 0.07 },
@@ -88,7 +88,7 @@ function ProductCard({
       {/* ── Image ── */}
       <div
         className="relative overflow-hidden"
-        style={{ height: '200px', borderRadius: '16px 16px 0 0' }}
+        style={{ height: 'clamp(120px, 28vw, 200px)', borderRadius: '16px 16px 0 0' }}
       >
         {firstImage ? (
           <motion.img
@@ -125,12 +125,12 @@ function ProductCard({
       </div>
 
       {/* ── Body ── */}
-      <div className="flex flex-col flex-1 p-5">
+      <div className="flex flex-col flex-1 p-3 sm:p-5">
 
         {/* Name */}
         <h3
           className="font-bold leading-snug"
-          style={{ fontSize: '1rem', color: '#0F0A04', letterSpacing: '-0.01em' }}
+          style={{ fontSize: 'clamp(0.85rem, 3vw, 1rem)', color: '#0F0A04', letterSpacing: '-0.01em' }}
         >
           {product.name}
         </h3>
@@ -138,12 +138,11 @@ function ProductCard({
         {/* Description */}
         <p
           className="mt-2 leading-relaxed line-clamp-2"
-          style={{ fontSize: '0.8rem', color: '#6B5840' }}
+          style={{ fontSize: 'clamp(0.72rem, 2.5vw, 0.8rem)', color: '#6B5840' }}
         >
           {product.description}
         </p>
 
-        Specs commented out
         {product.specs && product.specs.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
             {product.specs.map(({ label, value }) => (
@@ -164,12 +163,12 @@ function ProductCard({
             ))}
           </div>
         )}
-       
+
 
         <div className="flex-1" />
-       
 
-        <div className="mt-5 flex gap-2.5">
+
+        <div className="mt-4 sm:mt-5 flex gap-1.5 mb-2">
           <motion.button
             type="button"
             onClick={() => openModal('export')}
@@ -177,7 +176,7 @@ function ProductCard({
             whileTap={reduce ? {} : { scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             aria-label={`Request quote for ${product.name}`}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 py-[10px] rounded-xl font-bold text-[12px] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900"
+            className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-bold text-[9px] min-[370px]:text-[11px] sm:text-[12px] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900"
             style={{
               background: '#0F0A04',
               boxShadow: '0 3px 12px rgba(0,0,0,0.22)',
@@ -191,7 +190,7 @@ function ProductCard({
 
           <Link
             to={`/product/${slugify(product.name)}`}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 py-[10px] rounded-xl font-semibold text-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
+            className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-semibold text-[9px] min-[370px]:text-[11px] sm:text-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
             style={{
               background: '#FFFFFF',
               border: '1.5px solid rgba(0,0,0,0.12)',
@@ -203,7 +202,7 @@ function ProductCard({
             View Details
           </Link>
         </div>
-       
+
       </div>
     </motion.article>
   );
@@ -215,8 +214,8 @@ export default function ProductsSection() {
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const sectionRef   = useRef<HTMLElement>(null);
-  const isInView     = useInView(sectionRef, { once: true, amount: 0.08 });
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.08 });
   const shouldReduce = useReducedMotion();
 
   // Fetch published products on mount
@@ -313,8 +312,8 @@ export default function ProductsSection() {
                     className="relative px-4 py-2 rounded-full text-[12px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
                     style={{
                       background: isActive ? '#0F0A04' : 'rgba(0,0,0,0.05)',
-                      color:      isActive ? '#FFFFFF' : '#5A4830',
-                      border:     isActive ? '1.5px solid transparent' : '1.5px solid rgba(0,0,0,0.09)',
+                      color: isActive ? '#FFFFFF' : '#5A4830',
+                      border: isActive ? '1.5px solid transparent' : '1.5px solid rgba(0,0,0,0.09)',
                       transition: 'background 0.22s ease, color 0.22s ease',
                     }}
                   >
@@ -386,7 +385,7 @@ export default function ProductsSection() {
               <motion.div
                 key={activeFilter}
                 layout
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6"
+                className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6"
               >
                 {filtered.map((product, i) => (
                   <ProductCard
@@ -407,7 +406,7 @@ export default function ProductsSection() {
         ══════════════════════════════════════════ */}
         <motion.div
           variants={shouldReduce ? {} : {
-            hidden:  { opacity: 0, y: 32 },
+            hidden: { opacity: 0, y: 32 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 } },
           }}
           initial="hidden"
@@ -450,7 +449,7 @@ export default function ProductsSection() {
             >
               Get Custom Quote
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 8 13 8"/><polyline points="9 4 13 8 9 12"/>
+                <polyline points="3 8 13 8" /><polyline points="9 4 13 8 9 12" />
               </svg>
             </motion.a>
 
