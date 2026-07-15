@@ -61,150 +61,142 @@ function ProductCard({
   const firstImage = product.images?.[0];
 
   return (
-    <motion.article
-      layout
-      key={product.id}
-      custom={index}
-      variants={cardVariant}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      onHoverStart={() => !reduce && setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      whileHover={reduce ? {} : { y: -6 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="flex flex-col overflow-hidden"
-      style={{
-        background: '#FFFFFF',
-        borderRadius: '18px',
-        border: hovered ? '1.5px solid rgba(200,140,50,0.45)' : '1.5px solid rgba(0,0,0,0.07)',
-        boxShadow: hovered
-          ? '0 20px 48px rgba(0,0,0,0.13), 0 6px 16px rgba(185,120,45,0.14)'
-          : '0 4px 20px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)',
-        transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
-      }}
-      aria-label={product.name}
+    <Link
+      to={`/product/${slugify(product.name)}`}
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', color: 'inherit' }}
     >
-      {/* ── Image ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{ height: 'clamp(120px, 28vw, 200px)', borderRadius: '16px 16px 0 0' }}
+      <motion.article
+        layout
+        key={product.id}
+        custom={index}
+        variants={cardVariant}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        onHoverStart={() => !reduce && setHovered(true)}
+        onHoverEnd={() => setHovered(false)}
+        whileHover={reduce ? {} : { y: -6 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        className="flex flex-col overflow-hidden flex-1 w-full"
+        style={{
+          background: '#FFFFFF',
+          borderRadius: '18px',
+          border: hovered ? '1.5px solid rgba(200,140,50,0.45)' : '1.5px solid rgba(0,0,0,0.07)',
+          boxShadow: hovered
+            ? '0 20px 48px rgba(0,0,0,0.13), 0 6px 16px rgba(185,120,45,0.14)'
+            : '0 4px 20px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)',
+          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          height: '100%',
+        }}
+        aria-label={product.name}
       >
-        {firstImage ? (
-          <motion.img
-            src={getImageSrc(firstImage)}
-            alt={product.name}
-            className="w-full h-full object-cover"
-            animate={hovered && !reduce ? { scale: 1.08 } : { scale: 1.0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            loading="lazy"
-          />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center text-5xl"
-            style={{ background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)' }}
-          >
-            📦
-          </div>
-        )}
-        {/* Category chip overlay commented out
-        <div className="absolute top-3 left-3">
-          <span
-            className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.88)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              color: '#7A5020',
-            }}
-          >
-            {product.category}
-          </span>
-        </div>
-        */}
-      </div>
-
-      {/* ── Body ── */}
-      <div className="flex flex-col flex-1 p-3 sm:p-5">
-
-        {/* Name */}
-        <h3
-          className="font-bold leading-snug"
-          style={{ fontSize: 'clamp(0.85rem, 3vw, 1rem)', color: '#0F0A04', letterSpacing: '-0.01em' }}
+        {/* ── Image ── */}
+        <div
+          className="relative overflow-hidden"
+          style={{ height: 'clamp(120px, 28vw, 200px)', borderRadius: '16px 16px 0 0' }}
         >
-          {product.name}
-        </h3>
-
-        {/* Description */}
-        <p
-          className="mt-2 leading-relaxed line-clamp-2"
-          style={{ fontSize: 'clamp(0.72rem, 2.5vw, 0.8rem)', color: '#6B5840' }}
-        >
-          {product.description}
-        </p>
-
-        {product.specs && product.specs.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
-            {product.specs.map(({ label, value }) => (
-              <div key={label} className="flex items-center gap-1.5">
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-[0.1em]"
-                  style={{ color: '#A07840' }}
-                >
-                  {label}:
-                </span>
-                <span
-                  className="text-[11px] font-medium"
-                  style={{ color: '#3C2C18' }}
-                >
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-
-        <div className="flex-1" />
-
-
-        <div className="mt-4 sm:mt-5 flex gap-1.5 mb-2">
-          <motion.button
-            type="button"
-            onClick={() => openModal('export')}
-            whileHover={reduce ? {} : { scale: 1.03 }}
-            whileTap={reduce ? {} : { scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            aria-label={`Request quote for ${product.name}`}
-            className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-bold text-[9px] min-[370px]:text-[11px] sm:text-[12px] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900"
-            style={{
-              background: '#0F0A04',
-              boxShadow: '0 3px 12px rgba(0,0,0,0.22)',
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            Request Quote
-          </motion.button>
-
-          <Link
-            to={`/product/${slugify(product.name)}`}
-            className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-semibold text-[9px] min-[370px]:text-[11px] sm:text-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
-            style={{
-              background: '#FFFFFF',
-              border: '1.5px solid rgba(0,0,0,0.12)',
-              color: '#3C2C18',
-              textDecoration: 'none',
-              textAlign: 'center',
-            }}
-          >
-            View Details
-          </Link>
+          {firstImage ? (
+            <motion.img
+              src={getImageSrc(firstImage)}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              animate={hovered && !reduce ? { scale: 1.08 } : { scale: 1.0 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-5xl"
+              style={{ background: 'linear-gradient(135deg, #F5F1EB, #EAE3D6)' }}
+            >
+              📦
+            </div>
+          )}
         </div>
 
-      </div>
-    </motion.article>
+        {/* ── Body ── */}
+        <div className="flex flex-col flex-1 p-3 sm:p-5">
+
+          {/* Name */}
+          <h3
+            className="font-bold leading-snug"
+            style={{ fontSize: 'clamp(0.85rem, 3vw, 1rem)', color: '#0F0A04', letterSpacing: '-0.01em' }}
+          >
+            {product.name}
+          </h3>
+
+          {/* Description */}
+          <p
+            className="mt-2 leading-relaxed line-clamp-2"
+            style={{ fontSize: 'clamp(0.72rem, 2.5vw, 0.8rem)', color: '#6B5840' }}
+          >
+            {product.description}
+          </p>
+
+          {product.specs && product.specs.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
+              {product.specs.map(({ label, value }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                    style={{ color: '#A07840' }}
+                  >
+                    {label}:
+                  </span>
+                  <span
+                    className="text-[11px] font-medium"
+                    style={{ color: '#3C2C18' }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex-1" />
+
+          {/* Buttons Stacked on Mobile View, Side-by-Side on Desktop */}
+          <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row gap-1.5 mb-2">
+            <motion.button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal('export');
+              }}
+              whileHover={reduce ? {} : { scale: 1.03 }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              aria-label={`Request quote for ${product.name}`}
+              className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-bold text-[9px] min-[370px]:text-[11px] sm:text-[12px] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 w-full"
+              style={{
+                background: '#0F0A04',
+                boxShadow: '0 3px 12px rgba(0,0,0,0.22)',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Request Quote
+            </motion.button>
+
+            <div
+              className="flex-1 inline-flex items-center justify-center gap-1 py-[8px] sm:py-[10px] rounded-xl font-semibold text-[9px] min-[370px]:text-[11px] sm:text-[12px] w-full"
+              style={{
+                background: '#FFFFFF',
+                border: '1.5px solid rgba(0,0,0,0.12)',
+                color: '#3C2C18',
+                textAlign: 'center',
+              }}
+            >
+              View Details
+            </div>
+          </div>
+
+        </div>
+      </motion.article>
+    </Link>
   );
 }
 

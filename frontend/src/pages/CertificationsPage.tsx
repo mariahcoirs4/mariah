@@ -8,7 +8,7 @@ export default function CertificationsPage() {
   useSEO({
     title: 'Certifications & Quality Standards | Mariah Coirs Coir Products',
     description:
-      'Mariah Coirs is ISO 9001:2015 certified and Coir Board registered. We provide EC, pH, moisture and phytosanitary certificates for every export shipment. Quality-assured coir products from Pollachi, Tamil Nadu.',
+      'Mariah Coirs is ISO 9001:2015 certified and Coir Board registered. We provide EC, pH, moisture and phytosanitary certificates for every export shipment. Quality-assured coir products from Nilakottai, Dindigul District, Tamil Nadu.',
     canonical: `${SITE_URL}/certifications`,
     keywords: 'ISO 9001 coir manufacturer, coir board registered, phytosanitary certificate coir, coco peat quality certificates, coir export compliance',
     jsonLd: [

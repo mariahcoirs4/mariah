@@ -169,7 +169,7 @@ export default function AboutSection() {
               {/* Ken-Burns on inView */}
               <motion.img
                 src="/mariahcoirs/mills_top_view.jpeg"
-                alt="Mariah Coirs Pollachi manufacturing facility yard top view"
+                alt="Mariah Coirs Nilakottai manufacturing facility yard top view"
                 className="w-full h-full object-cover"
                 initial={shouldReduce ? {} : { scale: 1.08 }}
                 animate={isInView && !shouldReduce ? { scale: 1.0 } : {}}
@@ -270,7 +270,7 @@ export default function AboutSection() {
                   maxWidth: '540px',
                 }}
               >
-                Founded in 2009 and headquartered in Pollachi, Tamil Nadu, our
+                Founded in 2009 and headquartered in Nilakottai, Dindigul District, Tamil Nadu, our
                 manufacturing facility operates with advanced machinery, strict quality
                 control processes, and globally recognized production standards.
               </motion.p>

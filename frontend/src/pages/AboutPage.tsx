@@ -6,11 +6,11 @@ const SITE_URL = 'https://www.mariahcoirsexport.com';
 
 export default function AboutPage() {
   useSEO({
-    title: 'About Mariah Coirs | Coir Manufacturer in Pollachi, Tamil Nadu',
+    title: 'About Mariah Coirs | Coir Manufacturer in Nilakottai, Tamil Nadu',
     description:
-      'Learn about Mariah Coirs — a world-class coir manufacturing facility in Pollachi, Tamil Nadu. Founded in 2009, ISO 9001:2015 certified, serving 490+ global clients with 1,000+ MT monthly capacity.',
+      'Learn about Mariah Coirs — a world-class coir manufacturing facility in Nilakottai, Dindigul District, Tamil Nadu. Founded in 2009, ISO 9001:2015 certified, serving 490+ global clients with 1,000+ MT monthly capacity.',
     canonical: `${SITE_URL}/about`,
-    keywords: 'Mariah Coirs about, coir manufacturer Pollachi, coir factory Tamil Nadu, ISO certified coir manufacturer, coir exporter India',
+    keywords: 'Mariah Coirs about, coir manufacturer Nilakottai, coir factory Tamil Nadu, ISO certified coir manufacturer, coir exporter India',
     jsonLd: [
       ORGANIZATION_SCHEMA,
       breadcrumbSchema([
@@ -50,7 +50,7 @@ export default function AboutPage() {
             About Mariah Coirs
           </h1>
           <p style={{ fontSize: '18px', color: '#667085', maxWidth: '600px', lineHeight: 1.7 }}>
-            A world-class coir manufacturing facility in Pollachi, Tamil Nadu — serving global importers, greenhouse operators, and agricultural businesses since 2009.
+            A world-class coir manufacturing facility in Nilakottai, Dindigul District, Tamil Nadu — serving global importers, greenhouse operators, and agricultural businesses since 2009.
           </p>
         </div>
       </section>

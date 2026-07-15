@@ -37,6 +37,7 @@ import GalleryPage from './pages/GalleryPage'
 import EnquiriesPage from './pages/EnquiriesPage'
 import ProductDetail from './pages/ProductDetail'
 import TestimonialsSection from './components/TestimonialsSection'
+import TestimonialsPage from './pages/TestimonialsPage'
 
 
 import { useSEO, ORGANIZATION_SCHEMA, WEBSITE_SCHEMA } from './hooks/useSEO'
@@ -48,10 +49,10 @@ function LandingPage() {
   useSEO({
     title: 'Mariah Coirs | Premium Coir Products Exporter from India',
     description:
-      "India's premier manufacturer and exporter of premium coco peat blocks, coir fiber, grow bags, husk chips, and coir briquettes. ISO 9001:2015 certified. Supplying 50+ countries since 2009. Factory in Pollachi, Tamil Nadu.",
+      "India's premier manufacturer and exporter of premium coco peat blocks, coir fiber, grow bags, husk chips, and coir briquettes. ISO 9001:2015 certified. Supplying 50+ countries since 2009. Factory in Nilakottai, Dindigul District, Tamil Nadu.",
     canonical: `${SITE_URL}/`,
     keywords:
-      'coco peat exporter India, coir products manufacturer, cocopeat blocks, coir fiber supplier, grow bags exporter, coir pith, husk chips, Pollachi coir, Tamil Nadu coir exporter, ISO certified coir',
+      'coco peat exporter India, coir products manufacturer, cocopeat blocks, coir fiber supplier, grow bags exporter, coir pith, husk chips, Nilakottai coir, Tamil Nadu coir exporter, ISO certified coir',
     jsonLd: [ORGANIZATION_SCHEMA, WEBSITE_SCHEMA],
   })
 
@@ -119,6 +120,7 @@ function App() {
           <Route path="/industries" element={<PublicLayout><IndustriesPage /></PublicLayout>} />
           <Route path="/gallery" element={<PublicLayout><GalleryPage /></PublicLayout>} />
           <Route path="/enquiries" element={<PublicLayout><EnquiriesPage /></PublicLayout>} />
+          <Route path="/testimonials" element={<PublicLayout><TestimonialsPage /></PublicLayout>} />
 
 
           {/* Legal & Utility */}

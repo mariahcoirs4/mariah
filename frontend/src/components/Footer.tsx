@@ -240,6 +240,7 @@ export default function Footer() {
                 { name: 'Manufacturing', href: '/about' },
                 { name: 'Gallery', href: '/gallery' },
                 { name: 'Certifications', href: '/certifications' },
+                { name: 'Testimonials', href: '/testimonials' },
                 { name: 'Export Process', href: '/export-process' },
                 { name: 'Industry Insights', href: '/blogs' },
                 { name: 'Enquiries', href: '/enquiries' },

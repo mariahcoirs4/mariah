@@ -9,12 +9,12 @@ const NAV_LINKS = [
   // { label: 'Process', href: '/export-process', isRoute: true },
   { label: 'Gallery', href: '/gallery', isRoute: true },
   { label: 'Certifications', href: '/certifications', isRoute: true },
+  { label: 'Testimonials', href: '/testimonials', isRoute: true },
   { label: 'Faq', href: '/faq', isRoute: true },
   // { label: 'Global Reach',href: '/#global-reach'},
   { label: 'Blog', href: '/blogs', isRoute: true },
   { label: 'Enquiries', href: '/enquiries', isRoute: true },
   { label: 'Contact', href: '/contact', isRoute: true },
-
 ];
 
 export default function Navbar() {
@@ -62,7 +62,7 @@ export default function Navbar() {
         ].join(' ')}
         style={{ backgroundColor: isHeroState ? 'rgba(0,0,0,0.2)' : '#F8F6F3' }}
       >
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+        <div className="max-w-[1536px] mx-auto px-6 lg:px-12">
           <div className="flex items-center justify-between h-[100px]">
 
             {/* ── Logo ── */}

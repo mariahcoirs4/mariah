@@ -13,7 +13,7 @@ const FAQ_DATA = [
   {
     question: 'Where are your manufacturing facilities located?',
     answer:
-      'Our state-of-the-art production facilities are based in Pollachi, Tamil Nadu, India. Pollachi is globally recognized as the prime coconut and coir production hub of South India, allowing us direct access to premium quality raw materials year-round.',
+      'Our state-of-the-art production facilities are based in Kalladipatti, Nilakottai, Dindigul District, Tamil Nadu, India. Nilakottai is recognized as a prime agricultural and coir production hub of South India, allowing us direct access to premium quality raw materials year-round.',
   },
   {
     question: 'Do you offer private labeling (OEM) and custom packaging?',

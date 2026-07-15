@@ -18,7 +18,7 @@ export default function ContactPage() {
   useSEO({
     title: 'Contact Mariah Coirs | Export Enquiries & Bulk Orders',
     description:
-      'Contact Mariah Coirs export team for coir product enquiries, bulk pricing, and shipping quotes. Based in Pollachi, Tamil Nadu. Responds within 24 hours. FOB, CIF, CNF shipping to 50+ countries.',
+      'Contact Mariah Coirs export team for coir product enquiries, bulk pricing, and shipping quotes. Based in Nilakottai, Dindigul District, Tamil Nadu. Responds within 24 hours. FOB, CIF, CNF shipping to 50+ countries.',
     canonical: `${SITE_URL}/contact`,
     keywords: 'contact Mariah Coirs, coir export enquiry, cocopeat bulk order, coir supplier contact, export quote India',
     jsonLd: [

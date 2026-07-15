@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
-interface Testimonial {
+export interface Testimonial {
   id: number;
   name: string;
   role: string;
@@ -12,7 +13,7 @@ interface Testimonial {
   avatarPlaceholder: string;
 }
 
-const TESTIMONIALS: Testimonial[] = [
+export const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
     name: 'David Miller',
@@ -52,6 +53,56 @@ const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     content: 'Very impressed with the low EC buffered coco peat blocks. The expansion volume exceeded our expectations. Excellent phytosanitary certification handling for quick custom clearances.',
     avatarPlaceholder: 'KS',
+  },
+  {
+    id: 5,
+    name: 'Rajesh Patel',
+    role: 'Director of Operations',
+    company: 'Vedic Organic Farms & Nurseries',
+    location: 'India',
+    rating: 5,
+    content: 'We source high-quality cocopeat blocks and coir pith in bulk from Mariah Coirs. The low EC and stable pH are perfect for our vegetable crop propagation. Their local delivery speed and reliability are exceptional.',
+    avatarPlaceholder: 'RP',
+  },
+  {
+    id: 6,
+    name: 'Chen Wei',
+    role: 'Import Specialist',
+    company: 'Grand East Agricultural Import',
+    location: 'China',
+    rating: 5,
+    content: 'Importing coco peat blocks in large quantities to China was smooth with Mariah Coirs. Their team provided all phytosanitary and export documentations on time. Excellent expansion volume after wetting.',
+    avatarPlaceholder: 'CW',
+  },
+  {
+    id: 7,
+    name: 'Min-ho Ji',
+    role: 'Agronomic Research Lead',
+    company: 'Greenhouse Innovations Corp',
+    location: 'South Korea',
+    rating: 5,
+    content: 'We ordered custom coir grow bags for our smart-farm greenhouse. The bags are pre-cut perfectly and the UV stability of the plastic is outstanding. Mariah Coirs is our trusted partner in Asia.',
+    avatarPlaceholder: 'MJ',
+  },
+  {
+    id: 8,
+    name: 'Mateo Silva',
+    role: 'Hydroponics Consultant',
+    company: 'Iberia Growers Alliance',
+    location: 'Spain',
+    rating: 5,
+    content: 'For hydroponic greenhouse crop production, the water retention and structural stability of Mariah Coirs cocopeat is top-tier. Exceptional quality that meets rigorous European import standards.',
+    avatarPlaceholder: 'MS',
+  },
+  {
+    id: 9,
+    name: 'Hans Müller',
+    role: 'Product Sourcing Lead',
+    company: 'Alpen Soil Mixtures GmbH',
+    location: 'Germany',
+    rating: 5,
+    content: 'We import raw coir fiber and coco pith for our premium potting soil formulations. Mariah Coirs provides consistent grade, low impurities, and excellent customer communication throughout.',
+    avatarPlaceholder: 'HM',
   },
 ];
 
@@ -307,6 +358,40 @@ export default function TestimonialsSection() {
               }}
             />
           ))}
+        </div>
+
+        {/* View All Testimonials Link */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
+          <Link
+            to="/testimonials"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#B87038',
+              fontWeight: 700,
+              fontSize: '15px',
+              textDecoration: 'none',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            <span>View All Client Stories</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="8" x2="13" y2="8" />
+              <polyline points="9 4 13 8 9 12" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>

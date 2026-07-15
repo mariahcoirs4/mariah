@@ -21,7 +21,7 @@ export default function ProductsPage() {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
         name: 'Mariah Coirs Export Product Catalog',
-        description: 'Premium coir products manufactured and exported from Pollachi, Tamil Nadu, India.',
+        description: 'Premium coir products manufactured and exported from Nilakottai, Dindigul District, Tamil Nadu, India.',
         url: `${SITE_URL}/products`,
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Coco Peat Blocks', url: `${SITE_URL}/products` },

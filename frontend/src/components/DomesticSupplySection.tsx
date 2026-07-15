@@ -100,7 +100,7 @@ const BENEFITS: Benefit[] = [
     id: 5,
     icon: <ZapIcon />,
     title: 'Fast Dispatch',
-    description: '2–5 day turnaround for stock products from Pollachi.',
+    description: '2–5 day turnaround for stock products from Nilakottai.',
   },
   {
     id: 6,
