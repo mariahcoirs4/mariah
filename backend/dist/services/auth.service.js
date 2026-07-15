@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authService = exports.AuthService = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const admin_repository_1 = require("../repositories/admin.repository");
 const env_1 = require("../config/env");
@@ -14,7 +14,7 @@ class AuthService {
         if (!admin) {
             throw new Error('Invalid email or password');
         }
-        const isMatch = await bcrypt_1.default.compare(password, admin.password);
+        const isMatch = await bcryptjs_1.default.compare(password, admin.password);
         if (!isMatch) {
             throw new Error('Invalid email or password');
         }
@@ -32,7 +32,7 @@ class AuthService {
             const existing = await admin_repository_1.adminRepository.findFirst();
             if (!existing) {
                 console.log('⚡ No admin account detected. Creating default admin...');
-                const hashedPassword = await bcrypt_1.default.hash(env_1.env.ADMIN_PASSWORD, 10);
+                const hashedPassword = await bcryptjs_1.default.hash(env_1.env.ADMIN_PASSWORD, 10);
                 await admin_repository_1.adminRepository.create({
                     email: env_1.env.ADMIN_EMAIL,
                     password: hashedPassword,
