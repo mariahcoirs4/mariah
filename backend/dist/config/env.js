@@ -12,7 +12,7 @@ dotenv_1.default.config({ path: path_1.default.join(__dirname, '../../.env') });
 const envSchema = zod_1.z.object({
     PORT: zod_1.z.coerce.number().default(5000),
     NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
-    CORS_ORIGIN: zod_1.z.string().default('http://localhost:5173'),
+    CORS_ORIGIN: zod_1.z.string().optional(),
     DATABASE_URL: zod_1.z.string().min(1, 'DATABASE_URL is required'),
     DIRECT_URL: zod_1.z.string().min(1, 'DIRECT_URL is required'),
     JWT_SECRET: zod_1.z.string().min(8, 'JWT_SECRET must be at least 8 characters'),

@@ -1,7 +1,6 @@
 export declare const env: {
     PORT: number;
     NODE_ENV: "development" | "production" | "test";
-    CORS_ORIGIN: string;
     DATABASE_URL: string;
     DIRECT_URL: string;
     JWT_SECRET: string;
@@ -10,6 +9,7 @@ export declare const env: {
     ADMIN_PASSWORD: string;
     SMTP_PORT: number;
     SMTP_SECURE: boolean;
+    CORS_ORIGIN?: string | undefined;
     SMTP_HOST?: string | undefined;
     SMTP_USER?: string | undefined;
     SMTP_PASSWORD?: string | undefined;

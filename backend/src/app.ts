@@ -122,9 +122,11 @@ async function main() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-main().catch((err) => {
-  console.error('❌ Fatal startup error:', err);
-  process.exit(1);
-});
+if (!process.env.VERCEL) {
+  main().catch((err) => {
+    console.error('❌ Fatal startup error:', err);
+    process.exit(1);
+  });
+}
 
 export default app;
