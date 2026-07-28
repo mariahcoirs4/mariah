@@ -3,9 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
 
 const NAV_LINKS = [
-  { label: 'Products', href: '/products', isRoute: true },
   { label: 'About', href: '/about', isRoute: true },
   { label: 'Industries', href: '/industries', isRoute: true },
+  { label: 'Products', href: '/products', isRoute: true },
   // { label: 'Process', href: '/export-process', isRoute: true },
   { label: 'Gallery', href: '/gallery', isRoute: true },
   { label: 'Certifications', href: '/certifications', isRoute: true },
