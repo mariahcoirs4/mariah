@@ -38,6 +38,7 @@ import EnquiriesPage from './pages/EnquiriesPage'
 import ProductDetail from './pages/ProductDetail'
 import TestimonialsSection from './components/TestimonialsSection'
 import TestimonialsPage from './pages/TestimonialsPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 
 import { useSEO, ORGANIZATION_SCHEMA, WEBSITE_SCHEMA } from './hooks/useSEO'
@@ -130,6 +131,9 @@ function App() {
 
           {/* Admin — not indexed */}
           <Route path="/admin" element={<AdminPortal />} />
+
+          {/* Catch-all 404 Route */}
+          <Route path="*" element={<PublicLayout><NotFoundPage /></PublicLayout>} />
         </Routes>
       </ModalProvider>
     </BrowserRouter>

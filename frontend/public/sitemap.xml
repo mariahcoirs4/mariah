@@ -71,4 +71,53 @@
     <priority>0.3</priority>
   </url>
 
+  <!-- Product Pages (Default Stable Catalog) -->
+  <url>
+    <loc>https://www.mariahcoirsexport.com/product/low-ec-coco-peat-blocks</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/product/high-ec-coco-peat-blocks</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/product/35-kg-coir-fiber-bales</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/product/coconut-husk-chips</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Blog Posts -->
+  <url>
+    <loc>https://www.mariahcoirsexport.com/blog/low-ec-coco-peat-export-tests</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/blog/coir-fibre-water-management-greenhouse-beds</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/blog/modern-coir-plant-husk-to-compression-block</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/blog/choosing-right-grow-bag-density</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.mariahcoirsexport.com/blog/export-checklist-cocopeat-shipments</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>

@@ -18,7 +18,7 @@ const CERTIFICATIONS = [
 
 const STATS = [
   { value: '15+', label: 'Years Experience' },
-  { value: '490+', label: 'Global Clients' },
+  { value: '150+', label: 'Global Clients' },
   { value: '1,000+', label: 'MT Capacity/Mo' },
 ];
 
@@ -263,32 +263,28 @@ export default function AboutSection() {
                 variants={fadeUp(0.28)}
                 initial="hidden"
                 animate={isInView ? 'visible' : 'hidden'}
-                className="leading-relaxed"
+                className="leading-relaxed font-sans"
                 style={{
                   fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
                   color: '#4A3C28',
                   maxWidth: '540px',
                 }}
               >
-                Founded in 2009 and headquartered in Nilakottai, Dindigul District, Tamil Nadu, our
-                manufacturing facility operates with advanced machinery, strict quality
-                control processes, and globally recognized production standards.
+                Founded in 2009 in Nilakottai, Dindigul District, Tamil Nadu, Mariah Coirs is a premier coco peat manufacturer and coir products exporter. Our state-of-the-art facility processes high-grade coir pith, coco peat blocks, and grow bags using advanced decorticating and hydraulic compression machinery.
               </motion.p>
 
               <motion.p
                 variants={fadeUp(0.36)}
                 initial="hidden"
                 animate={isInView ? 'visible' : 'hidden'}
-                className="leading-relaxed"
+                className="leading-relaxed font-sans"
                 style={{
                   fontSize: 'clamp(0.9rem, 1.25vw, 1.02rem)',
                   color: '#4A3C28',
                   maxWidth: '540px',
                 }}
               >
-                We serve international importers, agricultural businesses, greenhouse
-                operators, and commercial distributors across multiple countries,
-                delivering premium-quality products with factory-direct efficiency.
+                We serve international B2B importers, hydroponic companies, greenhouse farms, and commercial nurseries across the USA, Canada, Netherlands, Spain, Poland, and South Korea. Our strategic proximity to logistics hubs in Madurai, Coimbatore, and Chennai port ensures reliable, year-round global shipping.
               </motion.p>
             </div>
 

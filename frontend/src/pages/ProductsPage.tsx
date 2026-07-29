@@ -6,11 +6,11 @@ const SITE_URL = 'https://www.mariahcoirsexport.com';
 
 export default function ProductsPage() {
   useSEO({
-    title: 'Coir Products | Coco Peat Blocks, Grow Bags, Coir Fiber — Mariah Coirs',
+    title: 'Coco Peat Exporter India | Coir Products Catalog | Mariah Coirs',
     description:
-      'Browse Mariah Coirs\' premium export product catalog: coco peat blocks, grow bags, briquettes, husk chips, coir fiber bales, and custom packaging. Factory-direct pricing for FCL and LCL shipments worldwide.',
+      'Browse Mariah Coirs\' catalog of export-grade coir products, featuring 5kg coco peat blocks, grow bags, coir fiber, and husk chips. Factory-direct from Nilakottai, Tamil Nadu.',
     canonical: `${SITE_URL}/products`,
-    keywords: 'coco peat blocks, grow bags, coir fiber bales, husk chips, coir briquettes, coir products export, cocopeat supplier, coir exporter catalog',
+    keywords: 'coco peat exporter india, coir products india, coco peat blocks bulk, grow bags supplier, coco peat supplier',
     jsonLd: [
       ORGANIZATION_SCHEMA,
       breadcrumbSchema([
@@ -28,7 +28,7 @@ export default function ProductsPage() {
           { '@type': 'ListItem', position: 2, name: 'Grow Bags', url: `${SITE_URL}/products` },
           { '@type': 'ListItem', position: 3, name: 'Briquettes & Discs', url: `${SITE_URL}/products` },
           { '@type': 'ListItem', position: 4, name: 'Husk Chips', url: `${SITE_URL}/products` },
-          { '@type': 'ListItem', position: 5, name: 'Coir Fibre Bales', url: `${SITE_URL}/products` },
+          { '@type': 'ListItem', position: 5, name: '35 kg Coir Fiber Bales', url: `${SITE_URL}/products` },
           { '@type': 'ListItem', position: 6, name: 'Custom Packaging', url: `${SITE_URL}/products` },
         ],
       },

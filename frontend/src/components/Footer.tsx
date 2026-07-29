@@ -185,11 +185,11 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {[
                 { name: 'Coco Peat Blocks', href: '/products' },
-                { name: 'Grow Bags', href: '/products' },
-                { name: 'Briquettes & Discs', href: '/products' },
+
+
                 { name: 'Husk Chips', href: '/products' },
-                { name: 'Coir Fibre Bales', href: '/products' },
-                { name: 'Custom Packaging', href: '/products' },
+                { name: '35 kg Coir Fiber Bales', href: '/products' },
+
               ].map(item => (
                 <li key={item.name} className="overflow-hidden">
                   <Link

@@ -98,7 +98,7 @@ function ProductCard({
           {firstImage ? (
             <motion.img
               src={getImageSrc(firstImage)}
-              alt={product.name}
+              alt={`${product.name} - Export quality coir products manufacturer India`}
               className="w-full h-full object-cover"
               animate={hovered && !reduce ? { scale: 1.08 } : { scale: 1.0 }}
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}

@@ -6,11 +6,11 @@ const SITE_URL = 'https://www.mariahcoirsexport.com';
 
 export default function AboutPage() {
   useSEO({
-    title: 'About Mariah Coirs | Coir Manufacturer in Nilakottai, Tamil Nadu',
+    title: 'About Mariah Coirs | Coco Peat Manufacturer Tamil Nadu',
     description:
-      'Learn about Mariah Coirs — a world-class coir manufacturing facility in Nilakottai, Dindigul District, Tamil Nadu. Founded in 2009, ISO 9001:2015 certified, serving 490+ global clients with 1,000+ MT monthly capacity.',
+      'Learn about Mariah Coirs — a premier coco peat manufacturer and coir products exporter in Nilakottai, Dindigul District, Tamil Nadu. Supplying high-quality grow bags, coir pith, and blocks globally since 2009.',
     canonical: `${SITE_URL}/about`,
-    keywords: 'Mariah Coirs about, coir manufacturer Nilakottai, coir factory Tamil Nadu, ISO certified coir manufacturer, coir exporter India',
+    keywords: 'coco peat manufacturer tamil nadu, coco peat exporter india, coir pith supplier dindigul, coco peat manufacturer madurai, coco coir export',
     jsonLd: [
       ORGANIZATION_SCHEMA,
       breadcrumbSchema([

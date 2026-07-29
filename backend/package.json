@@ -11,8 +11,7 @@
     "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
     "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate dev",
     "prisma:migrate:deploy": "node ./node_modules/prisma/build/index.js migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "seed:products": "ts-node --transpile-only src/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

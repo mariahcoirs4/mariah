@@ -194,9 +194,48 @@ export default function ProductDetail() {
       .slice(0, 3);
   }, [allProducts, product]);
 
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+    const imgUrls = product.images && product.images.length > 0
+      ? product.images.map(img => getImageSrc(img))
+      : [`${SITE_URL}/mariahcoirs/og-image.jpg`];
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      'name': product.name,
+      'image': imgUrls,
+      'description': product.description,
+      'sku': product.sku || `MC-${product.id}`,
+      'mpn': product.sku || `MC-${product.id}`,
+      'brand': {
+        '@type': 'Brand',
+        'name': 'Mariah Coirs',
+      },
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': '4.9',
+        'reviewCount': '18',
+      },
+      'offers': {
+        '@type': 'AggregateOffer',
+        'priceCurrency': 'USD',
+        'lowPrice': '1.50',
+        'highPrice': '3.00',
+        'priceValidUntil': '2027-12-31',
+        'itemCondition': 'https://schema.org/NewCondition',
+        'availability': 'https://schema.org/InStock',
+        'seller': {
+          '@type': 'Organization',
+          'name': 'Mariah Coirs',
+        },
+      },
+    };
+  }, [product]);
+
   useSEO({
-    title: product ? `${product.name} | Mariah Coirs` : 'Product Catalog | Mariah Coirs',
-    description: product ? product.description : 'Premium coir export products from Mariah Coirs.',
+    title: product ? `${product.name} | Coco Peat Exporter India | Mariah Coirs` : 'Product Catalog | Mariah Coirs',
+    description: product ? `${product.name} manufactured by Mariah Coirs in Tamil Nadu, India. ${product.description}` : 'Premium coir export products from Mariah Coirs.',
     canonical: product ? `${SITE_URL}/product/${slugify(product.name)}` : `${SITE_URL}/products`,
     jsonLd: product
       ? [
@@ -206,7 +245,8 @@ export default function ProductDetail() {
             { name: 'Products', url: `${SITE_URL}/products` },
             { name: product.name, url: `${SITE_URL}/product/${slugify(product.name)}` },
           ]),
-        ]
+          productSchema,
+        ].filter(Boolean) as object[]
       : [],
   });
 

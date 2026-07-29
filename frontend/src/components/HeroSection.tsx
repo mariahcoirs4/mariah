@@ -9,17 +9,17 @@ import { useModal } from '../context/ModalContext';
 
 // ─── Image Slides ────────────────────────────────────────────────
 const SLIDES = [
-  { src: '/mariahcoirs/droven_view.jpeg', alt: 'Aerial view of Mariah Coirs facility' },
+  { src: '/mariahcoirs/droven_view.jpeg', alt: 'Aerial view of Mariah Coirs coco peat manufacturing facility yard in Nilakottai, Tamil Nadu' },
   // { src: '/mariahcoirs/machine_process.jpeg', alt: 'Coir processing machinery in operation' },
-  { src: '/mariahcoirs/machine_top.jpeg', alt: 'Top view of processing machines' },
-  { src: '/mariahcoirs/coir_group.jpeg', alt: 'Top view of processing machines' },
-  { src: '/mariahcoirs/machine.jpeg', alt: 'Top view of processing machines' },
+  { src: '/mariahcoirs/machine_top.jpeg', alt: 'Top view of coir processing and decorticating machinery in Dindigul factory' },
+  { src: '/mariahcoirs/coir_group.jpeg', alt: 'Washed and dried coconut coir fiber bundles ready for baling' },
+  { src: '/mariahcoirs/machine.jpeg', alt: 'Coco peat hydraulic compression machine processing 5kg blocks' },
 
-  { src: '/mariahcoirs/raw_material.jpeg', alt: 'Top view of processing machines' },
-  { src: '/mariahcoirs/long_view.jpeg', alt: 'Top view of processing machines' },
+  { src: '/mariahcoirs/raw_material.jpeg', alt: 'Raw coconut husks stored for coco peat and coir fiber extraction' },
+  { src: '/mariahcoirs/long_view.jpeg', alt: 'Mariah Coirs processing yard showing sun-drying of coco peat blocks' },
   // { src: '/mariahcoirs/process.jpeg', alt: 'Coir manufacturing process' },
-  { src: '/mariahcoirs/mills_top_view.jpeg', alt: 'Top view of coir mills' },
-  { src: '/mariahcoirs/bed.jpeg', alt: 'Coco peat growing medium' },
+  { src: '/mariahcoirs/mills_top_view.jpeg', alt: 'Top view of coir mills yard and coco peat storage tanks' },
+  { src: '/mariahcoirs/bed.jpeg', alt: 'Coco peat growing medium substrate used in hydroponic greenhouse beds' },
   // { src: '/mariahcoirs/machinr_cutter.jpeg', alt: 'Coir cutter machine' },
   // { src: '/mariahcoirs/coco_husk_cutted.jpg', alt: 'Cut coco husk ready for processing' },
 ];
@@ -161,12 +161,12 @@ export default function HeroSection() {
               textShadow: '0 4px 20px rgba(0,0,0,0.30)',
             }}
           >
-            Premium&nbsp;Coco&nbsp;Peat
+            Coco Peat Manufacturer
             <br />
-            &amp;&nbsp;Coir&nbsp;Products
+            &amp; Coir Exporter India
             <br />
             <span style={{ color: 'rgb(229, 169, 60)', textShadow: '0 4px 20px rgba(0,0,0,0.30)' }}>
-              for Global Growers
+              Premium Growing Media
             </span>
           </motion.h1>
 
@@ -182,9 +182,7 @@ export default function HeroSection() {
               textShadow: '0 2px 12px rgba(0,0,0,0.25)',
             }}
           >
-            Sustainable growing media trusted by international importers, greenhouse
-            operators and hydroponic growers across&nbsp;50+ countries.
-            Factory-direct. Export-certified.
+            Mariah Coirs is India's leading manufacturer, supplier, and exporter of premium coco peat blocks, grow bags, coir pith, and coir products. ISO 9001:2015 certified, supplying nurseries and hydroponic greenhouse farms globally.
           </motion.p>
 
           {/* ── Buttons ── */}
