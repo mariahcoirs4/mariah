@@ -242,6 +242,8 @@ export default function Footer() {
                 { name: 'Certifications', href: '/certifications' },
                 { name: 'Testimonials', href: '/testimonials' },
                 { name: 'Export Process', href: '/export-process' },
+                { name: 'Quality Control', href: '/quality-control' },
+                { name: 'Export Logistics', href: '/export-logistics' },
                 { name: 'Industry Insights', href: '/blogs' },
                 { name: 'Enquiries', href: '/enquiries' },
                 { name: 'Contact Us', href: '/contact' },

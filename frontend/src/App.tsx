@@ -25,6 +25,8 @@ import ScrollToTop from './components/ScrollToTop'
 // ─── SEO Pages ───────────────────────────────────────────────────
 import AboutPage from './pages/AboutPage'
 import ProductsPage from './pages/ProductsPage'
+import QualityControlPage from './pages/QualityControlPage'
+import ExportLogisticsPage from './pages/ExportLogisticsPage'
 import FAQPage from './pages/FAQPage'
 import CertificationsPage from './pages/CertificationsPage'
 import ContactPage from './pages/ContactPage'
@@ -122,6 +124,10 @@ function App() {
           <Route path="/gallery" element={<PublicLayout><GalleryPage /></PublicLayout>} />
           <Route path="/enquiries" element={<PublicLayout><EnquiriesPage /></PublicLayout>} />
           <Route path="/testimonials" element={<PublicLayout><TestimonialsPage /></PublicLayout>} />
+
+          {/* Quality & Operations */}
+          <Route path="/quality-control" element={<PublicLayout><QualityControlPage /></PublicLayout>} />
+          <Route path="/export-logistics" element={<PublicLayout><ExportLogisticsPage /></PublicLayout>} />
 
 
           {/* Legal & Utility */}
