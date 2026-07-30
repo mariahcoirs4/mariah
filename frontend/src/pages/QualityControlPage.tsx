@@ -7,15 +7,15 @@ import { useModal } from '../context/ModalContext';
 // ─── Image & Video Placeholders ─────────────────────────────────────
 // Easy to swap variables for user's Google Drive image/video links
 const IMAGES = {
-  moistureTesting: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80', // lab digital moisture test
-  ecTesting: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80', // water/chemical conductivity test
-  phTesting: 'https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80', // pH lab verification
-  densityTesting: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80', // block weighing & physical check
+  moistureTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol1.jpg', // lab digital moisture test
+  ecTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualityconrol2.jpg', // water/chemical conductivity test
+  phTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/quality%20control%203.jpg', // pH lab verification
+  densityTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', // block weighing & physical check
   videoDemoThumb: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=800&q=80', // live lab batch testing video cover
 };
 
 const VIDEOS = {
-  labTestingUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', // sample mp4 to show functioning player, easily swappable
+  labTestingUrl: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/qualitycontrol5.mp4', // live video demo
 };
 
 const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -23,6 +23,7 @@ const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export default function QualityControlPage() {
   const { openModal } = useModal();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [activeModalImage, setActiveModalImage] = useState<{ src: string; title: string; description: string; detail: string } | null>(null);
   const SITE_URL = 'https://www.mariahcoirsexport.com';
 
   useSEO({
@@ -112,11 +113,19 @@ export default function QualityControlPage() {
           
           {/* Card 1: Moisture Testing */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
-            <div className="relative h-56 overflow-hidden bg-gray-200">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.moistureTesting,
+                title: "Digital Moisture Testing",
+                description: "Moisture is monitored inside the yard and prior to compression using calibrated digital pin meters. Low moisture levels ensure blocks do not degrade or form mold during long-duration sea container shipping.",
+                detail: "Standard < 15% - Sun-dried & oven-verified batch validation"
+              })}
+            >
               <img 
                 src={IMAGES.moistureTesting} 
                 alt="Digital Moisture Testing" 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 Standard &lt; 15%
@@ -138,11 +147,19 @@ export default function QualityControlPage() {
 
           {/* Card 2: Electrical Conductivity (EC) */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
-            <div className="relative h-56 overflow-hidden bg-gray-200">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.ecTesting,
+                title: "Electrical Conductivity (EC)",
+                description: "Using a standard 1:1.5 volume dilution method, our lab verifies salt indexes. Minimizing electrical conductivity protects sensitive roots from chemical burns and ensures optimal fertilizer absorption.",
+                detail: "Low EC < 0.5 mS/cm - Triple-washed in fresh deep-bore well water"
+              })}
+            >
               <img 
                 src={IMAGES.ecTesting} 
                 alt="Electrical Conductivity (EC) Testing" 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 Low EC &lt; 0.5 mS/cm
@@ -164,11 +181,19 @@ export default function QualityControlPage() {
 
           {/* Card 3: pH Level Verification */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
-            <div className="relative h-56 overflow-hidden bg-gray-200">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.phTesting,
+                title: "pH Level Verification",
+                description: "Frequent dilution testing confirms that the coco coir remains in the ideal slightly acidic range of 5.5 to 6.5. This pH window optimizes nutrient bioavailability (nitrogen, phosphorus, iron) for hydroponics.",
+                detail: "pH 5.5 - 6.5 - Calibrated digital benchtop probes"
+              })}
+            >
               <img 
                 src={IMAGES.phTesting} 
                 alt="pH Level Verification" 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 pH 5.5 - 6.5
@@ -190,11 +215,19 @@ export default function QualityControlPage() {
 
           {/* Card 4: Weight & Density Checks */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
-            <div className="relative h-56 overflow-hidden bg-gray-200">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.densityTesting,
+                title: "Weight & Compression Density",
+                description: "We monitor the physical dimensions and dry weight of every compressed block. Precision hydraulic pressing ensures the required volume expansion (minimum 75 Liters of yield per 5kg block) is met.",
+                detail: "5kg / Briquette Accuracy - Automated rejection scale systems"
+              })}
+            >
               <img 
                 src={IMAGES.densityTesting} 
                 alt="Weight & Compression Density Checks" 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 5kg / Briquette Accuracy
@@ -216,11 +249,13 @@ export default function QualityControlPage() {
 
           {/* Card 5: Video Demonstration */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1 md:col-span-2 lg:col-span-2 flex flex-col md:flex-row">
-            <div className="relative w-full md:w-[45%] h-56 md:h-auto overflow-hidden bg-gray-900 group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
-              <img 
-                src={IMAGES.videoDemoThumb} 
-                alt="Live Lab Batch Testing Video" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80" 
+            <div className="relative w-full md:w-[45%] h-56 md:h-auto overflow-hidden bg-gray-950 group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
+              <video 
+                src={VIDEOS.labTestingUrl} 
+                preload="metadata"
+                muted
+                playsInline
+                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 opacity-80" 
               />
               <div className="absolute inset-0 bg-[#102A1D]/20 group-hover:bg-[#102A1D]/10 transition-colors" />
               {/* Play Button Overlay */}
@@ -404,6 +439,57 @@ export default function QualityControlPage() {
               <div className="px-6 py-4 bg-[#0d2218] text-xs text-white/50 leading-relaxed">
                 <span className="font-semibold text-[#E5A93C] uppercase block mb-1">Testing Protocol Demonstration</span>
                 This video walks through the electrical conductivity calibration checks, weight density verifications, and final pre-shipment phytosanitary procedures conducted at the Nilakottai Factory.
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── IMAGE MODAL DIALOG ─────────────────────────────────────── */}
+      <AnimatePresence>
+        {activeModalImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveModalImage(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              transition={{ ease: EASE_CUBIC, duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-[800px] bg-[#102A1D] rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                <h3 className="text-white font-bold tracking-tight">{activeModalImage.title}</h3>
+                <button 
+                  onClick={() => setActiveModalImage(null)}
+                  className="text-white/60 hover:text-white transition-colors p-1 hover:bg-white/5 rounded-lg cursor-pointer"
+                  aria-label="Close image modal"
+                >
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Image Content */}
+              <div className="relative aspect-video bg-black flex items-center justify-center">
+                <img 
+                  src={activeModalImage.src}
+                  alt={activeModalImage.title}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              {/* Footer text */}
+              <div className="px-6 py-4 bg-[#0d2218] text-xs text-white/50 leading-relaxed">
+                <span className="font-semibold text-[#E5A93C] uppercase block mb-1">{activeModalImage.detail}</span>
+                {activeModalImage.description}
               </div>
             </motion.div>
           </motion.div>
