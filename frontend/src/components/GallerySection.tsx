@@ -21,7 +21,21 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/bed.jpeg', title: 'Coir Drying Beds' },
 ];
 
-const GALLERY_VIDEOS = [
+interface YouTubeVideoInfo {
+  type: 'youtube';
+  id: string;
+  title: string;
+}
+
+interface MP4VideoInfo {
+  type: 'mp4';
+  src: string;
+  title: string;
+}
+
+type VideoInfo = YouTubeVideoInfo | MP4VideoInfo;
+
+const GALLERY_VIDEOS: VideoInfo[] = [
   { type: 'mp4', src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/qualitycontrol5.mp4', title: 'Coco Peat Expansion Demonstration' },
   { type: 'youtube', id: 'y6LWZYxbqUU', title: 'Mariah Coirs Production Yard' },
   { type: 'youtube', id: 'NNAR6sWSnoM', title: 'Mariah Coirs Factory Processing' },
@@ -123,7 +137,7 @@ export default function GallerySection() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[130px] sm:auto-rows-[180px] lg:auto-rows-[210px] gap-2.5 sm:gap-3.5 lg:gap-4">
-          {GALLERY_IMAGES.map((image, index) => (
+          {GALLERY_IMAGES.map((image) => (
             <motion.button
               key={image.src}
               type="button"
@@ -152,7 +166,7 @@ export default function GallerySection() {
             if (video.type === 'mp4') {
               return <MP4Video key={video.src} src={video.src} title={video.title} />;
             }
-            return <YouTubeVideo key={video.id} id={video.id!} title={video.title} />;
+            return <YouTubeVideo key={video.id} id={video.id} title={video.title} />;
           })}
         </div>
 
