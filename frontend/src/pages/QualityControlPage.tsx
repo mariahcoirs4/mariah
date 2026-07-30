@@ -125,7 +125,7 @@ export default function QualityControlPage() {
               <img 
                 src={IMAGES.moistureTesting} 
                 alt="Digital Moisture Testing" 
-                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 Standard &lt; 15%
@@ -159,7 +159,7 @@ export default function QualityControlPage() {
               <img 
                 src={IMAGES.ecTesting} 
                 alt="Electrical Conductivity (EC) Testing" 
-                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 Low EC &lt; 0.5 mS/cm
@@ -193,7 +193,7 @@ export default function QualityControlPage() {
               <img 
                 src={IMAGES.phTesting} 
                 alt="pH Level Verification" 
-                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 pH 5.5 - 6.5
@@ -227,7 +227,7 @@ export default function QualityControlPage() {
               <img 
                 src={IMAGES.densityTesting} 
                 alt="Weight & Compression Density Checks" 
-                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
               />
               <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                 5kg / Briquette Accuracy

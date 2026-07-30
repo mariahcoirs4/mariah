@@ -7,15 +7,12 @@ import { useModal } from '../context/ModalContext';
 // ─── Image & Video Placeholders ─────────────────────────────────────
 // Easy to swap variables for user's Google Drive image/video links
 const IMAGES = {
-  warehouseStorage: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80', // warehouses & systematic blocks
-  palletization: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80', // pallets & shrink wrap packing
-  containerStuffing: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80', // container stuffing loading
-  dispatchThumb: 'https://images.unsplash.com/photo-1542435503-956c469947f6?auto=format&fit=crop&w=800&q=80', // dispatch truck departure
+  warehouseStorage: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', // warehouses & systematic blocks
+  palletization: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', // pallets & shrink wrap packing
+  containerStuffing: 'https://ik.imagekit.io/26fkxjtlf/factory/factory2.jpeg', // container stuffing loading
+  dispatchThumb: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', // dispatch truck departure
 };
 
-const VIDEOS = {
-  dispatchVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', // sample mp4, easily swappable
-};
 
 const FAQS = [
   {
@@ -36,7 +33,7 @@ const EASE_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export default function ExportLogisticsPage() {
   const { openModal } = useModal();
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [activeModalImage, setActiveModalImage] = useState<{ src: string; title: string; description: string; detail: string } | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
@@ -128,111 +125,112 @@ export default function ExportLogisticsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Slot 1: Warehouse Storage */}
-          <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group">
-            <div className="relative h-64 bg-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.warehouseStorage,
+                title: "Warehouse Storage & Systematic Stacking",
+                description: "Our dry indoor storage facility stores up to 2,500 metric tons of compressed coir blocks, isolated from dirt and humidity to guarantee clean, dry products.",
+                detail: "Capacity - Indoor Storage Facility"
+              })}
+            >
               <img 
                 src={IMAGES.warehouseStorage} 
                 alt="Warehouse Storage" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="bg-[#102A1D] text-white text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider mb-2 inline-block">
-                  Capacity
-                </span>
-                <h3 className="text-base font-bold text-white leading-tight">
-                  Warehouse Storage &amp; Systematic Block Stacking
-                </h3>
-              </div>
+              <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                Capacity
+              </span>
             </div>
-            <div className="p-5">
-              <p className="text-gray-500 text-xs leading-relaxed">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Warehouse Storage</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 Our dry indoor storage facility stores up to 2,500 metric tons of compressed coir blocks, isolated from dirt and humidity to guarantee clean, dry products.
               </p>
             </div>
           </div>
 
           {/* Slot 2: Palletization & Wrap */}
-          <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group">
-            <div className="relative h-64 bg-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.palletization,
+                title: "Palletization & Weather Protection",
+                description: "Standard B2B cargo is placed on heat-treated wooden pallets, secured with cardboard corner guards, and wrapped in heavy-duty weatherproof stretch film.",
+                detail: "Protection - Weatherproof Shrink Wrap"
+              })}
+            >
               <img 
                 src={IMAGES.palletization} 
                 alt="Palletization & Wrap" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="bg-[#C97B38] text-white text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider mb-2 inline-block">
-                  Protection
-                </span>
-                <h3 className="text-base font-bold text-white leading-tight">
-                  Palletization &amp; Shrink-Wrap Protection
-                </h3>
-              </div>
+              <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                Protection
+              </span>
             </div>
-            <div className="p-5">
-              <p className="text-gray-500 text-xs leading-relaxed">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Palletization &amp; Wrap</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 Standard B2B cargo is placed on heat-treated wooden pallets, secured with cardboard corner guards, and wrapped in heavy-duty weatherproof stretch film.
               </p>
             </div>
           </div>
 
           {/* Slot 3: Container Stuffing */}
-          <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group">
-            <div className="relative h-64 bg-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.containerStuffing,
+                title: "Container Stuffing & Loading",
+                description: "With a loading platform directly connected to the warehouse floor, our team stuffs containers efficiently, preventing exposure to rain or direct sunshine.",
+                detail: "Loading - Direct Stuffing Platform"
+              })}
+            >
               <img 
                 src={IMAGES.containerStuffing} 
                 alt="Direct Container Stuffing" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="bg-[#102A1D] text-white text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider mb-2 inline-block">
-                  Loading
-                </span>
-                <h3 className="text-base font-bold text-white leading-tight">
-                  Direct Container Stuffing &amp; Truck Loading
-                </h3>
-              </div>
+              <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                Loading
+              </span>
             </div>
-            <div className="p-5">
-              <p className="text-gray-500 text-xs leading-relaxed">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Container Stuffing</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 With a loading platform directly connected to the warehouse floor, our team stuffs containers efficiently, preventing exposure to rain or direct sunshine.
               </p>
             </div>
           </div>
 
-          {/* Slot 4: Video Container Dispatch */}
-          <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group">
+          {/* Slot 4: Container Dispatch */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
             <div 
-              className="relative h-64 bg-gray-900 overflow-hidden cursor-pointer"
-              onClick={() => setIsVideoModalOpen(true)}
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.dispatchThumb,
+                title: "Container Loading & Dispatch",
+                description: "Watch container loading runs, double checking weight sheets, moisture levels, and seal attachments live.",
+                detail: "Dispatch - Port & Truck Dispatch"
+              })}
             >
               <img 
                 src={IMAGES.dispatchThumb} 
-                alt="Live Container Dispatch Video" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80" 
+                alt="Container Dispatch" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
               />
-              <div className="absolute inset-0 bg-[#102A1D]/30 group-hover:bg-[#102A1D]/15 transition-colors" />
-              
-              {/* Play Icon */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-[#E5A93C] text-[#102A1D] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="ml-1">
-                  <polygon points="5 3 19 12 5 21" />
-                </svg>
-              </div>
-
-              <div className="absolute bottom-4 left-4 right-4 text-left">
-                <span className="bg-black/60 text-white text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider mb-2 inline-block">
-                  Live Dispatch
-                </span>
-                <h3 className="text-base font-bold text-white leading-tight">
-                  Loading &amp; Dispatch Process Demonstration
-                </h3>
-              </div>
+              <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                Dispatch
+              </span>
             </div>
-            <div className="p-5 flex flex-col justify-between h-[90px]">
-              <p className="text-gray-500 text-xs leading-relaxed">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Container Dispatch</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 Watch container loading runs, double checking weight sheets, moisture levels, and seal attachments live.
               </p>
             </div>
@@ -401,14 +399,16 @@ export default function ExportLogisticsPage() {
         </div>
       </section>
 
-      {/* ─── VIDEO MODAL DIALOG ─────────────────────────────────────── */}
+
+
+      {/* ─── IMAGE MODAL DIALOG ─────────────────────────────────────── */}
       <AnimatePresence>
-        {isVideoModalOpen && (
+        {activeModalImage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsVideoModalOpen(false)}
+            onClick={() => setActiveModalImage(null)}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
           >
             <motion.div
@@ -421,11 +421,11 @@ export default function ExportLogisticsPage() {
             >
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-                <h3 className="text-white font-bold tracking-tight">Live Container Dispatch Walkthrough</h3>
+                <h3 className="text-white font-bold tracking-tight">{activeModalImage.title}</h3>
                 <button 
-                  onClick={() => setIsVideoModalOpen(false)}
+                  onClick={() => setActiveModalImage(null)}
                   className="text-white/60 hover:text-white transition-colors p-1 hover:bg-white/5 rounded-lg cursor-pointer"
-                  aria-label="Close video modal"
+                  aria-label="Close image modal"
                 >
                   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -433,22 +433,19 @@ export default function ExportLogisticsPage() {
                 </button>
               </div>
 
-              {/* Video Content */}
-              <div className="relative aspect-video bg-black">
-                {/* Standard video element with dynamic variable path */}
-                <video 
-                  src={VIDEOS.dispatchVideoUrl}
-                  controls
-                  autoPlay
-                  playsInline
+              {/* Image Content */}
+              <div className="relative aspect-video bg-black flex items-center justify-center">
+                <img 
+                  src={activeModalImage.src}
+                  alt={activeModalImage.title}
                   className="w-full h-full object-contain"
                 />
               </div>
 
               {/* Footer text */}
               <div className="px-6 py-4 bg-[#0d2218] text-xs text-white/50 leading-relaxed">
-                <span className="font-semibold text-[#E5A93C] uppercase block mb-1">Loading Protocol Demonstration</span>
-                This video shows the pallet securement, desiccants dispersion, moisture barrier liners installation, direct stuffing loading, and locking inspection conducted at our loading platforms.
+                <span className="font-semibold text-[#E5A93C] uppercase block mb-1">{activeModalImage.detail}</span>
+                {activeModalImage.description}
               </div>
             </motion.div>
           </motion.div>

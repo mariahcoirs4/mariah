@@ -7,7 +7,11 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/process.jpeg', title: 'Washing Process' },
   { src: '/mariahcoirs/mills_top_view.jpeg', title: 'Production Yard' },
   { src: '/mariahcoirs/coco_block_person.jpeg', title: 'Finished Coco Peat Blocks' },
-  { src: '/mariahcoirs/package_unit.jpg', title: 'Export Packaging' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', title: 'Container Dispatch' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', title: 'Factory Warehouse' },
+
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol1.jpg', title: 'Moisture Checking' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', title: 'Density Checking' },
   { src: '/mariahcoirs/block_machine.jpeg', title: 'Block Production' },
   { src: '/mariahcoirs/dry_process.jpeg', title: 'Natural Drying' },
   { src: '/mariahcoirs/long_view.jpeg', title: 'Facility Overview' },
@@ -17,11 +21,11 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/bed.jpeg', title: 'Coir Drying Beds' },
 ];
 
-const YOUTUBE_VIDEOS = [
-  { id: 'y6LWZYxbqUU', title: 'Mariah Coirs production video 1' },
-  { id: 'NNAR6sWSnoM', title: 'Mariah Coirs production video 2' },
-  { id: 'uJb435zTwek', title: 'Mariah Coirs production video 3' },
-  { id: '249tINY_JEY', title: 'Mariah Coirs production video 4' },
+const GALLERY_VIDEOS = [
+  { type: 'mp4', src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/qualitycontrol5.mp4', title: 'Coco Peat Expansion Demonstration' },
+  { type: 'youtube', id: 'y6LWZYxbqUU', title: 'Mariah Coirs Production Yard' },
+  { type: 'youtube', id: 'NNAR6sWSnoM', title: 'Mariah Coirs Factory Processing' },
+  { type: 'youtube', id: 'uJb435zTwek', title: 'Mariah Coirs Block Pressing' },
 ];
 
 function YouTubeVideo({ id, title }: { id: string; title: string }) {
@@ -79,6 +83,23 @@ function YouTubeVideo({ id, title }: { id: string; title: string }) {
   );
 }
 
+function MP4Video({ src, title }: { src: string; title: string }) {
+  return (
+    <div className="relative aspect-video overflow-hidden rounded-2xl bg-black shadow-[0_16px_40px_rgba(42,30,18,0.16)] flex items-center justify-center">
+      <video
+        src={src}
+        title={title}
+        controls
+        muted
+        loop
+        autoPlay
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  );
+}
+
 export default function GallerySection() {
   const [activeImage, setActiveImage] = useState<(typeof GALLERY_IMAGES)[number] | null>(null);
 
@@ -108,7 +129,7 @@ export default function GallerySection() {
               type="button"
               onClick={() => setActiveImage(image)}
               whileHover={{ y: -4 }}
-              className={`group relative overflow-hidden rounded-2xl text-left cursor-zoom-in ${index === 0 || index === 5 ? 'row-span-2' : ''}`}
+              className={`group relative overflow-hidden rounded-2xl text-left cursor-zoom-in ${image.title === 'Moisture Checking' || image.title === 'Density Checking' || image.title === 'Container Dispatch' ? 'row-span-2' : ''}`}
               aria-label={`View ${image.title}`}
             >
               <img src={image.src} alt={image.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -127,9 +148,12 @@ export default function GallerySection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
-          {YOUTUBE_VIDEOS.map(video => (
-            <YouTubeVideo key={video.id} {...video} />
-          ))}
+          {GALLERY_VIDEOS.map(video => {
+            if (video.type === 'mp4') {
+              return <MP4Video key={video.src} src={video.src} title={video.title} />;
+            }
+            return <YouTubeVideo key={video.id} id={video.id!} title={video.title} />;
+          })}
         </div>
 
       </div>
