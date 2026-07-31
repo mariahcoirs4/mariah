@@ -145,7 +145,7 @@ export default function AboutSection() {
         aria-hidden="true"
       />
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
 
           {/* ══════════════════════════════════════════
@@ -159,11 +159,10 @@ export default function AboutSection() {
           >
             {/* Image wrapper */}
             <div
-              className="relative overflow-hidden"
+              className="relative overflow-hidden w-full h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] xl:h-[650px]"
               style={{
                 borderRadius: '20px',
                 boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08)',
-                aspectRatio: '4 / 3.2',
               }}
             >
               {/* Ken-Burns on inView */}
