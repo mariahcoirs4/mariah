@@ -7,11 +7,14 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/process.jpeg', title: 'Washing Process' },
   { src: '/mariahcoirs/mills_top_view.jpeg', title: 'Production Yard' },
   { src: '/mariahcoirs/coco_block_person.jpeg', title: 'Finished Coco Peat Blocks' },
-  { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', title: 'Container Dispatch' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', title: 'Container Dispatch', rowSpan: 2 },
   { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', title: 'Factory Warehouse' },
 
-  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol1.jpg', title: 'Moisture Checking' },
-  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', title: 'Density Checking' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol1.jpg', title: 'Moisture Checking', rowSpan: 2 },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', title: 'Density Checking', rowSpan: 2 },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualityconrol2.jpg', title: 'EC Testing', rowSpan: 2 },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/quality%20control%203.jpg', title: 'pH Testing', rowSpan: 2 },
+
   { src: '/mariahcoirs/block_machine.jpeg', title: 'Block Production' },
   { src: '/mariahcoirs/dry_process.jpeg', title: 'Natural Drying' },
   { src: '/mariahcoirs/long_view.jpeg', title: 'Facility Overview' },
@@ -136,14 +139,14 @@ export default function GallerySection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[130px] sm:auto-rows-[180px] lg:auto-rows-[210px] gap-2.5 sm:gap-3.5 lg:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 grid-flow-dense auto-rows-[130px] sm:auto-rows-[180px] lg:auto-rows-[210px] gap-2.5 sm:gap-3.5 lg:gap-4">
           {GALLERY_IMAGES.map((image) => (
             <motion.button
               key={image.src}
               type="button"
               onClick={() => setActiveImage(image)}
               whileHover={{ y: -4 }}
-              className={`group relative overflow-hidden rounded-2xl text-left cursor-zoom-in ${image.title === 'Moisture Checking' || image.title === 'Density Checking' || image.title === 'Container Dispatch' ? 'row-span-2' : ''}`}
+              className={`group relative overflow-hidden rounded-2xl text-left cursor-zoom-in ${image.rowSpan === 2 ? 'row-span-2' : ''}`}
               aria-label={`View ${image.title}`}
             >
               <img src={image.src} alt={image.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
