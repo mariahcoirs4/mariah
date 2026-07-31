@@ -9,11 +9,15 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/coco_block_person.jpeg', title: 'Finished Coco Peat Blocks' },
   { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', title: 'Container Dispatch', rowSpan: 2 },
   { src: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', title: 'Factory Warehouse' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/coco-block.jpg', title: 'Coco Block' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/Palletization&Wrap.png', title: 'Palletization & Wrap' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/product/Low_ec_Cocopeat_blocks_1.jpeg?updatedAt=1784698350317', title: 'Low EC Coco Peat Blocks' },
 
   { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol1.jpg', title: 'Moisture Checking', rowSpan: 2 },
   { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', title: 'Density Checking', rowSpan: 2 },
   { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualityconrol2.jpg', title: 'EC Testing', rowSpan: 2 },
   { src: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/quality%20control%203.jpg', title: 'pH Testing', rowSpan: 2 },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/volume.jpeg?updatedAt=1785474912928', title: 'Expansion & Volume Testing', rowSpan: 2 },
 
   { src: '/mariahcoirs/block_machine.jpeg', title: 'Block Production' },
   { src: '/mariahcoirs/dry_process.jpeg', title: 'Natural Drying' },
@@ -21,6 +25,7 @@ const GALLERY_IMAGES = [
   { src: '/mariahcoirs/machine.jpeg', title: 'Processing Machinery' },
   { src: '/mariahcoirs/raw_material.jpeg', title: 'Raw Coconut Husk' },
   { src: '/mariahcoirs/coir_group.jpeg', title: 'Coir Fiber Stock' },
+  { src: 'https://ik.imagekit.io/26fkxjtlf/product/35kg_coir_fibre_bales_2.jpeg?updatedAt=1784698350361', title: 'Coir Fiber Bales' },
   { src: '/mariahcoirs/bed.jpeg', title: 'Coir Drying Beds' },
 ];
 

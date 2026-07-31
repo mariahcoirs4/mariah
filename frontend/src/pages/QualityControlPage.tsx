@@ -11,6 +11,7 @@ const IMAGES = {
   ecTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualityconrol2.jpg', // water/chemical conductivity test
   phTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/quality%20control%203.jpg', // pH lab verification
   densityTesting: 'https://ik.imagekit.io/26fkxjtlf/Qualitycontrol/Qualitycontrol4.jpg', // block weighing & physical check
+  volumeTesting: 'https://ik.imagekit.io/26fkxjtlf/volume.jpeg', // volume expansion test
   videoDemoThumb: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=800&q=80', // live lab batch testing video cover
 };
 
@@ -79,19 +80,6 @@ export default function QualityControlPage() {
               className="px-8 py-4 bg-[#E5A93C] hover:bg-[#c99532] text-[#102A1D] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Explore Testing Standards
-            </a>
-            <a
-              href="/mariahcoirs/sample-spec-sheet.pdf" // Placeholder link
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-transparent border border-white/30 hover:border-white text-white font-semibold rounded-lg hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
-            >
-              <span>Download Quality Spec Sheet</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
             </a>
           </div>
         </div>
@@ -247,15 +235,52 @@ export default function QualityControlPage() {
             </div>
           </div>
 
-          {/* Card 5: Video Demonstration */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1 md:col-span-2 lg:col-span-2 flex flex-col md:flex-row">
-            <div className="relative w-full md:w-[45%] h-56 md:h-auto overflow-hidden bg-gray-950 group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
+          {/* Card 5: Expansion & Volume Testing */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
+              onClick={() => setActiveModalImage({
+                src: IMAGES.volumeTesting,
+                title: "Rigorous Expansion & Volume Testing",
+                description: "Our team performs batch volume and hydration tests on expanded coco plugs and blocks to ensure consistent texture, porosity, and output. Standardized checks verify water-to-peat expansion ratios and optimal fiber structure, ensuring ideal root aeration and water retention.",
+                detail: "Maximum Yield & Expansion - Standardized measuring tool validation"
+              })}
+            >
+              <img 
+                src={IMAGES.volumeTesting} 
+                alt="Rigorous Expansion & Volume Testing" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+              />
+              <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                Max Expansion
+              </span>
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Expansion &amp; Volume Testing</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                We perform hands-on expansion and volume testing on every batch to verify water-to-peat expansion ratios and optimal fiber structure, ensuring ideal root aeration and water retention.
+              </p>
+              <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                <svg className="w-4 h-4 text-[#C97B38]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Maximum yield &amp; structural integrity check</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 6: Video Demonstration */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
+            <div 
+              className="relative h-[360px] overflow-hidden bg-gray-950 group cursor-pointer" 
+              onClick={() => setIsVideoModalOpen(true)}
+            >
               <video 
                 src={VIDEOS.labTestingUrl} 
                 preload="metadata"
                 muted
                 playsInline
-                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 opacity-80" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80" 
               />
               <div className="absolute inset-0 bg-[#102A1D]/20 group-hover:bg-[#102A1D]/10 transition-colors" />
               {/* Play Button Overlay */}
@@ -268,19 +293,17 @@ export default function QualityControlPage() {
                 Live Video Check
               </span>
             </div>
-            <div className="p-8 flex-1 flex flex-col justify-between">
-              <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C97B38] mb-1.5 block">
-                  Video Demonstration
-                </span>
-                <h3 className="text-xl font-bold text-[#102A1D] mb-3">Live Laboratory Testing Walkthrough</h3>
-                <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                  Watch our laboratory technicians execute standard moisture checks, electrical conductivity washing calibrations, and core density testing processes live inside the Mariah production plant.
-                </p>
-              </div>
+            <div className="p-6">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C97B38] mb-1.5 block">
+                Video Demonstration
+              </span>
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Live Testing Walkthrough</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                Watch our laboratory technicians execute standard moisture checks, electrical conductivity washing calibrations, and core density testing processes live inside our plant.
+              </p>
               <button 
                 onClick={() => setIsVideoModalOpen(true)}
-                className="w-fit text-sm font-bold text-[#C97B38] hover:text-[#b0672b] flex items-center gap-2 group cursor-pointer"
+                className="text-sm font-bold text-[#C97B38] hover:text-[#b0672b] flex items-center gap-2 group cursor-pointer"
               >
                 <span>Launch Video Player</span>
                 <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

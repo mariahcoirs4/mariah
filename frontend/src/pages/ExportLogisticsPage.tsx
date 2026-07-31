@@ -8,7 +8,7 @@ import { useModal } from '../context/ModalContext';
 // Easy to swap variables for user's Google Drive image/video links
 const IMAGES = {
   warehouseStorage: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', // warehouses & systematic blocks
-  palletization: 'https://ik.imagekit.io/26fkxjtlf/factory/factory1.jpeg', // pallets & shrink wrap packing
+  palletization: 'https://ik.imagekit.io/26fkxjtlf/Palletization&Wrap.png', // pallets & shrink wrap packing
   containerStuffing: 'https://ik.imagekit.io/26fkxjtlf/factory/factory2.jpeg', // container loading
   dispatchThumb: 'https://ik.imagekit.io/26fkxjtlf/factory/factory3.jpeg', // dispatch truck departure
 };
@@ -147,7 +147,7 @@ export default function ExportLogisticsPage() {
             <div className="p-6">
               <h3 className="text-xl font-bold text-[#102A1D] mb-2">Warehouse Storage</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Our dry indoor storage facility stores up to 2,500 metric tons of compressed coir blocks, isolated from dirt and humidity to guarantee clean, dry products.
+                Our dry indoor storage facility stores up to 25000 metric tons of compressed coir blocks, isolated from dirt and humidity to guarantee clean, dry products.
               </p>
             </div>
           </div>
@@ -180,20 +180,20 @@ export default function ExportLogisticsPage() {
             </div>
           </div>
 
-          {/* Slot 3: Container Loading */}
+          {/* Slot 3: Truck Loading */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
             <div
               className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
               onClick={() => setActiveModalImage({
                 src: IMAGES.containerStuffing,
-                title: "Container Loading",
-                description: "With a loading platform directly connected to the warehouse floor, our team loads containers efficiently, preventing exposure to rain or direct sunshine.",
+                title: "Truck Loading",
+                description: "With a loading platform directly connected to the warehouse floor, our team loads trucks efficiently, preventing exposure to rain or direct sunshine.",
                 detail: "Loading - Direct Loading Platform"
               })}
             >
               <img
                 src={IMAGES.containerStuffing}
-                alt="Direct Container Loading"
+                alt="Direct Truck Loading"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute top-4 right-4 bg-[#102A1D] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
@@ -201,27 +201,27 @@ export default function ExportLogisticsPage() {
               </span>
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Container Loading</h3>
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Truck Loading</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                With a loading platform directly connected to the warehouse floor, our team loads containers efficiently, preventing exposure to rain or direct sunshine.
+                With a loading platform directly connected to the warehouse floor, our team loads trucks efficiently, preventing exposure to rain or direct sunshine.
               </p>
             </div>
           </div>
 
-          {/* Slot 4: Container Dispatch */}
+          {/* Slot 4: Truck Dispatch */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] hover:-translate-y-1">
             <div
               className="relative h-[360px] overflow-hidden bg-gray-50 cursor-pointer group"
               onClick={() => setActiveModalImage({
                 src: IMAGES.dispatchThumb,
-                title: "Container Dispatch",
-                description: "Watch container dispatch runs, double checking weight sheets, moisture levels, and seal attachments live.",
+                title: "Truck Dispatch",
+                description: "Watch truck dispatch runs, double checking weight sheets, moisture levels, and seal attachments live.",
                 detail: "Dispatch - Port & Truck Dispatch"
               })}
             >
               <img
                 src={IMAGES.dispatchThumb}
-                alt="Container Dispatch"
+                alt="Truck Dispatch"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute top-4 right-4 bg-[#C97B38] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
@@ -229,9 +229,9 @@ export default function ExportLogisticsPage() {
               </span>
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Container Dispatch</h3>
+              <h3 className="text-xl font-bold text-[#102A1D] mb-2">Truck Dispatch</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Watch container dispatch runs, double checking weight sheets, moisture levels, and seal attachments live.
+                Watch truck dispatch runs, double checking weight sheets, moisture levels, and seal attachments live.
               </p>
             </div>
           </div>
